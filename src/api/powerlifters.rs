@@ -2,7 +2,7 @@ use actix_web::{post, web::Form, HttpResponse, Responder};
 use maud::{html, Markup};
 use serde::Deserialize;
 
-use crate::data_fetching::{get_powerlifter_data, PowerlifterData, POWERLIFTER_TABLE_HEADERS};
+use crate::data_fetching::{LifterEntry, POWERLIFTER_TABLE_HEADERS};
 
 #[derive(Debug, Deserialize)]
 struct PowerlifterForm {
@@ -12,25 +12,30 @@ struct PowerlifterForm {
 #[post("/powerlifters")]
 pub async fn powerlifters(data: Form<PowerlifterForm>) -> impl Responder {
     println!("data: {data:?}");
-    let powerlifter_data: Vec<PowerlifterData> = get_powerlifter_data(&data.powerlifters);
-    HttpResponse::Ok().body(build_table(Vec::new()))
-    // HttpResponse::Ok().json(vec![1, 2, 3, 4, 5])
+    let powerlifter_data: Vec<LifterEntry> = LifterEntry::from_string(&data.powerlifters);
+    HttpResponse::Ok().body(build_table(powerlifter_data))
 }
 
 
-fn build_table(data: Vec<PowerlifterData>) -> Markup {
+fn build_table(data: Vec<LifterEntry>) -> Markup {
     html! {
         table {
+
             tr {
                 @for header in &POWERLIFTER_TABLE_HEADERS {
                     th { (header) }
                 }
             }
-            tr {
-                @for header in &POWERLIFTER_TABLE_HEADERS {
-                    td { (header) }
+
+            @for row in data {
+                tr {
+                    td { (row.name) }
+                    @for _ in 0..&POWERLIFTER_TABLE_HEADERS.len()-1 {
+                        td { }
+                    }
                 }
             }
+
         }
     }
 }
