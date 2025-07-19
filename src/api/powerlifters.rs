@@ -13,7 +13,8 @@ struct PowerlifterForm {
 pub async fn powerlifters(data: Form<PowerlifterForm>) -> impl Responder {
     println!("data: {data:?}");
     let powerlifter_data: Vec<PowerlifterData> = get_powerlifter_data(&data.powerlifters);
-    HttpResponse::Ok().json(vec![1, 2, 3, 4, 5])
+    HttpResponse::Ok().body(build_table(Vec::new()))
+    // HttpResponse::Ok().json(vec![1, 2, 3, 4, 5])
 }
 
 
@@ -23,6 +24,11 @@ fn build_table(data: Vec<PowerlifterData>) -> Markup {
             tr {
                 @for header in &POWERLIFTER_TABLE_HEADERS {
                     th { (header) }
+                }
+            }
+            tr {
+                @for header in &POWERLIFTER_TABLE_HEADERS {
+                    td { (header) }
                 }
             }
         }

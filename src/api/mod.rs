@@ -1,13 +1,15 @@
 use maud::{html, Markup};
 
-pub mod root;
 pub mod powerlifters;
+pub mod root;
+pub mod styles;
 
 fn head() -> Markup {
     html! {
         head {
             script src="https://unpkg.com/htmx.org" { }
             title { "Powerlifting API" }
+            link rel="stylesheet" href="styles.css" { }
         }
     }
 }

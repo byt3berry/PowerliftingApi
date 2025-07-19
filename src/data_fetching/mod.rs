@@ -17,5 +17,5 @@ pub const POWERLIFTER_TABLE_HEADERS: [&str; 12] = [
 ];
 
 pub fn get_powerlifter_data(data: &String) -> Vec<PowerlifterData> {
-    todo!()
+    Vec::new()
 }
