@@ -31,7 +31,7 @@ async fn main() -> std::io::Result<()> {
             )
     })
     .workers(1)
-    .bind(("localhost", args.port))?
+    .bind((args.ip, args.port))?
     .run()
     .await
 }
