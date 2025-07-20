@@ -1,4 +1,5 @@
 use actix_web::{post, web::Form, HttpResponse, Responder};
+use log::debug;
 use maud::{html, Markup};
 use serde::Deserialize;
 
@@ -11,7 +12,7 @@ struct PowerlifterForm {
 
 #[post("/powerlifters")]
 pub async fn powerlifters(data: Form<PowerlifterForm>) -> impl Responder {
-    println!("data: {data:?}");
+    debug!("data: {data:?}");
     let powerlifter_data: Vec<LifterEntry> = LifterEntry::from_string(&data.powerlifters);
     HttpResponse::Ok().body(build_table(powerlifter_data))
 }
