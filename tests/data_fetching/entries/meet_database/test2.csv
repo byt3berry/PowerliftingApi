@@ -1,0 +1,18 @@
+Place,Name,Division,Equipment,Event,BirthDate,BirthYear,Age,Sex,BodyweightKg,WeightClassKg,Squat1Kg,Squat2Kg,Squat3Kg,Best3SquatKg,Bench1Kg,Bench2Kg,Bench3Kg,Best3BenchKg,Deadlift1Kg,Deadlift2Kg,Deadlift3Kg,Best3DeadliftKg,TotalKg
+1,Test Powerlifter,Cadet,Raw,Event Name,,1961,48,M,45,47,55,60,65,65,30,32.5,35,35,60,70,75,75,175
+1,Test Powerlifter,Elite,Raw,Event Name,,1961,48,M,45,47,55,60,65,65,30,32.5,35,35,60,70,75,75,175
+1,Test Powerlifter,Guest,Raw,Event Name,,1961,48,M,45,47,55,60,65,65,30,32.5,35,35,60,70,75,75,175
+1,Test Powerlifter,Hors Match,Raw,Event Name,,1961,48,M,45,47,55,60,65,65,30,32.5,35,35,60,70,75,75,175
+1,Test Powerlifter,Jeunes,Raw,Event Name,,1961,48,M,45,47,55,60,65,65,30,32.5,35,35,60,70,75,75,175
+1,Test Powerlifter,Juniors,Raw,Event Name,,1961,48,M,45,47,55,60,65,65,30,32.5,35,35,60,70,75,75,175
+1,Test Powerlifter,Masters,Raw,Event Name,,1961,48,M,45,47,55,60,65,65,30,32.5,35,35,60,70,75,75,175
+1,Test Powerlifter,Masters 1,Raw,Event Name,,1961,48,M,45,47,55,60,65,65,30,32.5,35,35,60,70,75,75,175
+1,Test Powerlifter,Masters 2,Raw,Event Name,,1961,48,M,45,47,55,60,65,65,30,32.5,35,35,60,70,75,75,175
+1,Test Powerlifter,Masters 3,Raw,Event Name,,1961,48,M,45,47,55,60,65,65,30,32.5,35,35,60,70,75,75,175
+1,Test Powerlifter,Masters 4,Raw,Event Name,,1961,48,M,45,47,55,60,65,65,30,32.5,35,35,60,70,75,75,175
+1,Test Powerlifter,Open,Raw,Event Name,,1961,48,M,45,47,55,60,65,65,30,32.5,35,35,60,70,75,75,175
+1,Test Powerlifter,Prime Time,Raw,Event Name,,1961,48,M,45,47,55,60,65,65,30,32.5,35,35,60,70,75,75,175
+1,Test Powerlifter,Senior/Master,Raw,Event Name,,1961,48,M,45,47,55,60,65,65,30,32.5,35,35,60,70,75,75,175
+1,Test Powerlifter,Seniors,Raw,Event Name,,1961,48,M,45,47,55,60,65,65,30,32.5,35,35,60,70,75,75,175
+1,Test Powerlifter,Subjunior/Junior,Raw,Event Name,,1961,48,M,45,47,55,60,65,65,30,32.5,35,35,60,70,75,75,175
+1,Test Powerlifter,Sub-Juniors,Raw,Event Name,,1961,48,M,45,47,55,60,65,65,30,32.5,35,35,60,70,75,75,175

@@ -1,4 +1,6 @@
-#[derive(Debug, Default)]
+use serde::Deserialize;
+
+#[derive(Debug, Default, Deserialize)]
 pub enum Place {
     /// The placing assigned to the entry.
     P(u8),
