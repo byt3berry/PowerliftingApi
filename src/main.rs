@@ -5,7 +5,6 @@ use clap::Parser;
 
 use api::powerlifters::powerlifters;
 use api::root::root;
-use api::styles::styles;
 use cli::Args;
 
 mod api;
@@ -25,7 +24,6 @@ async fn main() -> std::io::Result<()> {
             .wrap(NormalizePath::new(TrailingSlash::Trim))
             .wrap(HtmxMiddleware)
             .wrap(Logger::new("%a [%s] %U"))
-            .service(styles)
             .service(root)
             .service(powerlifters)
             .default_service(
