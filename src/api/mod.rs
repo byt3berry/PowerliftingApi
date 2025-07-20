@@ -2,14 +2,19 @@ use maud::{html, Markup};
 
 pub mod powerlifters;
 pub mod root;
-pub mod styles;
 
 fn head() -> Markup {
     html! {
         head {
             script src="https://unpkg.com/htmx.org" { }
             title { "Powerlifting API" }
-            link rel="stylesheet" href="styles.css" { }
+            style {
+                r#"
+                table { border: 1px solid black; }
+                th { border: 1px solid black; }
+                td { border: 1px solid black; }
+                "#
+            }
         }
     }
 }
