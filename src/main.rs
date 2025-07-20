@@ -14,7 +14,7 @@ mod data_fetching;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // Enables debug infos
-    #[cfg(debug_assertions)] std::env::set_var("RUST_LOG", "info");
+    std::env::set_var("RUST_LOG", "info");
     env_logger::init();
 
     let args: Args = Args::parse();
