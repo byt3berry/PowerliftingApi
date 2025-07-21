@@ -3,7 +3,7 @@ use log::debug;
 use maud::{html, Markup};
 use serde::Deserialize;
 
-use crate::data_fetching::{LifterEntry, POWERLIFTER_TABLE_HEADERS};
+use crate::data_fetching::{types::meet_entry::MeetEntry, POWERLIFTER_TABLE_HEADERS};
 
 #[derive(Debug, Deserialize)]
 struct PowerlifterForm {
@@ -13,12 +13,12 @@ struct PowerlifterForm {
 #[post("/powerlifters")]
 pub async fn powerlifters(data: Form<PowerlifterForm>) -> impl Responder {
     debug!("data: {data:?}");
-    let powerlifter_data: Vec<LifterEntry> = LifterEntry::from_string(&data.powerlifters);
+    let powerlifter_data: Vec<MeetEntry> = MeetEntry::from_string(&data.powerlifters);
     HttpResponse::Ok().body(build_table(powerlifter_data))
 }
 
 
-fn build_table(data: Vec<LifterEntry>) -> Markup {
+fn build_table(data: Vec<MeetEntry>) -> Markup {
     html! {
         table {
 
