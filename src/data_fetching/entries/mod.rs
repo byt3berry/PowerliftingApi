@@ -1,2 +1,2 @@
-mod meet_database;
-mod lifter_database;
+pub mod meet_database;
+pub mod lifter_database;

@@ -1,4 +1,5 @@
 pub mod division;
+pub mod dots;
 pub mod equipment;
 pub mod meet_entry;
 pub mod place;

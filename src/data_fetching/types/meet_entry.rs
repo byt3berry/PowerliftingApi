@@ -1,6 +1,7 @@
 use serde::Deserialize;
 
 use crate::data_fetching::types::division::Division;
+use crate::data_fetching::types::dots::Dots;
 use crate::data_fetching::types::equipment::Equipment;
 use crate::data_fetching::types::sex::Sex;
 use crate::data_fetching::types::weight::Weight;
@@ -18,7 +19,7 @@ pub struct MeetEntry {
     pub equipment: Equipment,
 
     #[serde(rename(deserialize = "Age"))]
-    pub age: u8,
+    pub age: Option<u8>,
 
     #[serde(rename(deserialize = "Sex"))]
     pub sex: Sex,
@@ -30,47 +31,47 @@ pub struct MeetEntry {
     pub weight_class: Option<WeightClass>,
 
     #[serde(rename(deserialize = "Squat1Kg"))]
-    pub squat1: Weight,
+    pub squat1: Option<Weight>,
 
     #[serde(rename(deserialize = "Squat2Kg"))]
-    pub squat2: Weight,
+    pub squat2: Option<Weight>,
 
     #[serde(rename(deserialize = "Squat3Kg"))]
-    pub squat3: Weight,
+    pub squat3: Option<Weight>,
 
     #[serde(rename(deserialize = "Best3SquatKg"))]
-    pub best3squat: Weight,
+    pub best3squat: Option<Weight>,
 
     #[serde(rename(deserialize = "Bench1Kg"))]
-    pub bench1: Weight,
+    pub bench1: Option<Weight>,
 
     #[serde(rename(deserialize = "Bench2Kg"))]
-    pub bench2: Weight,
+    pub bench2: Option<Weight>,
 
     #[serde(rename(deserialize = "Bench3Kg"))]
-    pub bench3: Weight,
+    pub bench3: Option<Weight>,
 
     #[serde(rename(deserialize = "Best3BenchKg"))]
-    pub best3bench: Weight,
+    pub best3bench: Option<Weight>,
 
     #[serde(rename(deserialize = "Deadlift1Kg"))]
-    pub deadlift1: Weight,
+    pub deadlift1: Option<Weight>,
 
     #[serde(rename(deserialize = "Deadlift2Kg"))]
-    pub deadlift2: Weight,
+    pub deadlift2: Option<Weight>,
 
     #[serde(rename(deserialize = "Deadlift3Kg"))]
-    pub deadlift3: Weight,
+    pub deadlift3: Option<Weight>,
 
     #[serde(rename(deserialize = "Best3DeadliftKg"))]
-    pub best3deadlift: Weight,
+    pub best3deadlift: Option<Weight>,
 
     #[serde(rename(deserialize = "TotalKg"))]
-    pub total: Weight
+    pub total: Weight,
 }
 
 impl MeetEntry {
-    pub fn from_string(data: &String) -> Vec<Self> {
+    pub fn from_string(data: &str) -> Vec<Self> {
         data
             .lines()
             .map(|name| {
@@ -82,5 +83,9 @@ impl MeetEntry {
     pub fn with_name(mut self, name: String) -> Self {
         self.name = name;
         self
+    }
+
+    pub fn dots(&self) ->Dots {
+        Dots::new(self.sex, self.bodyweight, self.total)
     }
 }

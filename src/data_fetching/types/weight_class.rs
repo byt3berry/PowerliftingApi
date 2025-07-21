@@ -4,14 +4,10 @@ use serde::{de::{self, Visitor}, Deserialize};
 
 use crate::data_fetching::types::weight::Weight;
 
-/// The definition of the "WeightClassKg" column.
 #[derive(Debug, Default, PartialEq)]
 pub enum WeightClass {
-    /// A class defined as being under or equal to a maximum weight.
     UnderOrEqual(Weight),
-    /// A class defined as being over a minimum weight, for superheavies.
     Over(Weight),
-    /// No weight class information supplied.
     #[default]
     None,
 }
@@ -20,15 +16,15 @@ impl FromStr for WeightClass {
     type Err = num::ParseFloatError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        println!("ici");
         if s.is_empty() {
+            println!("iciiii");
             return Ok(WeightClass::None);
         }
 
         if let Some(v) = s.strip_suffix('+') {
-            v.parse::<Weight>().map(WeightClass::Over)
+            v.parse::<Weight>().map(Self::Over)
         } else {
-            s.parse::<Weight>().map(WeightClass::UnderOrEqual)
+            s.parse::<Weight>().map(Self::UnderOrEqual)
         }
     }
 }
@@ -39,7 +35,7 @@ impl Visitor<'_> for WeightClassVisitor {
     type Value = WeightClass;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("A floating-point value optionally ending with '+'")
+        formatter.write_str("a valid weight class")
     }
 
     fn visit_str<E: de::Error>(self, value: &str) -> Result<WeightClass, E> {

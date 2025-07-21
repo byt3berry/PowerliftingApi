@@ -2,11 +2,22 @@ use serde::Deserialize;
 
 #[derive(Debug, Default, Deserialize, PartialEq)]
 pub enum Equipment {
+    #[serde(rename(deserialize = "Raw"))]
     Raw,
+
+    #[serde(rename(deserialize = "Wraps"))]
     Wraps,
+
+    #[serde(rename(deserialize = "Single"))]
+    #[serde(rename(deserialize = "Single-ply"))]
     Single,
+
+    #[serde(rename(deserialize = "Multi"))]
     Multi,
+
+    #[serde(rename(deserialize = "Straps"))]
     Straps,
+
     #[default]
     Unlimited,
 }
