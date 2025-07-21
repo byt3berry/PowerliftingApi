@@ -1,7 +1,7 @@
 use actix_web::{get, HttpResponse, Responder};
 use maud::{html, Markup, DOCTYPE};
 
-use crate::api::{head, input_div, result_div};
+use crate::api::{body, head};
 
 #[get("/")]
 pub async fn root() -> impl Responder {
@@ -13,7 +13,6 @@ fn root_page() -> Markup {
     html! {
         (DOCTYPE)
         (head())
-        (input_div())
-        (result_div())
+        (body())
     }
 }
