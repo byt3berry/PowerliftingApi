@@ -6,7 +6,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use tokio::sync::Notify;
 
 use cli::Args;
-use crate::server::{handle_sigint_signal, handle_sighup_signal, start_server};
+use crate::server::{handle_sigint_signal, handle_sigusr1_signal, start_server};
 
 mod api;
 mod cli;
@@ -28,7 +28,7 @@ async fn main() -> std::io::Result<()> {
         let handle: ServerHandle = server.handle();
 
         handle_sigint_signal(&handle, &exit_flag);
-        handle_sighup_signal(&handle, &restart_notifier);
+        handle_sigusr1_signal(&handle, &restart_notifier);
 
         server.await?;
 
