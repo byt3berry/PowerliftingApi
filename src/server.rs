@@ -4,14 +4,19 @@ use actix_web::middleware::{Logger, NormalizePath, TrailingSlash};
 use actix_web::rt::signal::ctrl_c;
 use actix_web::rt::signal::unix::{signal, SignalKind};
 use actix_web::{web, App, HttpResponse, HttpServer};
+use chrono::Local;
 use log::{info, warn};
+use tokio::task::JoinHandle;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
+use tokio::signal::unix::Signal;
 use tokio::sync::Notify;
+use tokio::time::{sleep, Duration};
 
 use crate::api::powerlifters::powerlifters;
 use crate::api::root::root;
 
+/// Start a server listening on `ip`:`port`
 pub fn start_server(ip: &str, port: u16) -> std::io::Result<Server>{
     info!("Starting server on {ip}:{port}");
 
@@ -20,7 +25,7 @@ pub fn start_server(ip: &str, port: u16) -> std::io::Result<Server>{
             App::new()
                 .wrap(NormalizePath::new(TrailingSlash::Trim))
                 .wrap(HtmxMiddleware)
-                .wrap(Logger::new("%{r}a [%s] %U"))
+                .wrap(Logger::new("[%s] %U"))
                 .service(root)
                 .service(powerlifters)
                 .default_service(
@@ -33,9 +38,26 @@ pub fn start_server(ip: &str, port: u16) -> std::io::Result<Server>{
     )
 }
 
+/// Restart the server every day at 00:10
+async fn restart_server(handler: &ServerHandle, notifier: &Arc<Notify>) {
+    loop {
+        let now = Local::now();
+        let next_run = now
+            .date_naive()
+            .succ_opt()
+            .unwrap()
+            .and_hms_opt(0, 10, 0)
+            .unwrap();
+        let duration_until_next = next_run - now.naive_local();
+
+        sleep(Duration::from_secs(duration_until_next.num_seconds() as u64)).await;
+        handle_sigusr1_signal(handler, notifier);
+    }
+}
+
 /// Catch signal SIGINT to trigger the shut down of the server
-pub fn handle_sigint_signal(handle: &ServerHandle, exit_flag: &Arc<AtomicBool>) {
-    let handler_clone: ServerHandle = handle.clone();
+pub fn handle_sigint_signal(handler: &ServerHandle, exit_flag: &Arc<AtomicBool>) {
+    let handler_clone: ServerHandle = handler.clone();
     let flag_clone: Arc<AtomicBool> = exit_flag.clone();
 
     tokio::spawn(async move {
@@ -47,15 +69,25 @@ pub fn handle_sigint_signal(handle: &ServerHandle, exit_flag: &Arc<AtomicBool>) 
 }
 
 /// Catch signal SIGUSR1 to trigger the hot reload of the server
-pub fn handle_sigusr1_signal(handle: &ServerHandle, notifier: &Arc<Notify>) {
-    let handler_clone: ServerHandle = handle.clone();
-    let notifier_clone = notifier.clone();
+pub fn handle_sigusr1_signal(handler: &ServerHandle, notifier: &Arc<Notify>) {
+    let handler_clone: ServerHandle = handler.clone();
+    let notifier_clone: Arc<Notify> = notifier.clone();
 
     tokio::spawn(async move {
-        let mut sig = signal(SignalKind::user_defined1()).unwrap();
+        let mut sig: Signal = signal(SignalKind::user_defined1()).unwrap();
         sig.recv().await;
         warn!("SIGUSR1 received: Restarting server");
         handler_clone.stop(true).await;
         notifier_clone.notify_one();
     });
+}
+
+/// Create a task that restart the server
+pub async fn schedule_daily_reload(handler: &ServerHandle, notifier: &Arc<Notify>) -> JoinHandle<()> {
+    let handler_clone: ServerHandle = handler.clone();
+    let notifier_clone: Arc<Notify> = notifier.clone();
+
+    tokio::spawn(async move {
+        restart_server(&handler_clone, &notifier_clone).await;
+    })
 }
