@@ -6,7 +6,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use tokio::sync::Notify;
 
 use cli::Args;
-use crate::server::{handle_sigint_signal, handle_sigusr1_signal, start_server};
+use crate::server::{handle_sigint_signal, handle_sigusr1_signal, schedule_daily_reload, start_server};
 
 mod api;
 mod cli;
@@ -25,16 +25,18 @@ async fn main() -> std::io::Result<()> {
 
     loop {
         let server: Server = start_server(&args.ip, args.port)?;
-        let handle: ServerHandle = server.handle();
+        let handler: ServerHandle = server.handle();
 
-        handle_sigint_signal(&handle, &exit_flag);
-        handle_sigusr1_signal(&handle, &restart_notifier);
+        let scheduled_task = schedule_daily_reload(&handler, &restart_notifier);
+        handle_sigint_signal(&handler, &exit_flag);
+        handle_sigusr1_signal(&handler, &restart_notifier);
 
         server.await?;
 
         if exit_flag.load(Ordering::SeqCst) {
             break;
         } else {
+            scheduled_task.await.abort();
             restart_notifier.notified().await;
             continue;
         }
