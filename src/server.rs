@@ -20,7 +20,7 @@ pub fn start_server(ip: &str, port: u16) -> std::io::Result<Server>{
             App::new()
                 .wrap(NormalizePath::new(TrailingSlash::Trim))
                 .wrap(HtmxMiddleware)
-                .wrap(Logger::new("%a [%s] %U"))
+                .wrap(Logger::new("%{r}a [%s] %U"))
                 .service(root)
                 .service(powerlifters)
                 .default_service(
@@ -33,6 +33,7 @@ pub fn start_server(ip: &str, port: u16) -> std::io::Result<Server>{
     )
 }
 
+/// Catch signal SIGINT to trigger the shut down of the server
 pub fn handle_sigint_signal(handle: &ServerHandle, exit_flag: &Arc<AtomicBool>) {
     let handler_clone: ServerHandle = handle.clone();
     let flag_clone: Arc<AtomicBool> = exit_flag.clone();
@@ -45,14 +46,15 @@ pub fn handle_sigint_signal(handle: &ServerHandle, exit_flag: &Arc<AtomicBool>) 
     });
 }
 
-pub fn handle_sighup_signal(handle: &ServerHandle, notifier: &Arc<Notify>) {
+/// Catch signal SIGUSR1 to trigger the hot reload of the server
+pub fn handle_sigusr1_signal(handle: &ServerHandle, notifier: &Arc<Notify>) {
     let handler_clone: ServerHandle = handle.clone();
     let notifier_clone = notifier.clone();
 
     tokio::spawn(async move {
-        let mut sig = signal(SignalKind::hangup()).unwrap();
+        let mut sig = signal(SignalKind::user_defined1()).unwrap();
         sig.recv().await;
-        warn!("SIGHUP received: Restarting server");
+        warn!("SIGUSR1 received: Restarting server");
         handler_clone.stop(true).await;
         notifier_clone.notify_one();
     });
