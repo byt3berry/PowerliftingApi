@@ -1,7 +1,9 @@
 use anyhow::{bail, Result};
+use csv::Reader;
 use log::warn;
-use walkdir::WalkDir;
+use std::fs::File;
 use std::path::{Path, PathBuf};
+use walkdir::WalkDir;
 
 use crate::data_fetching::types::meet_entry::MeetEntry;
 
@@ -9,10 +11,10 @@ pub struct MeetDatabase;
 
 impl MeetDatabase {
     fn from_csv(csv: &PathBuf) -> Result<Vec<MeetEntry>> {
-        let mut entries = Vec::with_capacity(50_000);
+        let mut entries: Vec<MeetEntry> = Vec::with_capacity(50_000);
 
-        let mut rdr = csv::ReaderBuilder::new().quoting(false).from_path(csv)?;
-        for entry in rdr.deserialize() {
+        let mut reader: Reader<File> = csv::ReaderBuilder::new().quoting(false).from_path(csv)?;
+        for entry in reader.deserialize() {
             let entry: MeetEntry = entry?;
             entries.push(entry);
         }
@@ -34,7 +36,7 @@ impl MeetDatabase {
             .filter(|path| path.is_file())
             .filter(|path| path.file_name().unwrap() == filename)
             .map(|path| {
-                let result = Self::from_csv(&path);
+                let result: Result<Vec<MeetEntry>> = Self::from_csv(&path);
 
                 if result.is_err() {
                     warn!("file {} can't be used: {:?}", path.display(), result.as_ref().err().unwrap());
@@ -168,7 +170,7 @@ mod perf_tests {
         let path: &Path = Path::new(ENTRIES_ROOT);
         assert!(path.is_dir());
 
-        let now = Instant::now();
+        let now: Instant = Instant::now();
         MeetDatabase::from_folder(path).unwrap();
         let elapsed: Duration = now.elapsed();
 

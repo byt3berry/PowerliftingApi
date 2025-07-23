@@ -25,9 +25,9 @@ impl Dots {
 
     #[inline]
     fn poly4(a: f64, b: f64, c: f64, d: f64, e: f64, x: f64) -> f64 {
-        let x2 = x * x;
-        let mut even = Self::madd(a, x2, c); // Ax^2 + C.
-        let odd = Self::madd(b, x2, d); // Bx^2 + D.
+        let x2: f64 = x * x;
+        let mut even: f64 = Self::madd(a, x2, c); // Ax^2 + C.
+        let odd: f64 = Self::madd(b, x2, d); // Bx^2 + D.
         even = Self::madd(even, x2, e); // Ax^4 + Cx^2 + E.
         Self::madd(odd, x, even) // Ax^4 + Bx^3 + Cx^2 + Dx + E.
     }
@@ -40,7 +40,7 @@ impl Dots {
         const E: f64 = -307.750_760;
 
         // Bodyweight bounds are defined; bodyweights out of range match the boundaries.
-        let adjusted = bodyweightkg.clamp(40., 210.);
+        let adjusted: f64 = bodyweightkg.clamp(40., 210.);
         500. / Self::poly4(A, B, C, D, E, adjusted)
     }
 
@@ -52,7 +52,7 @@ impl Dots {
         const E: f64 = -57.962_880;
 
         // Bodyweight bounds are defined; bodyweights out of range match the boundaries.
-        let adjusted = bodyweightkg.clamp(40., 150.);
+        let adjusted: f64 = bodyweightkg.clamp(40., 150.);
         500. / Self::poly4(A, B, C, D, E, adjusted)
     }
 
