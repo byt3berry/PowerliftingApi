@@ -1,3 +1,4 @@
+use std::net::IpAddr;
 use std::sync::Arc;
 
 use actix_htmx::HtmxMiddleware;
@@ -15,7 +16,7 @@ struct ServerData {
 }
 
 /// Start a server listening on `ip`:`port`
-pub fn start_server(ip: &str, port: u16, meet_entries: Vec<MeetEntry>) -> std::io::Result<Server>{
+pub fn start_server(ip: IpAddr, port: u16, meet_entries: Vec<MeetEntry>) -> std::io::Result<Server>{
     info!("Starting server on {ip}:{port}");
 
     Ok(

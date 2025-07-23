@@ -19,8 +19,9 @@ async fn main() -> anyhow::Result<()> {
     env_logger::init();
 
     let args: Args = Args::parse();
+    args.validate()?;
     let meet_entries: Vec<MeetEntry> = MeetDatabase::from_folder(&args.path)?;
-    let server: Server = start_server(&args.ip, args.port, meet_entries)?;
+    let server: Server = start_server(args.ip, args.port, meet_entries)?;
 
     server.await?;
 
