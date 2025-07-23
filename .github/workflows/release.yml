@@ -28,6 +28,7 @@ jobs:
           name: powerlifting_api
           path: ${{ github.workspace }}/target/release/powerlifting_api
 
+  test:
     name: Test binary
     runs-on: ubuntu-latest
     steps:
