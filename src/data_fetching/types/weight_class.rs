@@ -1,10 +1,11 @@
 use serde::de::{self, Visitor};
 use serde::{Deserialize};
-use std::{fmt, num, str::FromStr};
+use std::str::FromStr;
+use std::{fmt, num};
 
 use crate::data_fetching::types::weight::Weight;
 
-#[derive(Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum WeightClass {
     UnderOrEqual(Weight),
     Over(Weight),

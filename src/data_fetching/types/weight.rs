@@ -83,4 +83,12 @@ impl Visitor<'_> for WeightVisitor {
     fn visit_f64<E: de::Error>(self, f: f64) -> Result<Self::Value, E> {
         Ok(Self::Value::from(f))
     }
+
+    fn visit_borrowed_str<E: de::Error>(self, v: &str) -> Result<Self::Value, E> {
+        Self::Value::from_str(v).map_err(E::custom)
+    }
+
+    fn visit_str<E: de::Error>(self, v: &str) -> Result<Self::Value, E> {
+        self.visit_borrowed_str(v)
+    }
 }

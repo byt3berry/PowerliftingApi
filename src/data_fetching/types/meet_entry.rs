@@ -7,7 +7,7 @@ use crate::data_fetching::types::sex::Sex;
 use crate::data_fetching::types::weight::Weight;
 use crate::data_fetching::types::weight_class::WeightClass;
 
-#[derive(Debug, Default, Deserialize, Eq, PartialEq)]
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq)]
 pub struct MeetEntry {
     #[serde(rename(deserialize = "Name"))]
     pub name: String,
