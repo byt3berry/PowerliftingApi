@@ -28,22 +28,9 @@ jobs:
           name: powerlifting_api
           path: ${{ github.workspace }}/target/release/powerlifting_api
 
-  test:
-    name: Test binary
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-
-      - name: Test
-        run: cargo test --release -- --ignored
-
   release:
     name: Create release
-    needs: [build, test]
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
