@@ -51,6 +51,18 @@ impl FromStr for Weight {
 
 impl Eq for Weight { }
 
+impl<'de> Deserialize<'de> for Weight {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        deserializer.deserialize_any(WeightVisitor)
+    }
+}
+
+impl Weight {
+    pub fn is_zero(self) -> bool {
+        self == Self::from(0.)
+    }
+}
+
 struct WeightVisitor;
 
 impl Visitor<'_> for WeightVisitor {
@@ -70,25 +82,5 @@ impl Visitor<'_> for WeightVisitor {
 
     fn visit_f64<E: de::Error>(self, f: f64) -> Result<Self::Value, E> {
         Ok(Self::Value::from(f))
-    }
-
-    fn visit_borrowed_str<E: de::Error>(self, v: &str) -> Result<Self::Value, E> {
-        Self::Value::from_str(v).map_err(E::custom)
-    }
-
-    fn visit_str<E: de::Error>(self, v: &str) -> Result<Self::Value, E> {
-        self.visit_borrowed_str(v)
-    }
-}
-
-impl<'de> Deserialize<'de> for Weight {
-    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        deserializer.deserialize_any(WeightVisitor)
-    }
-}
-
-impl Weight {
-    pub fn is_zero(self) -> bool {
-        self == Self::from(0.)
     }
 }
