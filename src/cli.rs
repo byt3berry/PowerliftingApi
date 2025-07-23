@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use clap::Parser;
 
 /// `PowerliftingApi`
@@ -6,6 +8,10 @@ use clap::Parser;
 pub struct Args {
     /// IP
     pub ip: String,
+
     /// Port
     pub port: u16,
+
+    /// Path to data
+    pub path: PathBuf,
 }

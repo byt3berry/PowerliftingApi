@@ -23,7 +23,7 @@ impl MeetDatabase {
         Ok(entries)
     }
 
-    pub fn from_folder(meet_folder: &Path) -> Result<Vec<MeetEntry>> {
+    pub fn from_folder(meet_folder: &PathBuf) -> Result<Vec<MeetEntry>> {
         if !meet_folder.is_dir() {
             bail!("{meet_folder:?} should be a folder");
         }
@@ -171,7 +171,7 @@ mod perf_tests {
         assert!(path.is_dir());
 
         let now: Instant = Instant::now();
-        MeetDatabase::from_folder(path).unwrap();
+        MeetDatabase::from_folder(&path.to_path_buf()).unwrap();
         let elapsed: Duration = now.elapsed();
 
         assert!(elapsed.as_millis() < 100, "parsing too long: {}ms", elapsed.as_millis());
