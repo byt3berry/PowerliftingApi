@@ -3,10 +3,9 @@ use clap::Parser;
 use log::info;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
-use tokio::sync::Notify;
 
 use cli::Args;
-use crate::server::{handle_sigint_signal, handle_sigusr1_signal, schedule_daily_reload, start_server};
+use crate::server::{handle_sigint_signal, schedule_daily_reload, start_server};
 
 mod api;
 mod cli;
@@ -20,24 +19,22 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
 
     let args: Args = Args::parse();
-    let exit_flag: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
-    let restart_notifier: Arc<Notify> = Arc::new(Notify::new());
 
     loop {
+        let exit_flag: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
+        let restart_flag: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
         let server: Server = start_server(&args.ip, args.port)?;
         let handler: ServerHandle = server.handle();
 
-        let scheduled_task = schedule_daily_reload(&handler, &restart_notifier);
+        let scheduled_task = schedule_daily_reload(&handler, &restart_flag).await;
         handle_sigint_signal(&handler, &exit_flag);
-        handle_sigusr1_signal(&handler, &restart_notifier);
 
         server.await?;
 
         if exit_flag.load(Ordering::SeqCst) {
             break;
         } else {
-            scheduled_task.await.abort();
-            restart_notifier.notified().await;
+            scheduled_task.abort();
             continue;
         }
     }
