@@ -1,11 +1,9 @@
-use actix_web::dev::{Server, ServerHandle};
+use actix_web::dev::Server;
 use clap::Parser;
 use log::info;
-use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, Ordering};
 
 use cli::Args;
-use crate::server::{handle_sigint_signal, schedule_daily_reload, start_server};
+use crate::server::start_server;
 
 mod api;
 mod cli;
@@ -19,25 +17,9 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
 
     let args: Args = Args::parse();
+    let server: Server = start_server(&args.ip, args.port)?;
 
-    loop {
-        let exit_flag: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
-        let restart_flag: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
-        let server: Server = start_server(&args.ip, args.port)?;
-        let handler: ServerHandle = server.handle();
-
-        let scheduled_task = schedule_daily_reload(&handler, &restart_flag).await;
-        handle_sigint_signal(&handler, &exit_flag);
-
-        server.await?;
-
-        if exit_flag.load(Ordering::SeqCst) {
-            break;
-        } else {
-            scheduled_task.abort();
-            continue;
-        }
-    }
+    server.await?;
 
     info!("Server exited cleanly");
     Ok(())
