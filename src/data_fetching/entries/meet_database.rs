@@ -29,7 +29,7 @@ impl MeetDatabase {
         let filename: &Path = Path::new("entries.csv");
         let output: Vec<MeetEntry> = WalkDir::new(meet_folder)
             .into_iter()
-            .filter_map(|element| element.ok())
+            .filter_map(Result::ok)
             .map(|element| element.path().to_owned())
             .filter(|path| path.is_file())
             .filter(|path| path.file_name().unwrap() == filename)
@@ -37,12 +37,12 @@ impl MeetDatabase {
                 let result = Self::from_csv(&path);
 
                 if result.is_err() {
-                    warn!("file {path:?} can't be used: {:?}", result.as_ref().err().unwrap());
+                    warn!("file {} can't be used: {:?}", path.display(), result.as_ref().err().unwrap());
                 }
 
                 result
             })
-            .filter_map(|element| element.ok())
+            .filter_map(Result::ok)
             .flatten()
             .collect();
 
@@ -74,23 +74,23 @@ mod tests {
 
     #[test]
     fn test_from_csv_no_error_divisions() {
-        let test_file: PathBuf = Path::new(TEST_PATH).join("test2.csv");
-
-        MeetDatabase::from_csv(&test_file).unwrap();
-    }
-
-    #[test]
-    fn test_from_csv_no_error_no_weight_class() {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test3.csv");
 
         MeetDatabase::from_csv(&test_file).unwrap();
     }
 
     #[test]
-    fn test_from_csv_simple() {
+    fn test_from_csv_no_error_no_weight_class() {
+        let test_file: PathBuf = Path::new(TEST_PATH).join("test4.csv");
+
+        MeetDatabase::from_csv(&test_file).unwrap();
+    }
+
+    #[test]
+    fn test_from_csv_integer() {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test1.csv");
         let expected: Vec<MeetEntry> = vec![
-            MeetEntry { 
+            MeetEntry {
                 name: String::from("Test Powerlifter"),
                 division: Division::Masters3,
                 equipment: Equipment::Raw,
@@ -103,7 +103,7 @@ mod tests {
                 squat3: Some(Weight(65.)),
                 best3squat: Some(Weight(65.)),
                 bench1: Some(Weight(30.)),
-                bench2: Some(Weight(32.5)),
+                bench2: Some(Weight(32.)),
                 bench3: Some(Weight(35.)),
                 best3bench: Some(Weight(35.)),
                 deadlift1: Some(Weight(60.)),
@@ -111,6 +111,39 @@ mod tests {
                 deadlift3: Some(Weight(75.)),
                 best3deadlift: Some(Weight(75.)),
                 total: Weight(175.),
+            }
+        ];
+
+        let meets: Vec<MeetEntry> = MeetDatabase::from_csv(&test_file).unwrap();
+
+        assert_eq!(expected, meets);
+    }
+
+    #[test]
+    fn test_from_csv_float() {
+        let test_file: PathBuf = Path::new(TEST_PATH).join("test2.csv");
+        let expected: Vec<MeetEntry> = vec![
+            MeetEntry {
+                name: String::from("Test Powerlifter"),
+                division: Division::Masters3,
+                equipment: Equipment::Raw,
+                age: Some(48),
+                sex: Sex::M,
+                bodyweight: Weight(45.3),
+                weight_class: Some(WeightClass::UnderOrEqual(Weight(47.))),
+                squat1: Some(Weight(55.1)),
+                squat2: Some(Weight(60.2)),
+                squat3: Some(Weight(65.3)),
+                best3squat: Some(Weight(65.3)),
+                bench1: Some(Weight(30.4)),
+                bench2: Some(Weight(32.5)),
+                bench3: Some(Weight(35.6)),
+                best3bench: Some(Weight(35.6)),
+                deadlift1: Some(Weight(60.7)),
+                deadlift2: Some(Weight(70.8)),
+                deadlift3: Some(Weight(75.9)),
+                best3deadlift: Some(Weight(75.9)),
+                total: Weight(176.8),
             }
         ];
 
@@ -130,7 +163,7 @@ mod perf_tests {
     const ENTRIES_ROOT: &str = "/tmp/opl-data/meet-data/ffforce";
     
     #[test]
-    #[ignore = "benchmark test, run only in release mode"]
+    #[ignore = "benchmark test, run only in release mode with `cargo run perf --release -- --ignored`"]
     fn perf_load_ffforce_entries() {
         let path: &Path = Path::new(ENTRIES_ROOT);
         assert!(path.is_dir());

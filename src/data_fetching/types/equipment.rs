@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Debug, Default, Deserialize, PartialEq)]
+#[derive(Debug, Default, Deserialize, Eq, PartialEq)]
 pub enum Equipment {
     #[serde(rename(deserialize = "Raw"))]
     Raw,

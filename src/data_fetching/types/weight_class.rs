@@ -1,10 +1,10 @@
+use serde::de::{self, Visitor};
+use serde::{Deserialize};
 use std::{fmt, num, str::FromStr};
-
-use serde::{de::{self, Visitor}, Deserialize};
 
 use crate::data_fetching::types::weight::Weight;
 
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, Eq, PartialEq)]
 pub enum WeightClass {
     UnderOrEqual(Weight),
     Over(Weight),
@@ -17,8 +17,7 @@ impl FromStr for WeightClass {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.is_empty() {
-            println!("iciiii");
-            return Ok(WeightClass::None);
+            return Ok(Self::None);
         }
 
         if let Some(v) = s.strip_suffix('+') {
@@ -54,7 +53,8 @@ mod tests {
     use rstest::rstest;
     use pretty_assertions::assert_eq;
 
-    use crate::data_fetching::types::{weight::Weight, weight_class::WeightClass};
+    use crate::data_fetching::types::weight::Weight;
+    use crate::data_fetching::types::weight_class::WeightClass;
 
     #[rstest]
     #[case("43", WeightClass::UnderOrEqual(Weight(43.)))]

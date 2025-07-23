@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq)]
 pub enum Sex {
     #[default]
     M,

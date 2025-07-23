@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Debug, Default, Deserialize, PartialEq)]
+#[derive(Debug, Default, Deserialize, Eq, PartialEq)]
 pub enum Division {
     #[serde(rename(deserialize = "Open"))]
     Open,
