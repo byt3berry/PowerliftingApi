@@ -3,7 +3,7 @@ use serde::Deserialize;
 use crate::data_fetching::types::sex::Sex;
 use crate::data_fetching::types::weight::Weight;
 
-#[derive(Debug, Default, Deserialize, PartialEq)]
+#[derive(Debug, Default, Deserialize, Eq, PartialEq)]
 pub struct Dots(i32);
 
 impl From<f64> for Dots {
@@ -18,9 +18,9 @@ impl From<f64> for Dots {
 
 impl Dots {
     /// Multiply and add. On many CPUs, this is a single instruction.
-    #[inline(always)]
+    #[inline]
     fn madd(a: f64, b: f64, c: f64) -> f64 {
-        a * b + c
+        a.mul_add(b, c)
     }
 
     #[inline]
@@ -33,11 +33,11 @@ impl Dots {
     }
 
     fn dots_coefficient_men(bodyweightkg: f64) -> f64 {
-        const A: f64 = -0.0000010930;
-        const B: f64 = 0.0007391293;
-        const C: f64 = -0.1918759221;
-        const D: f64 = 24.0900756;
-        const E: f64 = -307.75076;
+        const A: f64 = -0.000_001_093_000;
+        const B: f64 = 0.000_739_129_300;
+        const C: f64 = -0.191_875_922_100;
+        const D: f64 = 24.090_075_600;
+        const E: f64 = -307.750_760;
 
         // Bodyweight bounds are defined; bodyweights out of range match the boundaries.
         let adjusted = bodyweightkg.clamp(40., 210.);
@@ -45,11 +45,11 @@ impl Dots {
     }
 
     fn dots_coefficient_women(bodyweightkg: f64) -> f64 {
-        const A: f64 = -0.0000010706;
-        const B: f64 = 0.0005158568;
-        const C: f64 = -0.1126655495;
-        const D: f64 = 13.6175032;
-        const E: f64 = -57.96288;
+        const A: f64 = -0.000_001_070_600;
+        const B: f64 = 0.000_515_856_800;
+        const C: f64 = -0.112_665_549_500;
+        const D: f64 = 13.617_503_200;
+        const E: f64 = -57.962_880;
 
         // Bodyweight bounds are defined; bodyweights out of range match the boundaries.
         let adjusted = bodyweightkg.clamp(40., 150.);

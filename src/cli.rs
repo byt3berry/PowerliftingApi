@@ -1,6 +1,6 @@
 use clap::Parser;
 
-/// PowerliftingApi
+/// `PowerliftingApi`
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 pub struct Args {
