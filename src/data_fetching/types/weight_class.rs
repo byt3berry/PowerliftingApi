@@ -1,5 +1,6 @@
-use serde::de::{self, Visitor};
-use serde::{Deserialize};
+use anyhow::Result;
+use serde::de::{Error, Visitor};
+use serde::{Deserialize, Deserializer};
 use std::str::FromStr;
 use std::{fmt, num};
 
@@ -38,24 +39,25 @@ impl Visitor<'_> for WeightClassVisitor {
         formatter.write_str("a valid weight class")
     }
 
-    fn visit_str<E: de::Error>(self, value: &str) -> Result<WeightClass, E> {
+    fn visit_str<E: Error>(self, value: &str) -> Result<WeightClass, E> {
         WeightClass::from_str(value).map_err(E::custom)
     }
 }
 
 impl<'de> Deserialize<'de> for WeightClass {
-    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         deserializer.deserialize_str(WeightClassVisitor)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use rstest::rstest;
     use pretty_assertions::assert_eq;
+    use rstest::rstest;
 
     use crate::data_fetching::types::weight::Weight;
-    use crate::data_fetching::types::weight_class::WeightClass;
+
+    use super::WeightClass;
 
     #[rstest]
     #[case("43", WeightClass::UnderOrEqual(Weight(43.)))]

@@ -2,12 +2,14 @@ use anyhow::{bail, Result};
 use csv::Reader;
 use log::warn;
 use std::fs::File;
+use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
 use crate::data_fetching::types::meet_entry::MeetEntry;
 
-pub struct MeetDatabase;
+#[derive(Clone, Debug)]
+pub struct MeetDatabase(Vec<MeetEntry>);
 
 impl MeetDatabase {
     fn from_csv(csv: &PathBuf) -> Result<Vec<MeetEntry>> {
@@ -23,13 +25,13 @@ impl MeetDatabase {
         Ok(entries)
     }
 
-    pub fn from_folder(meet_folder: &PathBuf) -> Result<Vec<MeetEntry>> {
+    pub fn from_folder(meet_folder: &PathBuf) -> Result<Self> {
         if !meet_folder.is_dir() {
             bail!("{meet_folder:?} should be a folder");
         }
 
         let filename: &Path = Path::new("entries.csv");
-        let output: Vec<MeetEntry> = WalkDir::new(meet_folder)
+        let entries: Vec<MeetEntry> = WalkDir::new(meet_folder)
             .into_iter()
             .filter_map(Result::ok)
             .map(|element| element.path().to_owned())
@@ -48,7 +50,7 @@ impl MeetDatabase {
             .flatten()
             .collect();
 
-        Ok(output)
+        Ok(MeetDatabase(entries))
     }
 }
 
@@ -57,13 +59,14 @@ mod tests {
     use pretty_assertions::assert_eq;
     use std::path::{Path, PathBuf};
 
-    use crate::data_fetching::types::weight_class::WeightClass;
-    use crate::data_fetching::types::weight::Weight;
-    use crate::data_fetching::types::sex::Sex;
-    use crate::data_fetching::types::meet_entry::MeetEntry;
-    use crate::data_fetching::types::equipment::Equipment;
     use crate::data_fetching::types::division::Division;
-    use crate::data_fetching::entries::meet_database::MeetDatabase;
+    use crate::data_fetching::types::equipment::Equipment;
+    use crate::data_fetching::types::meet_entry::MeetEntry;
+    use crate::data_fetching::types::sex::Sex;
+    use crate::data_fetching::types::weight::Weight;
+    use crate::data_fetching::types::weight_class::WeightClass;
+
+    use super::MeetDatabase;
 
     const TEST_PATH: &str = "tests/data_fetching/entries/meet_database";
 
@@ -155,15 +158,23 @@ mod tests {
     }
 }
 
+impl Deref for MeetDatabase {
+    type Target = Vec<MeetEntry>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
 #[cfg(test)]
 mod perf_tests {
     use std::path::Path;
     use std::time::{Duration, Instant};
 
-    use crate::data_fetching::entries::meet_database::MeetDatabase;
+    use super::MeetDatabase;
 
     const ENTRIES_ROOT: &str = "/tmp/opl-data/meet-data/ffforce";
-    
+
     #[test]
     #[ignore = "benchmark test, run only in release mode with `cargo run perf --release -- --ignored`"]
     fn perf_load_ffforce_entries() {

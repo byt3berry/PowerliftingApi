@@ -1,9 +1,12 @@
-use actix_web::{post, web::Form, HttpResponse, Responder};
+use actix_web::{post, HttpResponse, Responder};
+use actix_web::web::{Data, Form};
 use log::debug;
 use maud::{html, Markup};
 use serde::Deserialize;
 
-use crate::data_fetching::{types::meet_entry::MeetEntry, POWERLIFTER_TABLE_HEADERS};
+use crate::data_fetching::POWERLIFTER_TABLE_HEADERS;
+use crate::data_fetching::types::meet_entry::MeetEntry;
+use crate::server::ServerData;
 
 #[derive(Debug, Deserialize)]
 struct PowerlifterForm {
@@ -11,9 +14,9 @@ struct PowerlifterForm {
 }
 
 #[post("/powerlifters")]
-pub async fn powerlifters(data: Form<PowerlifterForm>) -> impl Responder {
-    debug!("data: {data:?}");
-    let powerlifter_data: Vec<MeetEntry> = MeetEntry::from_string(&data.powerlifters);
+pub async fn powerlifters(form: Form<PowerlifterForm>, data: Data<ServerData>) -> impl Responder {
+    debug!("form: {form:?}");
+    let powerlifter_data: Vec<MeetEntry> = MeetEntry::from_string(&form.powerlifters);
     HttpResponse::Ok().body(build_table(powerlifter_data))
 }
 

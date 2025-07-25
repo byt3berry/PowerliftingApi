@@ -1,22 +1,22 @@
-use std::net::IpAddr;
-use std::sync::Arc;
-
 use actix_htmx::HtmxMiddleware;
 use actix_web::dev::Server;
 use actix_web::middleware::{Logger, NormalizePath, TrailingSlash};
 use actix_web::{web, App, HttpResponse, HttpServer};
+use anyhow::Result;
 use log::info;
+use std::net::IpAddr;
 
 use crate::api::powerlifters::powerlifters;
 use crate::api::root::root;
-use crate::data_fetching::types::meet_entry::MeetEntry;
+use crate::data_fetching::entries::lifter_database::LifterDatabase;
 
-struct ServerData {
-    meet_entries: Vec<MeetEntry>,
+#[derive(Debug)]
+pub struct ServerData {
+    pub database: LifterDatabase,
 }
 
 /// Start a server listening on `ip`:`port`
-pub fn start_server(ip: IpAddr, port: u16, meet_entries: Vec<MeetEntry>) -> std::io::Result<Server>{
+pub fn start_server(ip: IpAddr, port: u16, lifter_database: LifterDatabase) -> Result<Server>{
     info!("Starting server on {ip}:{port}");
 
     Ok(
@@ -25,7 +25,7 @@ pub fn start_server(ip: IpAddr, port: u16, meet_entries: Vec<MeetEntry>) -> std:
                 .wrap(NormalizePath::new(TrailingSlash::Trim))
                 .wrap(HtmxMiddleware)
                 .wrap(Logger::new("[%s] %U"))
-                .app_data(web::Data::new(ServerData { meet_entries: meet_entries.clone() }))
+                .app_data(web::Data::new(ServerData { database: lifter_database.clone() }))
                 .service(root)
                 .service(powerlifters)
                 .default_service(

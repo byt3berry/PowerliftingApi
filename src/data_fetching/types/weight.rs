@@ -1,8 +1,11 @@
-use serde::de::{self, Visitor};
+use anyhow::Result;
+use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer};
-use std::{fmt, num, str::FromStr};
+use std::cmp::Ordering;
+use std::str::FromStr;
+use std::{fmt, num};
 
-#[derive(Clone, Copy, Debug, Default, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, PartialOrd)]
 pub struct Weight(pub f32);
 
 impl From<i64> for Weight {
@@ -51,6 +54,20 @@ impl FromStr for Weight {
 
 impl Eq for Weight { }
 
+impl Ord for Weight {
+    fn cmp(&self, other: &Self) -> Ordering {
+        if self.0 < other.0 {
+            return Ordering::Less;
+        }
+
+        if self.0 > other.0 {
+            return Ordering::Greater;
+        }
+
+        Ordering::Equal
+    }
+}
+
 impl<'de> Deserialize<'de> for Weight {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         deserializer.deserialize_any(WeightVisitor)
@@ -72,23 +89,40 @@ impl Visitor<'_> for WeightVisitor {
         formatter.write_str("a number or numeric string")
     }
 
-    fn visit_i64<E: de::Error>(self, i: i64) -> Result<Self::Value, E> {
+    fn visit_i64<E: Error>(self, i: i64) -> Result<Self::Value, E> {
         Ok(Self::Value::from(i))
     }
 
-    fn visit_u64<E: de::Error>(self, u: u64) -> Result<Self::Value, E> {
+    fn visit_u64<E: Error>(self, u: u64) -> Result<Self::Value, E> {
         Ok(Self::Value::from(u))
     }
 
-    fn visit_f64<E: de::Error>(self, f: f64) -> Result<Self::Value, E> {
+    fn visit_f64<E: Error>(self, f: f64) -> Result<Self::Value, E> {
         Ok(Self::Value::from(f))
     }
 
-    fn visit_borrowed_str<E: de::Error>(self, v: &str) -> Result<Self::Value, E> {
+    fn visit_str<E: Error>(self, v: &str) -> Result<Self::Value, E> {
         Self::Value::from_str(v).map_err(E::custom)
     }
+}
 
-    fn visit_str<E: de::Error>(self, v: &str) -> Result<Self::Value, E> {
-        self.visit_borrowed_str(v)
+#[cfg(test)]
+mod tests {
+    use pretty_assertions::Comparison;
+    use rstest::rstest;
+    use std::cmp::Ordering;
+
+    use super::Weight;
+
+    #[rstest]
+    #[case(Weight::from(1.), Weight::from(2.), Ordering::Less)]
+    #[case(Weight::from(2.), Weight::from(1.), Ordering::Greater)]
+    #[case(Weight::from(1.), Weight::from(1.), Ordering::Equal)]
+    fn test_ord(
+        #[case] weight1: Weight,
+        #[case] weight2: Weight,
+        #[case] expected: Ordering,
+    ) {
+        assert_eq!(weight1.cmp(&weight2), expected, "{}", Comparison::new(&weight1, &weight2));
     }
 }
