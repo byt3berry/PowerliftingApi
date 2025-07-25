@@ -1,5 +1,6 @@
 use anyhow::Result;
 use itertools::Itertools;
+use std::ops::Deref;
 use std::path::PathBuf;
 
 use crate::data_fetching::entries::meet_database::MeetDatabase;
@@ -13,6 +14,7 @@ impl From<MeetDatabase> for LifterDatabase {
     fn from(database: MeetDatabase) -> Self {
         let lifters: Vec<Lifter> = database
             .iter()
+            .sorted_by_key(|entry| &entry.name)
             .chunk_by(|entry| &entry.name)
             .into_iter()
             .map(|chunk| Lifter::from_meet_data(chunk.1))
@@ -33,6 +35,14 @@ impl LifterDatabase {
 
     fn search_one(&self, data: &str) -> MeetEntry {
         todo!();
+    }
+}
+
+impl Deref for LifterDatabase {
+    type Target = Vec<Lifter>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
 

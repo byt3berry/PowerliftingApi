@@ -54,6 +54,14 @@ impl MeetDatabase {
     }
 }
 
+impl Deref for MeetDatabase {
+    type Target = Vec<MeetEntry>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
@@ -155,14 +163,6 @@ mod tests {
         let meets: Vec<MeetEntry> = MeetDatabase::from_csv(&test_file).unwrap();
 
         assert_eq!(expected, meets);
-    }
-}
-
-impl Deref for MeetDatabase {
-    type Target = Vec<MeetEntry>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
     }
 }
 
