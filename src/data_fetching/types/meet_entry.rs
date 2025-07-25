@@ -7,7 +7,7 @@ use crate::data_fetching::types::sex::Sex;
 use crate::data_fetching::types::weight::Weight;
 use crate::data_fetching::types::weight_class::WeightClass;
 
-#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
 pub struct MeetEntry {
     #[serde(rename(deserialize = "Name"))]
     pub name: String,
@@ -71,20 +71,6 @@ pub struct MeetEntry {
 }
 
 impl MeetEntry {
-    pub fn from_string(data: &str) -> Vec<Self> {
-        data
-            .lines()
-            .map(|name| {
-                Self::default().with_name(name.to_string())
-            })
-            .collect()
-    }
-
-    pub fn with_name(mut self, name: String) -> Self {
-        self.name = name;
-        self
-    }
-
     pub fn dots(&self) ->Dots {
         Dots::new(self.sex, self.bodyweight, self.total)
     }

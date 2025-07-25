@@ -5,7 +5,7 @@ use std::cmp::Ordering;
 use std::str::FromStr;
 use std::{fmt, num};
 
-#[derive(Clone, Copy, Debug, Default, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
 pub struct Weight(pub f32);
 
 impl From<i64> for Weight {

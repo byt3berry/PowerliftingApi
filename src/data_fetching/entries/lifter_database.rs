@@ -3,6 +3,7 @@ use itertools::Itertools;
 use std::ops::Deref;
 use std::path::PathBuf;
 
+use crate::api::powerlifters::PowerlifterForm;
 use crate::data_fetching::entries::meet_database::MeetDatabase;
 use crate::data_fetching::types::lifter::Lifter;
 use crate::data_fetching::types::meet_entry::MeetEntry;
@@ -29,11 +30,11 @@ impl LifterDatabase {
         Ok(MeetDatabase::from_folder(meet_folder)?.into())
     }
 
-    pub fn search_many(&self, data: &str) -> Vec<MeetEntry> {
+    pub fn search_many(&self, form: PowerlifterForm) -> Vec<MeetEntry> {
         todo!();
     }
 
-    fn search_one(&self, data: &str) -> MeetEntry {
+    fn search_one(&self, form: PowerlifterForm) -> MeetEntry {
         todo!();
     }
 }

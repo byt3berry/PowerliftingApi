@@ -5,18 +5,24 @@ use maud::{html, Markup};
 use serde::Deserialize;
 
 use crate::data_fetching::POWERLIFTER_TABLE_HEADERS;
+use crate::data_fetching::types::division::Division;
+use crate::data_fetching::types::equipment::Equipment;
 use crate::data_fetching::types::meet_entry::MeetEntry;
+use crate::data_fetching::types::sex::Sex;
 use crate::server::ServerData;
 
 #[derive(Debug, Deserialize)]
-struct PowerlifterForm {
+pub struct PowerlifterForm {
+    pub equipment_choice: Equipment,
+    pub sex_choice: Sex,
+    pub division_choice: Division,
     pub powerlifters: String,
 }
 
 #[post("/powerlifters")]
 pub async fn powerlifters(form: Form<PowerlifterForm>, data: Data<ServerData>) -> impl Responder {
     debug!("form: {form:?}");
-    let powerlifter_data: Vec<MeetEntry> = MeetEntry::from_string(&form.powerlifters);
+    let powerlifter_data: Vec<MeetEntry> = data.database.search_many(form.0);
     HttpResponse::Ok().body(build_table(powerlifter_data))
 }
 

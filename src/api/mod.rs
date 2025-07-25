@@ -1,4 +1,9 @@
 use maud::{html, Markup};
+use strum::IntoEnumIterator;
+
+use crate::data_fetching::types::division::Division;
+use crate::data_fetching::types::equipment::Equipment;
+use crate::data_fetching::types::sex::Sex;
 
 pub mod powerlifters;
 pub mod root;
@@ -114,10 +119,32 @@ fn input_div() -> Markup {
     html! {
         div {
             form hx-post="/powerlifters" hx-target="#result" {
+                div {
+                    select id="equipment_choice" name="equipment_choice" {
+                        @for value in Equipment::iter() {
+                            option value=(value) { (value) }
+                        }
+                    }
+
+                    select id="sex_choice" name="sex_choice" {
+                        @for value in Sex::iter() {
+                            option value=(value) { (value) }
+                        }
+                    }
+
+                    select id="division_choice" name="division_choice" {
+                        @for value in Division::iter() {
+                            option value=(value) { (value) }
+                        }
+                    }
+                }
+
                 label for="powerlifters" { "Powerlifters:" }
                 br;
+
                 textarea name="powerlifters" id="powerlifters" rows="5" cols="40" { }
                 br;
+
                 button type="submit" { "Send" }
             }
         }

@@ -6,11 +6,10 @@ use std::{fmt, num};
 
 use crate::data_fetching::types::weight::Weight;
 
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum WeightClass {
     UnderOrEqual(Weight),
     Over(Weight),
-    #[default]
     None,
 }
 
