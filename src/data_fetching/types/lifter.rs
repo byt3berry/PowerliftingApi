@@ -1,29 +1,31 @@
-use std::iter::Peekable;
-
+use crate::data_fetching::types::division::Division;
+use crate::data_fetching::types::equipment::Equipment;
 use crate::data_fetching::types::meet_entry::MeetEntry;
 use crate::data_fetching::types::sex::Sex;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Lifter {
-    name: String,
-    sex: Sex,
-    best_meet: MeetEntry,
+    pub name: String,
+    pub equipment: Equipment,
+    pub sex: Sex,
+    pub division: Division,
+    pub best_meet: MeetEntry,
 }
 
 impl Lifter {
     pub fn from_meet_data<'a, I>(data: I) -> Self
         where I: Iterator<Item = &'a MeetEntry>
     {
-        let data: Peekable<I> = data.peekable();
-
         let best_meet: MeetEntry = data
             .max_by_key(|entry| entry.total)
             .expect("each lifter should have at least one meet entry")
             .clone();
 
-        Lifter {
+        Self {
             name: best_meet.name.to_string(),
+            equipment: best_meet.equipment,
             sex: best_meet.sex,
+            division: best_meet.division,
             best_meet,
         }
     }
@@ -78,7 +80,9 @@ mod tests {
         ];
         let expected: Lifter = Lifter {
             name: String::from("Powerlifter"),
+            equipment: Equipment::Raw,
             sex: Sex::M,
+            division: Division::Juniors,
             best_meet: MeetEntry {
                 name: String::from("Powerlifter"),
                 division: Division::Juniors,
@@ -158,7 +162,9 @@ mod tests {
         ];
         let expected: Lifter = Lifter {
             name: String::from("Powerlifter"),
+            equipment: Equipment::Raw,
             sex: Sex::M,
+            division: Division::Juniors,
             best_meet: MeetEntry {
                 name: String::from("Powerlifter"),
                 division: Division::Juniors,

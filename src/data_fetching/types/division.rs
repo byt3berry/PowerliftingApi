@@ -1,8 +1,12 @@
 use serde::Deserialize;
 use strum_macros::{Display, EnumIter};
 
-#[derive(Clone, Copy, Debug, Display, Deserialize, Eq, EnumIter, PartialEq)]
+#[derive(Clone, Copy, Debug, Display, Deserialize, Eq, EnumIter)]
 pub enum Division {
+    #[strum(to_string = "All")]
+    #[serde(rename(deserialize = "All"))]
+    All,
+
     #[strum(to_string = "Open")]
     #[serde(rename(deserialize = "Open"))]
     Open,
@@ -55,4 +59,24 @@ pub enum Division {
     #[strum(to_string = "Masters 4")]
     #[serde(rename(deserialize = "Masters 4"))]
     Masters4,
+}
+
+impl PartialEq for Division {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::All, _) => true,
+            (Self::Open, Self::Open) => true,
+            (Self::G, Self::G) => true,
+            (Self::Cadet, Self::Cadet) => true,
+            (Self::Elite, Self::Elite) => true,
+            (Self::SubJuniors, Self::SubJuniors) => true,
+            (Self::Juniors, Self::Juniors) => true,
+            (Self::Masters, Self::Masters | Self::Masters1 | Self::Masters2 | Self::Masters3 | Self::Masters4) => true,
+            (Self::Masters1, Self::Masters1) => true,
+            (Self::Masters2, Self::Masters2) => true,
+            (Self::Masters3, Self::Masters3) => true,
+            (Self::Masters4, Self::Masters4) => true,
+            _ => false,
+        }
+    }
 }

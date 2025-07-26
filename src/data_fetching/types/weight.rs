@@ -2,6 +2,7 @@ use anyhow::Result;
 use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer};
 use std::cmp::Ordering;
+use std::fmt::Display;
 use std::str::FromStr;
 use std::{fmt, num};
 
@@ -65,6 +66,12 @@ impl Ord for Weight {
         }
 
         Ordering::Equal
+    }
+}
+
+impl Display for Weight {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
 

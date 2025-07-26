@@ -50,7 +50,7 @@ impl MeetDatabase {
             .flatten()
             .collect();
 
-        Ok(MeetDatabase(entries))
+        Ok(Self(entries))
     }
 }
 

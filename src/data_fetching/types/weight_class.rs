@@ -1,6 +1,7 @@
 use anyhow::Result;
 use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer};
+use std::fmt::Display;
 use std::str::FromStr;
 use std::{fmt, num};
 
@@ -25,6 +26,16 @@ impl FromStr for WeightClass {
             v.parse::<Weight>().map(Self::Over)
         } else {
             s.parse::<Weight>().map(Self::UnderOrEqual)
+        }
+    }
+}
+
+impl Display for WeightClass {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::UnderOrEqual(weight) => write!(f, "{weight}"),
+            Self::Over(weight) => write!(f, "+{weight}"),
+            Self::None => todo!(),
         }
     }
 }
