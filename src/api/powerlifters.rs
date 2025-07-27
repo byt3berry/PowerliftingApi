@@ -46,12 +46,6 @@ fn build_table(data: Vec<(String, Option<Lifter>)>) -> Markup {
                         td { "FFForce" }
                         td { (lifter.sex) }
 
-                        @if let Some(age) = lifter.best_meet.age {
-                            td { (age) }
-                        } @else {
-                            td { "?" }
-                        }
-
                         td { (lifter.equipment) }
 
                         @if let Some(weight_class) = lifter.best_meet.weight_class {

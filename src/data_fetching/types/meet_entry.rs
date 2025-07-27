@@ -18,9 +18,6 @@ pub struct MeetEntry {
     #[serde(rename(deserialize = "Equipment"))]
     pub equipment: Equipment,
 
-    #[serde(rename(deserialize = "Age"))]
-    pub age: Option<u8>,
-
     #[serde(rename(deserialize = "Sex"))]
     pub sex: Sex,
 
