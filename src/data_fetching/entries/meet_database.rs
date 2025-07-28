@@ -64,6 +64,7 @@ impl Deref for MeetDatabase {
 
 #[cfg(test)]
 mod tests {
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
     use std::path::{Path, PathBuf};
     use std::str::FromStr;
@@ -81,32 +82,35 @@ mod tests {
     const TEST_PATH: &str = "tests/data_fetching/entries/meet_database";
 
     #[test]
-    fn test_from_csv_no_error_simple() {
+    fn test_from_csv_no_error_simple() -> Result<()> {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test1.csv");
 
-        MeetDatabase::from_csv(&test_file).unwrap();
+        MeetDatabase::from_csv(&test_file)?;
+        Ok(())
     }
 
     #[test]
-    fn test_from_csv_no_error_divisions() {
+    fn test_from_csv_no_error_divisions() -> Result<()> {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test3.csv");
 
-        MeetDatabase::from_csv(&test_file).unwrap();
+        MeetDatabase::from_csv(&test_file)?;
+        Ok(())
     }
 
     #[test]
-    fn test_from_csv_no_error_no_weight_class() {
+    fn test_from_csv_no_error_no_weight_class() -> Result<()> {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test4.csv");
 
-        MeetDatabase::from_csv(&test_file).unwrap();
+        MeetDatabase::from_csv(&test_file)?;
+        Ok(())
     }
 
     #[test]
-    fn test_from_csv_integer() {
+    fn test_from_csv_integer() -> Result<()> {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test1.csv");
         let expected: Vec<MeetEntry> = vec![
             MeetEntry {
-                name: Username::from_str("Test Powerlifter").unwrap(),
+                name: Username::from_str("Test Powerlifter")?,
                 division: Division::Masters3,
                 equipment: Equipment::Raw,
                 sex: Sex::M,
@@ -128,17 +132,18 @@ mod tests {
             }
         ];
 
-        let meets: Vec<MeetEntry> = MeetDatabase::from_csv(&test_file).unwrap();
+        let meets: Vec<MeetEntry> = MeetDatabase::from_csv(&test_file)?;
 
         assert_eq!(expected, meets);
+        Ok(())
     }
 
     #[test]
-    fn test_from_csv_float() {
+    fn test_from_csv_float() -> Result<()> {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test2.csv");
         let expected: Vec<MeetEntry> = vec![
             MeetEntry {
-                name: Username::from_str("Test Powerlifter").unwrap(),
+                name: Username::from_str("Test Powerlifter")?,
                 division: Division::Masters3,
                 equipment: Equipment::Raw,
                 sex: Sex::M,
@@ -160,14 +165,16 @@ mod tests {
             }
         ];
 
-        let meets: Vec<MeetEntry> = MeetDatabase::from_csv(&test_file).unwrap();
+        let meets: Vec<MeetEntry> = MeetDatabase::from_csv(&test_file)?;
 
         assert_eq!(expected, meets);
+        Ok(())
     }
 }
 
 #[cfg(test)]
 mod perf_tests {
+    use anyhow::Result;
     use std::path::Path;
     use std::time::{Duration, Instant};
 
@@ -177,14 +184,15 @@ mod perf_tests {
 
     #[test]
     #[ignore = "benchmark test, run only in release mode with `cargo run perf --release -- --ignored`"]
-    fn perf_load_ffforce_entries() {
+    fn perf_load_ffforce_entries() -> Result<()> {
         let path: &Path = Path::new(ENTRIES_ROOT);
         assert!(path.is_dir());
 
         let now: Instant = Instant::now();
-        MeetDatabase::from_folder(&path.to_path_buf()).unwrap();
+        MeetDatabase::from_folder(&path.to_path_buf())?;
         let elapsed: Duration = now.elapsed();
 
         assert!(elapsed.as_millis() < 1000, "parsing too long: {}ms", elapsed.as_millis());
+        Ok(())
     }
 }

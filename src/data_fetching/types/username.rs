@@ -1,28 +1,39 @@
 use anyhow::{bail, Error, Result};
 use serde::de::{self, Visitor};
 use serde::{Deserialize, Deserializer};
-use std::ops::Deref;
 use std::str::FromStr;
 use std::fmt::{self, Display};
 
 #[derive(Clone, Debug, Ord, PartialOrd)]
-pub struct Username(pub Vec<String>);
+pub struct Username {
+    pub name: String,
+    parts: Vec<String>,
+}
+
+impl Username {
+    fn new(name: &str, parts: Vec<String>) -> Self {
+        Self {
+            name: name.to_string(),
+            parts,
+        }
+    }
+}
 
 impl FromStr for Username {
     type Err = Error;
 
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self> {
         let parts: Vec<String> = s
             .split_whitespace()
-            .map(str::to_string)
             .filter(|w| !w.is_empty())
+            .map(str::to_lowercase)
             .collect();
 
         if parts.is_empty() {
             bail!("Username must not be null");
         }
 
-        Ok(Self(parts))
+        Ok(Self::new(s, parts))
     }
 }
 
@@ -30,12 +41,12 @@ impl Eq for Username { }
 
 impl PartialEq for Username {
     fn eq(&self, other: &Self) -> bool {
-        if self.len() != other.len() {
+        if self.parts.len() != other.parts.len() {
             return false;
         }
 
-        for part in self.iter() {
-            if !other.contains(part) {
+        for part in self.parts.iter() {
+            if !other.parts.contains(part) {
                 return false;
             }
         }
@@ -44,17 +55,9 @@ impl PartialEq for Username {
     }
 }
 
-impl Deref for Username {
-    type Target = Vec<String>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
 impl Display for Username {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.join(" "))
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{}", self.name)
     }
 }
 
@@ -64,7 +67,7 @@ impl Visitor<'_> for UsernameVisitor {
     type Value = Username;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("a valid weight class")
+        formatter.write_str("a valid username")
     }
 
     fn visit_str<E: de::Error>(self, value: &str) -> Result<Self::Value, E> {
@@ -80,6 +83,7 @@ impl<'de> Deserialize<'de> for Username {
 
 #[cfg(test)]
 mod tests {
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
     use rstest::rstest;
 
@@ -93,15 +97,35 @@ mod tests {
     }
 
     #[rstest]
-    #[case("a b", Username(vec!["a".to_string(), "b".to_string()]))]
-    #[case("a  b", Username(vec!["a".to_string(), "b".to_string()]))]
-    #[case("a b c", Username(vec!["a".to_string(), "b".to_string(), "c".to_string()]))]
+    #[case("a b", Username::new("a b", vec!["a".to_string(), "b".to_string()]))]
+    #[case("A B", Username::new("A B", vec!["a".to_string(), "b".to_string()]))]
+    #[case("a  b", Username::new("a b", vec!["a".to_string(), "b".to_string()]))]
+    #[case("a b c", Username::new("a b c", vec!["a".to_string(), "b".to_string(), "c".to_string()]))]
     fn test_deserialize(
         #[case] input: String,
         #[case] expected: Username,
-    ) {
-        let username: Username = input.parse().unwrap();
+    ) -> Result<()> {
+        let username: Username = input.parse()?;
 
         assert_eq!(username, expected);
+        Ok(())
+    }
+
+    #[rstest]
+    #[case("a b", "a b")]
+    #[case("a  b", "a b")]
+    #[case("a b", "b a")]
+    #[case("a b c", "c b a")]
+    #[case("a b c", "b c a")]
+    #[case("a b c", "c a b")]
+    fn test_compare(
+        #[case] first: String,
+        #[case] second: String,
+    ) -> Result<()> {
+        let first_username: Username = first.parse()?;
+        let second_username: Username = second.parse()?;
+
+        assert_eq!(first_username, second_username);
+        Ok(())
     }
 }

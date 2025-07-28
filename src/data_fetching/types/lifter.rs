@@ -2,10 +2,11 @@ use crate::data_fetching::types::division::Division;
 use crate::data_fetching::types::equipment::Equipment;
 use crate::data_fetching::types::meet_entry::MeetEntry;
 use crate::data_fetching::types::sex::Sex;
+use crate::data_fetching::types::username::Username;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Lifter {
-    pub name: String,
+    pub name: Username,
     pub equipment: Equipment,
     pub sex: Sex,
     pub division: Division,
@@ -16,26 +17,25 @@ impl Lifter {
     pub fn from_meet_data<'a, I>(data: I) -> Self
         where I: Iterator<Item = &'a MeetEntry>
     {
-        let best_meet: MeetEntry = data
+        let best_meet: &MeetEntry = data
             .max_by_key(|entry| entry.total)
-            .expect("each lifter should have at least one meet entry")
-            .clone();
+            .expect("each lifter should have at least one meet entry");
 
         Self {
-            name: best_meet.name.to_string(),
+            name: best_meet.name.clone(),
             equipment: best_meet.equipment,
             sex: best_meet.sex,
             division: best_meet.division,
-            best_meet,
+            best_meet: best_meet.clone(),
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
-
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
+    use std::str::FromStr;
 
     use crate::data_fetching::types::division::Division;
     use crate::data_fetching::types::equipment::Equipment;
@@ -56,10 +56,10 @@ mod tests {
     }
 
     #[test]
-    fn test_from_meet_data_1() {
+    fn test_from_meet_data_1() -> Result<()> {
         let data: Vec<MeetEntry> = vec![
             MeetEntry {
-                name: Username::from_str("Powerlifter").unwrap(),
+                name: Username::from_str("Powerlifter")?,
                 division: Division::Juniors,
                 equipment: Equipment::Raw,
                 sex: Sex::M,
@@ -81,12 +81,12 @@ mod tests {
             },
         ];
         let expected: Lifter = Lifter {
-            name: String::from("Powerlifter"),
+            name: Username::from_str("Powerlifter")?,
             equipment: Equipment::Raw,
             sex: Sex::M,
             division: Division::Juniors,
             best_meet: MeetEntry {
-                name: Username::from_str("Powerlifter").unwrap(),
+                name: Username::from_str("Powerlifter")?,
                 division: Division::Juniors,
                 equipment: Equipment::Raw,
                 sex: Sex::M,
@@ -111,13 +111,14 @@ mod tests {
         let lifter: Lifter = Lifter::from_meet_data(data.iter());
 
         assert_eq!(lifter, expected);
+        Ok(())
     }
 
     #[test]
-    fn test_from_meet_data_2() {
+    fn test_from_meet_data_2() -> Result<()> {
         let data: Vec<MeetEntry> = vec![
             MeetEntry {
-                name: Username::from_str("Powerlifter").unwrap(),
+                name: Username::from_str("Powerlifter")?,
                 division: Division::Juniors,
                 equipment: Equipment::Raw,
                 sex: Sex::M,
@@ -138,7 +139,7 @@ mod tests {
                 total: Weight(18.)
             },
             MeetEntry {
-                name: Username::from_str("Powerlifter").unwrap(),
+                name: Username::from_str("Powerlifter")?,
                 division: Division::Juniors,
                 equipment: Equipment::Raw,
                 sex: Sex::M,
@@ -160,12 +161,12 @@ mod tests {
             },
         ];
         let expected: Lifter = Lifter {
-            name: String::from("Powerlifter"),
+            name: Username::from_str("Powerlifter")?,
             equipment: Equipment::Raw,
             sex: Sex::M,
             division: Division::Juniors,
             best_meet: MeetEntry {
-                name: Username::from_str("Powerlifter").unwrap(),
+                name: Username::from_str("Powerlifter")?,
                 division: Division::Juniors,
                 equipment: Equipment::Raw,
                 sex: Sex::M,
@@ -190,5 +191,6 @@ mod tests {
         let lifter: Lifter = Lifter::from_meet_data(data.iter());
 
         assert_eq!(lifter, expected);
+        Ok(())
     }
 }

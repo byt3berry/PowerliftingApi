@@ -62,6 +62,7 @@ impl<'de> Deserialize<'de> for WeightClass {
 
 #[cfg(test)]
 mod tests {
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
     use rstest::rstest;
 
@@ -99,9 +100,10 @@ mod tests {
     fn test_deserialize(
         #[case] weight_class: &str,
         #[case] expected: WeightClass,
-    ) {
-        let weight_class: WeightClass = weight_class.parse::<WeightClass>().unwrap();
+    ) -> Result<()> {
+        let weight_class: WeightClass = weight_class.parse::<WeightClass>()?;
 
         assert_eq!(weight_class, expected);
+        Ok(())
     }
 }
