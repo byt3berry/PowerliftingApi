@@ -3,9 +3,9 @@ use strum_macros::{Display, EnumIter};
 
 #[derive(Clone, Copy, Debug, Display, Deserialize, Eq, EnumIter)]
 pub enum Sex {
-    #[strum(to_string = "All")]
-    #[serde(rename(deserialize = "All"))]
-    All,
+    #[strum(to_string = "Any")]
+    #[serde(rename(deserialize = "Any"))]
+    Any,
 
     #[strum(to_string = "Men")]
     #[serde(rename(deserialize = "M"))]
@@ -21,7 +21,7 @@ pub enum Sex {
 impl PartialEq for Sex {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (Self::All, _) => true,
+            (Self::Any, _) => true,
             (Self::M, Self::M) => true,
             (Self::F, Self::F) => true,
             _ => false,

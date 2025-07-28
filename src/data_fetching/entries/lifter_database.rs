@@ -246,7 +246,7 @@ mod tests {
         let name: &str = "Powerlifter 2";
         let form: PowerlifterForm = PowerlifterForm {
             equipment_choice: Equipment::Raw,
-            sex_choice: Sex::All,
+            sex_choice: Sex::Any,
             division_choice: Division::Juniors,
             powerlifters: "Powerlifter 2".to_string(),
         };
@@ -323,8 +323,8 @@ mod perf_tests {
         let database: LifterDatabase = LifterDatabase::from_folder(&path.to_path_buf())?;
         let form: PowerlifterForm = PowerlifterForm { 
             equipment_choice: Equipment::Raw,
-            sex_choice: Sex::All,
-            division_choice: Division::All,
+            sex_choice: Sex::Any,
+            division_choice: Division::Any,
             powerlifters: database[database.len()-1].name.to_string(),
         };
 

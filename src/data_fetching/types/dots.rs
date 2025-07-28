@@ -62,7 +62,7 @@ impl Dots {
         }
 
         let coefficient: f64 = match sex {
-            Sex::M | Sex::All => Self::dots_coefficient_men(f64::from(bodyweight)),
+            Sex::M | Sex::Any => Self::dots_coefficient_men(f64::from(bodyweight)),
             Sex::F => Self::dots_coefficient_women(f64::from(bodyweight)),
         };
 

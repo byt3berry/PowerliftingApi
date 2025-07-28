@@ -3,9 +3,9 @@ use strum_macros::{Display, EnumIter};
 
 #[derive(Clone, Copy, Debug, Display, Deserialize, Eq, EnumIter)]
 pub enum Division {
-    #[strum(to_string = "All")]
-    #[serde(rename(deserialize = "All"))]
-    All,
+    #[strum(to_string = "Any")]
+    #[serde(rename(deserialize = "Any"))]
+    Any,
 
     #[strum(to_string = "Open")]
     #[serde(rename(deserialize = "Open"))]
@@ -64,7 +64,7 @@ pub enum Division {
 impl PartialEq for Division {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (Self::All, _) => true,
+            (Self::Any, _) => true,
             (Self::Open, Self::Open) => true,
             (Self::G, Self::G) => true,
             (Self::Cadet, Self::Cadet) => true,
