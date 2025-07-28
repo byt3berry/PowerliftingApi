@@ -33,12 +33,15 @@ impl Lifter {
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use pretty_assertions::assert_eq;
 
     use crate::data_fetching::types::division::Division;
     use crate::data_fetching::types::equipment::Equipment;
     use crate::data_fetching::types::meet_entry::MeetEntry;
     use crate::data_fetching::types::sex::Sex;
+    use crate::data_fetching::types::username::Username;
     use crate::data_fetching::types::weight::Weight;
     use crate::data_fetching::types::weight_class::WeightClass;
 
@@ -56,7 +59,7 @@ mod tests {
     fn test_from_meet_data_1() {
         let data: Vec<MeetEntry> = vec![
             MeetEntry {
-                name: String::from("Powerlifter"),
+                name: Username::from_str("Powerlifter").unwrap(),
                 division: Division::Juniors,
                 equipment: Equipment::Raw,
                 sex: Sex::M,
@@ -83,7 +86,7 @@ mod tests {
             sex: Sex::M,
             division: Division::Juniors,
             best_meet: MeetEntry {
-                name: String::from("Powerlifter"),
+                name: Username::from_str("Powerlifter").unwrap(),
                 division: Division::Juniors,
                 equipment: Equipment::Raw,
                 sex: Sex::M,
@@ -114,7 +117,7 @@ mod tests {
     fn test_from_meet_data_2() {
         let data: Vec<MeetEntry> = vec![
             MeetEntry {
-                name: String::from("Powerlifter"),
+                name: Username::from_str("Powerlifter").unwrap(),
                 division: Division::Juniors,
                 equipment: Equipment::Raw,
                 sex: Sex::M,
@@ -135,7 +138,7 @@ mod tests {
                 total: Weight(18.)
             },
             MeetEntry {
-                name: String::from("Powerlifter"),
+                name: Username::from_str("Powerlifter").unwrap(),
                 division: Division::Juniors,
                 equipment: Equipment::Raw,
                 sex: Sex::M,
@@ -162,7 +165,7 @@ mod tests {
             sex: Sex::M,
             division: Division::Juniors,
             best_meet: MeetEntry {
-                name: String::from("Powerlifter"),
+                name: Username::from_str("Powerlifter").unwrap(),
                 division: Division::Juniors,
                 equipment: Equipment::Raw,
                 sex: Sex::M,

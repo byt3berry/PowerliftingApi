@@ -5,5 +5,6 @@ pub mod lifter;
 pub mod meet_entry;
 pub mod place;
 pub mod sex;
+pub mod username;
 pub mod weight;
 pub mod weight_class;
