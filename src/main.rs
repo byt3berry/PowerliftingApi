@@ -5,7 +5,8 @@ use log::info;
 
 use cli::Args;
 use crate::data_fetching::entries::lifter_database::LifterDatabase;
-use crate::server::start_server;
+use crate::data_fetching::entries::meet_database::MeetDatabase;
+use crate::server::{start_server, ServerData};
 
 mod api;
 mod cli;
@@ -22,8 +23,14 @@ async fn main() -> Result<()> {
 
     let args: Args = Args::parse();
     args.validate()?;
-    let lifter_database: LifterDatabase = LifterDatabase::from_folder(&args.path)?;
-    let server: Server = start_server(args.ip, args.port, lifter_database)?;
+
+    let meet_database: MeetDatabase = MeetDatabase::from_folder(&args.path)?;
+    let lifter_database: LifterDatabase = LifterDatabase::from(&meet_database);
+    let data: ServerData = ServerData {
+        meet_database,
+        lifter_database,
+    };
+    let server: Server = start_server(args.ip, args.port, data)?;
 
     server.await?;
 

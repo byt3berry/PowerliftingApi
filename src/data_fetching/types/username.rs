@@ -40,13 +40,15 @@ impl FromStr for Username {
 impl Eq for Username { }
 
 impl PartialEq for Username {
+    /// `self` is the entry in the opl-data csv files
+    /// `other` is the powerlifter name requested
     fn eq(&self, other: &Self) -> bool {
-        if self.parts.len() != other.parts.len() {
+        if self.parts.len() < other.parts.len() {
             return false;
         }
 
-        for part in self.parts.iter() {
-            if !other.parts.contains(part) {
+        for part in &other.parts {
+            if !self.parts.contains(part) {
                 return false;
             }
         }
@@ -118,6 +120,8 @@ mod tests {
     #[case("a b c", "c b a")]
     #[case("a b c", "b c a")]
     #[case("a b c", "c a b")]
+    #[case("a b c", "a b")]
+    #[case("a b c", "b a")]
     fn test_compare(
         #[case] first: String,
         #[case] second: String,

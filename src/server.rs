@@ -9,14 +9,16 @@ use std::net::IpAddr;
 use crate::api::powerlifters::powerlifters;
 use crate::api::root::root;
 use crate::data_fetching::entries::lifter_database::LifterDatabase;
+use crate::data_fetching::entries::meet_database::MeetDatabase;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ServerData {
-    pub database: LifterDatabase,
+    pub meet_database: MeetDatabase,
+    pub lifter_database: LifterDatabase,
 }
 
 /// Start a server listening on `ip`:`port`
-pub fn start_server(ip: IpAddr, port: u16, lifter_database: LifterDatabase) -> Result<Server>{
+pub fn start_server(ip: IpAddr, port: u16, data: ServerData) -> Result<Server>{
     info!("Starting server on {ip}:{port}");
 
     Ok(
@@ -25,7 +27,7 @@ pub fn start_server(ip: IpAddr, port: u16, lifter_database: LifterDatabase) -> R
                 .wrap(NormalizePath::new(TrailingSlash::Trim))
                 .wrap(HtmxMiddleware)
                 .wrap(Logger::new("[%s] %U"))
-                .app_data(web::Data::new(ServerData { database: lifter_database.clone() }))
+                .app_data(web::Data::new(data.clone()))
                 .service(root)
                 .service(powerlifters)
                 .default_service(

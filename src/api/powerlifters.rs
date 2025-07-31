@@ -4,7 +4,7 @@ use log::debug;
 use maud::{html, Markup};
 use serde::Deserialize;
 
-use crate::data_fetching::types::lifter::Lifter;
+use crate::data_fetching::entries::export_row::ExportRow;
 use crate::data_fetching::POWERLIFTER_TABLE_HEADERS;
 use crate::data_fetching::types::division::Division;
 use crate::data_fetching::types::equipment::Equipment;
@@ -22,12 +22,11 @@ pub struct PowerlifterForm {
 #[post("/powerlifters")]
 pub async fn powerlifters(form: Form<PowerlifterForm>, data: Data<ServerData>) -> impl Responder {
     debug!("form: {form:?}");
-    let powerlifter_data: Vec<(String, Option<&Lifter>)> = data.database.search_many(&form.0);
+    let powerlifter_data: Vec<ExportRow> = data.lifter_database.search_many(&form.0);
     HttpResponse::Ok().body(build_table(powerlifter_data))
 }
 
-
-fn build_table(data: Vec<(String, Option<&Lifter>)>) -> Markup {
+fn build_table(data: Vec<ExportRow>) -> Markup {
     html! {
         table {
 
@@ -37,51 +36,20 @@ fn build_table(data: Vec<(String, Option<&Lifter>)>) -> Markup {
                 }
             }
 
-            @for (name, result) in data {
+            @for row in data {
                 tr {
                     td { }
-
-                    @if let Some(lifter) = result {
-                        td { (lifter.name) }
-                        td { "FFForce" }
-                        td { (lifter.sex) }
-
-                        td { (lifter.equipment) }
-
-                        @if let Some(weight_class) = lifter.best_meet.weight_class {
-                            td { (weight_class) }
-                        } @else {
-                            td { "?" }
-                        }
-
-                        td { (lifter.best_meet.bodyweight) }
-
-                        @if let Some(squat) = lifter.best_meet.best3squat {
-                            td { (squat) }
-                        } @else {
-                            td { "?" }
-                        }
-
-                        @if let Some(bench) = lifter.best_meet.best3bench {
-                            td { (bench) }
-                        } @else {
-                            td { "?" }
-                        }
-
-                        @if let Some(deadlift) = lifter.best_meet.best3deadlift {
-                            td { (deadlift) }
-                        } @else {
-                            td { "?" }
-                        }
-
-                        td { (lifter.best_meet.total) }
-                    } @else {
-                        td { (name) }
-
-                        @for _ in 1..&POWERLIFTER_TABLE_HEADERS.len()-1 {
-                            td { "?" }
-                        }
-                    }
+                    td { (row.name) }
+                    td { "FFForce" }
+                    td { (row.division) }
+                    td { (row.sex) }
+                    td { (row.equipment) }
+                    td { (row.weight_class) }
+                    td { (row.bodyweight) }
+                    td { (row.best_squat) }
+                    td { (row.best_bench) }
+                    td { (row.best_deadlift) }
+                    td { (row.total) }
                 }
             }
 

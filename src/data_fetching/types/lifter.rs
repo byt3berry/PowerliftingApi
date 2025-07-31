@@ -17,16 +17,17 @@ impl Lifter {
     pub fn from_meet_data<'a, I>(data: I) -> Self
         where I: Iterator<Item = &'a MeetEntry>
     {
-        let best_meet: &MeetEntry = data
+        let best_meet: MeetEntry = data
             .max_by_key(|entry| entry.total)
-            .expect("each lifter should have at least one meet entry");
+            .expect("each lifter should have at least one meet entry")
+            .clone();
 
         Self {
             name: best_meet.name.clone(),
             equipment: best_meet.equipment,
             sex: best_meet.sex,
             division: best_meet.division,
-            best_meet: best_meet.clone(),
+            best_meet,
         }
     }
 }
