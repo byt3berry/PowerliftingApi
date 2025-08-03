@@ -22,7 +22,7 @@ pub struct PowerlifterForm {
 #[post("/powerlifters")]
 pub async fn powerlifters(form: Form<PowerlifterForm>, data: Data<ServerData>) -> impl Responder {
     debug!("form: {form:?}");
-    let powerlifter_data: Vec<ExportRow> = data.lifter_database.search_many(&form.0);
+    let powerlifter_data: Vec<ExportRow> = data.lifter_database.search_export(&form.0).into();
     HttpResponse::Ok().body(build_table(powerlifter_data))
 }
 
@@ -38,7 +38,7 @@ fn build_table(data: Vec<ExportRow>) -> Markup {
 
             @for row in data {
                 tr {
-                    td { }
+                    td { (row.rank) }
                     td { (row.name) }
                     td { "FFForce" }
                     td { (row.division) }

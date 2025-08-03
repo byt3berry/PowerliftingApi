@@ -9,11 +9,9 @@ use std::net::IpAddr;
 use crate::api::powerlifters::powerlifters;
 use crate::api::root::root;
 use crate::data_fetching::entries::lifter_database::LifterDatabase;
-use crate::data_fetching::entries::meet_database::MeetDatabase;
 
 #[derive(Clone, Debug)]
 pub struct ServerData {
-    pub meet_database: MeetDatabase,
     pub lifter_database: LifterDatabase,
 }
 

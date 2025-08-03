@@ -27,7 +27,6 @@ async fn main() -> Result<()> {
     let meet_database: MeetDatabase = MeetDatabase::from_folder(&args.path)?;
     let lifter_database: LifterDatabase = LifterDatabase::from(&meet_database);
     let data: ServerData = ServerData {
-        meet_database,
         lifter_database,
     };
     let server: Server = start_server(args.ip, args.port, data)?;

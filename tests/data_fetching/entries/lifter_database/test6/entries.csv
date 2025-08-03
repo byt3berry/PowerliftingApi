@@ -1,0 +1,4 @@
+Place,Name,Division,Equipment,Event,BirthDate,BirthYear,Age,Sex,BodyweightKg,WeightClassKg,Squat1Kg,Squat2Kg,Squat3Kg,Best3SquatKg,Bench1Kg,Bench2Kg,Bench3Kg,Best3BenchKg,Deadlift1Kg,Deadlift2Kg,Deadlift3Kg,Best3DeadliftKg,TotalKg
+,Powerlifter 1,Juniors,Raw,Event Name,,,,M,80.3,83,1,0,0,1,0,0,0,0,0,0,0,0,1
+,Powerlifter 2,Masters,Raw,Event Name,,,,M,80.3,83,2,0,0,2,0,0,0,0,0,0,0,0,2
+,Powerlifter 3,Juniors,Raw,Event Name,,,,M,80.3,83,3,0,0,3,0,0,0,0,0,0,0,0,3

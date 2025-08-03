@@ -48,6 +48,7 @@ impl MeetDatabase {
             })
             .filter_map(Result::ok)
             .flatten()
+            // .inspect(|meet_entry| println!("{} {} {}", meet_entry.name.name, meet_entry.division, meet_entry.total))
             .collect();
 
         Ok(Self(entries))
