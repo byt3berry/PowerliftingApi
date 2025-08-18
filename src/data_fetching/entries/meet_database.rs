@@ -6,13 +6,25 @@ use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
+use crate::data_fetching::types::meet::Meet;
 use crate::data_fetching::types::meet_entry::MeetEntry;
 
 #[derive(Clone, Debug)]
 pub struct MeetDatabase(Vec<MeetEntry>);
 
 impl MeetDatabase {
-    fn from_csv(csv: &PathBuf) -> Result<Vec<MeetEntry>> {
+    fn from_meet_csv(csv: &PathBuf) -> Result<Meet> {
+        let meet: Meet = csv::ReaderBuilder::new()
+            .quoting(false)
+            .from_path(csv)?
+            .deserialize()
+            .next()
+            .expect("At least one meet expected")?;
+
+        Ok(meet)
+    }
+
+    fn from_entries_csv(csv: &PathBuf) -> Result<Vec<MeetEntry>> {
         let mut entries: Vec<MeetEntry> = Vec::with_capacity(50_000);
 
         let mut reader: Reader<File> = csv::ReaderBuilder::new().quoting(false).from_path(csv)?;
@@ -30,15 +42,20 @@ impl MeetDatabase {
             bail!("{meet_folder:?} should be a folder");
         }
 
-        let filename: &Path = Path::new("entries.csv");
+        let entries_filename: &Path = Path::new("entries.csv");
+        let meet_data_filename: &Path = Path::new("meet.csv");
         let entries: Vec<MeetEntry> = WalkDir::new(meet_folder)
             .into_iter()
             .filter_map(Result::ok)
             .map(|element| element.path().to_owned())
-            .filter(|path| path.is_file())
-            .filter(|path| path.file_name().unwrap() == filename)
+            .filter(|path| path.is_dir())
+            .filter(|path| path.join(entries_filename).exists())
+            .filter(|path| path.join(meet_data_filename).exists())
             .map(|path| {
-                let result: Result<Vec<MeetEntry>> = Self::from_csv(&path);
+                let entries_path: PathBuf = path.join(entries_filename);
+                let meet_data_path: PathBuf = path.join(meet_data_filename);
+                let meet: Meet = Self::from_meet_csv(&meet_data_path)?;
+                let result: Result<Vec<MeetEntry>> = Self::from_entries_csv(&entries_path);
 
                 if result.is_err() {
                     warn!("file {} can't be used: {:?}", path.display(), result.as_ref().err().unwrap());
@@ -48,7 +65,6 @@ impl MeetDatabase {
             })
             .filter_map(Result::ok)
             .flatten()
-            // .inspect(|meet_entry| println!("{} {} {}", meet_entry.name.name, meet_entry.division, meet_entry.total))
             .collect();
 
         Ok(Self(entries))
@@ -86,7 +102,7 @@ mod tests {
     fn test_from_csv_no_error_simple() -> Result<()> {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test1.csv");
 
-        MeetDatabase::from_csv(&test_file)?;
+        MeetDatabase::from_entries_csv(&test_file)?;
         Ok(())
     }
 
@@ -94,7 +110,7 @@ mod tests {
     fn test_from_csv_no_error_divisions() -> Result<()> {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test3.csv");
 
-        MeetDatabase::from_csv(&test_file)?;
+        MeetDatabase::from_entries_csv(&test_file)?;
         Ok(())
     }
 
@@ -102,7 +118,7 @@ mod tests {
     fn test_from_csv_no_error_no_weight_class() -> Result<()> {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test4.csv");
 
-        MeetDatabase::from_csv(&test_file)?;
+        MeetDatabase::from_entries_csv(&test_file)?;
         Ok(())
     }
 
@@ -133,7 +149,7 @@ mod tests {
             }
         ];
 
-        let meets: Vec<MeetEntry> = MeetDatabase::from_csv(&test_file)?;
+        let meets: Vec<MeetEntry> = MeetDatabase::from_entries_csv(&test_file)?;
 
         assert_eq!(expected, meets);
         Ok(())
@@ -166,7 +182,7 @@ mod tests {
             }
         ];
 
-        let meets: Vec<MeetEntry> = MeetDatabase::from_csv(&test_file)?;
+        let meets: Vec<MeetEntry> = MeetDatabase::from_entries_csv(&test_file)?;
 
         assert_eq!(expected, meets);
         Ok(())

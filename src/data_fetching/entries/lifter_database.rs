@@ -54,7 +54,6 @@ impl LifterDatabase {
             .filter_map(|lifter| lifter.best_total(form))
             .sorted_by_key(|lifter| lifter.total)
             .rev()
-            // .inspect(|meet_entry| println!("{} {}", meet_entry.total, meet_entry.name.name))
             .collect();
 
         form
