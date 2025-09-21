@@ -1,11 +1,10 @@
-use std::iter::Peekable;
-
 use itertools::Itertools;
+use std::iter::Peekable;
+use types::Sex;
+use types::Username;
 
-use crate::api::powerlifters::PowerlifterForm;
-use crate::data_fetching::types::meet_entry::MeetEntry;
-use crate::data_fetching::types::sex::Sex;
-use crate::data_fetching::types::username::Username;
+use crate::data::meet_entry::MeetEntry;
+use crate::data::query::Query;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Lifter {
@@ -15,7 +14,7 @@ pub struct Lifter {
 }
 
 impl Lifter {
-    pub fn best_total(&self, form: &PowerlifterForm) -> Option<&MeetEntry> {
+    pub fn best_total(&self, form: &Query) -> Option<&MeetEntry> {
         self
             .meets
             .iter()
@@ -52,16 +51,10 @@ mod tests {
     use anyhow::Result;
     use pretty_assertions::assert_eq;
     use std::str::FromStr;
-
-    use crate::data_fetching::types::division::Division;
-    use crate::data_fetching::types::equipment::Equipment;
-    use crate::data_fetching::types::meet_entry::MeetEntry;
-    use crate::data_fetching::types::sex::Sex;
-    use crate::data_fetching::types::username::Username;
-    use crate::data_fetching::types::weight::Weight;
-    use crate::data_fetching::types::weight_class::WeightClass;
-
+    use types::{Division, Equipment, Sex, Username, Weight, WeightClass};
+                        
     use super::Lifter;
+    use super::MeetEntry;
 
     #[test]
     #[should_panic]

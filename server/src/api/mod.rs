@@ -1,9 +1,6 @@
 use maud::{html, Markup};
 use strum::IntoEnumIterator;
-
-use crate::data_fetching::types::division::Division;
-use crate::data_fetching::types::equipment::Equipment;
-use crate::data_fetching::types::sex::Sex;
+use types::{Division, Equipment, Sex};
 
 pub mod powerlifters;
 pub mod root;

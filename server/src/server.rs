@@ -3,12 +3,12 @@ use actix_web::dev::Server;
 use actix_web::middleware::{Logger, NormalizePath, TrailingSlash};
 use actix_web::{web, App, HttpResponse, HttpServer};
 use anyhow::Result;
+use db::LifterDatabase;
 use log::info;
 use std::net::IpAddr;
 
 use crate::api::powerlifters::powerlifters;
 use crate::api::root::root;
-use crate::data_fetching::entries::lifter_database::LifterDatabase;
 
 #[derive(Clone, Debug)]
 pub struct ServerData {

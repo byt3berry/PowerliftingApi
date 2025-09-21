@@ -1,7 +1,6 @@
 use serde::Deserialize;
-
-use crate::data_fetching::types::country::Country;
-use crate::data_fetching::types::federation::Federation;
+use types::Country;
+use types::Federation;
 
 #[derive(Debug, Deserialize)]
 pub struct Meet {

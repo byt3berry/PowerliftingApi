@@ -6,8 +6,8 @@ use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
-use crate::data_fetching::types::meet::Meet;
-use crate::data_fetching::types::meet_entry::MeetEntry;
+use crate::data::meet::Meet;
+use crate::data::meet_entry::MeetEntry;
 
 #[derive(Clone, Debug)]
 pub struct MeetDatabase(Vec<MeetEntry>);
@@ -86,17 +86,18 @@ mod tests {
     use std::path::{Path, PathBuf};
     use std::str::FromStr;
 
-    use crate::data_fetching::types::division::Division;
-    use crate::data_fetching::types::equipment::Equipment;
-    use crate::data_fetching::types::meet_entry::MeetEntry;
-    use crate::data_fetching::types::sex::Sex;
-    use crate::data_fetching::types::username::Username;
-    use crate::data_fetching::types::weight::Weight;
-    use crate::data_fetching::types::weight_class::WeightClass;
+    use types::Division;
+    use types::Equipment;
+    use types::Sex;
+    use types::Username;
+    use types::Weight;
+    use types::WeightClass;
+
+    use crate::data::meet_entry::MeetEntry;
 
     use super::MeetDatabase;
 
-    const TEST_PATH: &str = "tests/data_fetching/entries/meet_database";
+    const TEST_PATH: &str = "tests/entries/meet_database";
 
     #[test]
     fn test_from_csv_no_error_simple() -> Result<()> {

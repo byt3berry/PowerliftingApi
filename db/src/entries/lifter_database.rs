@@ -2,13 +2,13 @@ use itertools::Itertools;
 use std::ops::Deref;
 use std::str::FromStr;
 
-use crate::api::powerlifters::PowerlifterForm;
-use crate::data_fetching::entries::export_row::ExportRow;
-use crate::data_fetching::entries::meet_database::MeetDatabase;
-use crate::data_fetching::entries::search_result::SearchResult;
-use crate::data_fetching::types::lifter::Lifter;
-use crate::data_fetching::types::meet_entry::MeetEntry;
-use crate::data_fetching::types::username::Username;
+use crate::data::lifter::Lifter;
+use crate::data::meet_entry::MeetEntry;
+use crate::data::query::Query;
+use crate::entries::export_row::ExportRow;
+use crate::entries::meet_database::MeetDatabase;
+use crate::entries::search_result::SearchResult;
+use types::Username;
 
 #[derive(Clone, Debug)]
 pub struct LifterDatabase(Vec<Lifter>);
@@ -40,7 +40,7 @@ impl LifterDatabase {
         Self(lifters)
     }
 
-    pub fn search_export(&self, form: &PowerlifterForm) -> Vec<ExportRow> {
+    pub fn search_export(&self, form: &Query) -> Vec<ExportRow> {
         self
             .search(form)
             .into_iter()
@@ -48,7 +48,7 @@ impl LifterDatabase {
             .collect()
     }
 
-    fn search(&self, form: &PowerlifterForm) -> Vec<SearchResult> {
+    fn search(&self, form: &Query) -> Vec<SearchResult> {
         let lifters: Vec<&MeetEntry>  = self
             .iter()
             .filter_map(|lifter| lifter.best_total(form))
@@ -89,30 +89,34 @@ impl Deref for LifterDatabase {
 mod tests {
     use anyhow::Result;
     use pretty_assertions::assert_eq;
+    use std::env;
     use std::path::{Path, PathBuf};
     use std::str::FromStr;
 
-    use crate::api::powerlifters::PowerlifterForm;
-    use crate::data_fetching::entries::meet_database::MeetDatabase;
-    use crate::data_fetching::entries::search_result::SearchResult;
-    use crate::data_fetching::types::division::Division;
-    use crate::data_fetching::types::equipment::Equipment;
-    use crate::data_fetching::types::meet_entry::MeetEntry;
-    use crate::data_fetching::types::sex::Sex;
-    use crate::data_fetching::types::username::Username;
-    use crate::data_fetching::types::weight::Weight;
-    use crate::data_fetching::types::weight_class::WeightClass;
+    use types::Division;
+    use types::Equipment;
+    use types::Sex;
+    use types::Username;
+    use types::Weight;
+    use types::WeightClass;
+
+    use crate::data::meet_entry::MeetEntry;
+    use crate::data::query::Query;
+    use crate::entries::meet_database::MeetDatabase;
+    use crate::entries::search_result::SearchResult;
 
     use super::LifterDatabase;
 
-    const TEST_PATH: &str = "tests/data_fetching/entries/lifter_database";
+    const TEST_PATH: &str = "tests/entries/lifter_database";
 
     #[test]
     fn test_search_1_not_found() -> Result<()> {
+        println!("{:?}", env::current_dir());
         let test_path: PathBuf = Path::new(TEST_PATH).join("test1");
+        assert!(test_path.exists());
         let meet_database: MeetDatabase = MeetDatabase::from_folder(&test_path)?.into();
         let lifter_database: LifterDatabase = LifterDatabase::from(&meet_database);
-        let form: PowerlifterForm = PowerlifterForm {
+        let form: Query = Query {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::M,
             division_choice: Division::Masters,
@@ -133,9 +137,10 @@ mod tests {
     #[test]
     fn test_search_1_meet_entry() -> Result<()> {
         let test_path: PathBuf = Path::new(TEST_PATH).join("test1");
+        assert!(test_path.exists());
         let meet_database: MeetDatabase = MeetDatabase::from_folder(&test_path)?.into();
         let lifter_database: LifterDatabase = LifterDatabase::from(&meet_database);
-        let form: PowerlifterForm = PowerlifterForm {
+        let form: Query = Query {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::M,
             division_choice: Division::Masters,
@@ -173,9 +178,10 @@ mod tests {
     #[test]
     fn test_search_2_meet_entry() -> Result<()> {
         let test_path: PathBuf = Path::new(TEST_PATH).join("test2");
+        assert!(test_path.exists());
         let meet_database: MeetDatabase = MeetDatabase::from_folder(&test_path)?.into();
         let lifter_database: LifterDatabase = LifterDatabase::from(&meet_database);
-        let form: PowerlifterForm = PowerlifterForm {
+        let form: Query = Query {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::M,
             division_choice: Division::Masters,
@@ -213,9 +219,10 @@ mod tests {
     #[test]
     fn test_search_3_meet_entry() -> Result<()> {
         let test_path: PathBuf = Path::new(TEST_PATH).join("test3");
+        assert!(test_path.exists());
         let meet_database: MeetDatabase = MeetDatabase::from_folder(&test_path)?.into();
         let lifter_database: LifterDatabase = LifterDatabase::from(&meet_database);
-        let form: PowerlifterForm = PowerlifterForm {
+        let form: Query = Query {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::M,
             division_choice: Division::Juniors,
@@ -253,9 +260,10 @@ mod tests {
     #[test]
     fn test_search_4_meet_entry() -> Result<()> {
         let test_path: PathBuf = Path::new(TEST_PATH).join("test4");
+        assert!(test_path.exists());
         let meet_database: MeetDatabase = MeetDatabase::from_folder(&test_path)?.into();
         let lifter_database: LifterDatabase = LifterDatabase::from(&meet_database);
-        let form: PowerlifterForm = PowerlifterForm {
+        let form: Query = Query {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::Any,
             division_choice: Division::Juniors,
@@ -293,9 +301,10 @@ mod tests {
     #[test]
     fn test_search_5_rank_1() -> Result<()> {
         let test_path: PathBuf = Path::new(TEST_PATH).join("test5");
+        assert!(test_path.exists());
         let meet_database: MeetDatabase = MeetDatabase::from_folder(&test_path)?.into();
         let lifter_database: LifterDatabase = LifterDatabase::from(&meet_database);
-        let form: PowerlifterForm = PowerlifterForm {
+        let form: Query = Query {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::Any,
             division_choice: Division::Juniors,
@@ -312,9 +321,10 @@ mod tests {
     #[test]
     fn test_search_5_rank_2() -> Result<()> {
         let test_path: PathBuf = Path::new(TEST_PATH).join("test5");
+        assert!(test_path.exists());
         let meet_database: MeetDatabase = MeetDatabase::from_folder(&test_path)?.into();
         let lifter_database: LifterDatabase = LifterDatabase::from(&meet_database);
-        let form: PowerlifterForm = PowerlifterForm {
+        let form: Query = Query {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::Any,
             division_choice: Division::Juniors,
@@ -331,9 +341,10 @@ mod tests {
     #[test]
     fn test_search_5_rank_3() -> Result<()> {
         let test_path: PathBuf = Path::new(TEST_PATH).join("test5");
+        assert!(test_path.exists());
         let meet_database: MeetDatabase = MeetDatabase::from_folder(&test_path)?.into();
         let lifter_database: LifterDatabase = LifterDatabase::from(&meet_database);
-        let form: PowerlifterForm = PowerlifterForm {
+        let form: Query = Query {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::Any,
             division_choice: Division::Juniors,
@@ -350,9 +361,10 @@ mod tests {
     #[test]
     fn test_search_6_rank_1() -> Result<()> {
         let test_path: PathBuf = Path::new(TEST_PATH).join("test6");
+        assert!(test_path.exists());
         let meet_database: MeetDatabase = MeetDatabase::from_folder(&test_path)?.into();
         let lifter_database: LifterDatabase = LifterDatabase::from(&meet_database);
-        let form: PowerlifterForm = PowerlifterForm {
+        let form: Query = Query {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::Any,
             division_choice: Division::Juniors,
@@ -369,9 +381,10 @@ mod tests {
     #[test]
     fn test_search_6_rank_2() -> Result<()> {
         let test_path: PathBuf = Path::new(TEST_PATH).join("test6");
+        assert!(test_path.exists());
         let meet_database: MeetDatabase = MeetDatabase::from_folder(&test_path)?.into();
         let lifter_database: LifterDatabase = LifterDatabase::from(&meet_database);
-        let form: PowerlifterForm = PowerlifterForm {
+        let form: Query = Query {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::Any,
             division_choice: Division::Masters,
@@ -388,9 +401,10 @@ mod tests {
     #[test]
     fn test_search_6_rank_3() -> Result<()> {
         let test_path: PathBuf = Path::new(TEST_PATH).join("test6");
+        assert!(test_path.exists());
         let meet_database: MeetDatabase = MeetDatabase::from_folder(&test_path)?.into();
         let lifter_database: LifterDatabase = LifterDatabase::from(&meet_database);
-        let form: PowerlifterForm = PowerlifterForm {
+        let form: Query = Query {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::Any,
             division_choice: Division::Juniors,
@@ -408,15 +422,13 @@ mod tests {
 #[cfg(test)]
 mod perf_tests {
     use anyhow::Result;
+    use types::{Division, Equipment, Sex};
     use std::path::Path;
     use std::time::{Duration, Instant};
 
-    use crate::api::powerlifters::PowerlifterForm;
-    use crate::data_fetching::entries::meet_database::MeetDatabase;
-    use crate::data_fetching::types::division::Division;
-    use crate::data_fetching::types::equipment::Equipment;
-    use crate::data_fetching::types::sex::Sex;
+    use crate::data::query::Query;
 
+    use super::MeetDatabase;
     use super::LifterDatabase;
 
     const ENTRIES_ROOT: &str = "/tmp/opl-data/meet-data/ffforce";
@@ -444,7 +456,7 @@ mod perf_tests {
         assert!(path.is_dir());
         let meet_database: MeetDatabase = MeetDatabase::from_folder(&path.to_path_buf())?.into();
         let lifter_database: LifterDatabase = LifterDatabase::from(&meet_database);
-        let form: PowerlifterForm = PowerlifterForm { 
+        let form: Query = Query { 
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::Any,
             division_choice: Division::Any,

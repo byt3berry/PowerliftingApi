@@ -5,7 +5,7 @@ use std::fmt::Display;
 use std::str::FromStr;
 use std::{fmt, num};
 
-use crate::data_fetching::types::weight::Weight;
+use crate::weight::Weight;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum WeightClass {
@@ -66,8 +66,7 @@ mod tests {
     use pretty_assertions::assert_eq;
     use rstest::rstest;
 
-    use crate::data_fetching::types::weight::Weight;
-
+    use super::Weight;
     use super::WeightClass;
 
     #[rstest]

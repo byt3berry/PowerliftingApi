@@ -1,7 +1,7 @@
 use serde::Deserialize;
 
-use crate::data_fetching::types::sex::Sex;
-use crate::data_fetching::types::weight::Weight;
+use crate::sex::Sex;
+use crate::weight::Weight;
 
 #[derive(Debug, Default, Deserialize, Eq, PartialEq)]
 pub struct Dots(i32);

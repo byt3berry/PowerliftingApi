@@ -1,4 +1,4 @@
-use crate::data_fetching::entries::search_result::SearchResult;
+use crate::entries::search_result::SearchResult;
 
 pub struct ExportRow {
     pub rank: String,

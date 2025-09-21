@@ -1,5 +1,6 @@
-use crate::data_fetching::types::meet_entry::MeetEntry;
-use crate::data_fetching::types::username::Username;
+use types::Username;
+
+use crate::data::meet_entry::MeetEntry;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SearchResult<'db> {

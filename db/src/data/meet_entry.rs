@@ -1,12 +1,12 @@
 use serde::Deserialize;
 
-use crate::data_fetching::types::division::Division;
-use crate::data_fetching::types::dots::Dots;
-use crate::data_fetching::types::equipment::Equipment;
-use crate::data_fetching::types::sex::Sex;
-use crate::data_fetching::types::username::Username;
-use crate::data_fetching::types::weight::Weight;
-use crate::data_fetching::types::weight_class::WeightClass;
+use types::Division;
+use types::Dots;
+use types::Equipment;
+use types::Sex;
+use types::Username;
+use types::Weight;
+use types::WeightClass;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
 pub struct MeetEntry {
