@@ -10,7 +10,7 @@ use crate::POWERLIFTER_TABLE_HEADERS;
 #[post("/powerlifters")]
 pub async fn powerlifters(form: Form<Query>, data: Data<ServerData>) -> impl Responder {
     debug!("form: {form:?}");
-    let powerlifter_data: Vec<ExportRow> = data.lifter_database.search_export(&form.0).into();
+    let powerlifter_data: Vec<ExportRow> = data.database.search_export(&form.0);
     HttpResponse::Ok().body(build_table(powerlifter_data))
 }
 

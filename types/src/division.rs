@@ -2,6 +2,7 @@ use serde::Deserialize;
 use strum_macros::{Display, EnumIter};
 
 #[derive(Clone, Copy, Debug, Display, Deserialize, Eq, EnumIter)]
+#[serde(rename_all = "lowercase")]
 pub enum Division {
     #[strum(to_string = "Any")]
     #[serde(rename(deserialize = "Any"))]
@@ -76,7 +77,42 @@ impl PartialEq for Division {
             (Self::Masters2, Self::Masters2) => true,
             (Self::Masters3, Self::Masters3) => true,
             (Self::Masters4, Self::Masters4) => true,
+            (Self::Seniors, Self::Seniors) => true,
             _ => false,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use rstest::rstest;
+    use serde_test::{assert_de_tokens, Token};
+
+    use super::Division;
+
+    #[rstest]
+    #[case("Cadet", Division::Cadet)]
+    #[case("Elite", Division::Elite)]
+    #[case("Hors Match", Division::G)]
+    #[case("Jeunes", Division::Juniors)]
+    #[case("Juniors", Division::Juniors)]
+    #[case("Masters", Division::Masters)]
+    #[case("Masters 1", Division::Masters1)]
+    #[case("Masters 2", Division::Masters2)]
+    #[case("Masters 3", Division::Masters3)]
+    #[case("Masters 4", Division::Masters4)]
+    #[case("Open", Division::Open)]
+    #[case("Prime Time", Division::G)]
+    #[case("Senior/Master", Division::Seniors)]
+    #[case("Seniors", Division::Seniors)]
+    #[case("Sub-Juniors", Division::SubJuniors)]
+    fn test_deserialize(
+        #[case] input: &'static str,
+        #[case] expected: Division,
+    ) {
+        assert_de_tokens(
+            &expected, 
+            &[Token::UnitVariant { name: "Division", variant: input }]
+        );
     }
 }

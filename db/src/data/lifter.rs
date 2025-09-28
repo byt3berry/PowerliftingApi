@@ -1,6 +1,3 @@
-use itertools::Itertools;
-use std::iter::Peekable;
-use types::Sex;
 use types::Username;
 
 use crate::data::meet_entry::MeetEntry;
@@ -9,40 +6,24 @@ use crate::data::query::Query;
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Lifter {
     pub name: Username,
-    pub sex: Sex,
     pub meets: Vec<MeetEntry>,
 }
 
 impl Lifter {
-    pub fn best_total(&self, form: &Query) -> Option<&MeetEntry> {
+    #[must_use]
+    pub const fn new(name: Username, meets: Vec<MeetEntry>) -> Self {
+        Self { name, meets, }
+    }
+
+    #[must_use]
+    pub fn best_total(&self, query: &Query) -> Option<&MeetEntry> {
         self
             .meets
             .iter()
-            .filter(|meet| form.sex_choice == meet.sex)
-            .filter(|meet| form.division_choice == meet.division)
-            .filter(|meet| form.equipment_choice == meet.equipment)
+            .filter(|meet| query.sex_choice == meet.sex)
+            .filter(|meet| query.division_choice == meet.division)
+            .filter(|meet| query.equipment_choice == meet.equipment)
             .max_by_key(|meet| meet.total)
-    }
-}
-
-impl<'a, I> From<I> for Lifter where I: Iterator<Item = &'a MeetEntry> {
-    fn from(data: I) -> Self {
-        let mut data: Peekable<I> = data.peekable();
-
-        let best_meet: &MeetEntry = data
-            .peek()
-            .expect("each lifter should have at least one meet entry");
-
-        let meets: Vec<MeetEntry> = data
-            .map(|meet| meet.to_owned())
-            .sorted_by_key(|meet| meet.total)
-            .collect();
-
-        Self {
-            name: best_meet.name.clone(),
-            sex: best_meet.sex,
-            meets,
-        }
     }
 }
 
@@ -57,18 +38,11 @@ mod tests {
     use super::MeetEntry;
 
     #[test]
-    #[should_panic]
-    fn test_from_meet_data_error() {
-        let data: Vec<MeetEntry> = vec![];
-
-        let _ = Lifter::from(data.iter());
-    }
-
-    #[test]
     fn test_from_meet_data_1() -> Result<()> {
+        let username: Username = Username::from_str("Powerlifter").unwrap();
         let data: Vec<MeetEntry> = vec![
             MeetEntry {
-                name: Username::from_str("Powerlifter")?,
+                name: Username::from_str("Powerlifter").unwrap(),
                 division: Division::Juniors,
                 equipment: Equipment::Raw,
                 sex: Sex::M,
@@ -90,11 +64,10 @@ mod tests {
             },
             ];
         let expected: Lifter = Lifter {
-            name: Username::from_str("Powerlifter")?,
-            sex: Sex::M,
+            name: Username::from_str("Powerlifter").unwrap(),
             meets: vec![
                 MeetEntry {
-                    name: Username::from_str("Powerlifter")?,
+                    name: Username::from_str("Powerlifter").unwrap(),
                     division: Division::Juniors,
                     equipment: Equipment::Raw,
                     sex: Sex::M,
@@ -117,17 +90,18 @@ mod tests {
                 ],
         };
 
-        let lifter: Lifter = Lifter::from(data.iter());
+        let lifter: Lifter = Lifter::new(username, data);
 
-        assert_eq!(lifter, expected);
+        assert_eq!(expected, lifter);
         Ok(())
     }
 
     #[test]
     fn test_from_meet_data_2() -> Result<()> {
+        let username: Username = Username::from_str("Powerlifter").unwrap();
         let data: Vec<MeetEntry> = vec![
             MeetEntry {
-                name: Username::from_str("Powerlifter")?,
+                name: Username::from_str("Powerlifter").unwrap(),
                 division: Division::Juniors,
                 equipment: Equipment::Raw,
                 sex: Sex::M,
@@ -148,7 +122,7 @@ mod tests {
                 total: Weight(18.)
             },
             MeetEntry {
-                name: Username::from_str("Powerlifter")?,
+                name: Username::from_str("Powerlifter").unwrap(),
                 division: Division::Juniors,
                 equipment: Equipment::Raw,
                 sex: Sex::M,
@@ -170,11 +144,10 @@ mod tests {
             },
             ];
         let expected: Lifter = Lifter {
-            name: Username::from_str("Powerlifter")?,
-            sex: Sex::M,
+            name: Username::from_str("Powerlifter").unwrap(),
             meets: vec![
                 MeetEntry {
-                    name: Username::from_str("Powerlifter")?,
+                    name: Username::from_str("Powerlifter").unwrap(),
                     division: Division::Juniors,
                     equipment: Equipment::Raw,
                     sex: Sex::M,
@@ -195,7 +168,7 @@ mod tests {
                     total: Weight(18.)
                 },
                 MeetEntry {
-                    name: Username::from_str("Powerlifter")?,
+                    name: Username::from_str("Powerlifter").unwrap(),
                     division: Division::Juniors,
                     equipment: Equipment::Raw,
                     sex: Sex::M,
@@ -218,9 +191,9 @@ mod tests {
                 ],
         };
 
-        let lifter: Lifter = Lifter::from(data.iter());
+        let lifter: Lifter = Lifter::new(username, data);
 
-        assert_eq!(lifter, expected);
+        assert_eq!(expected, lifter);
         Ok(())
     }
 }

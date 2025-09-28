@@ -3,7 +3,7 @@ use actix_web::dev::Server;
 use actix_web::middleware::{Logger, NormalizePath, TrailingSlash};
 use actix_web::{web, App, HttpResponse, HttpServer};
 use anyhow::Result;
-use db::LifterDatabase;
+use db::Database;
 use log::info;
 use std::net::IpAddr;
 
@@ -12,7 +12,7 @@ use crate::api::root::root;
 
 #[derive(Clone, Debug)]
 pub struct ServerData {
-    pub lifter_database: LifterDatabase,
+    pub database: Database
 }
 
 /// Start a server listening on `ip`:`port`

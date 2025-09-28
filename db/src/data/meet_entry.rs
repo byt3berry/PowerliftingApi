@@ -1,12 +1,5 @@
 use serde::Deserialize;
-
-use types::Division;
-use types::Dots;
-use types::Equipment;
-use types::Sex;
-use types::Username;
-use types::Weight;
-use types::WeightClass;
+use types::{Division, Dots, Equipment, Sex, Username, Weight, WeightClass};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
 pub struct MeetEntry {

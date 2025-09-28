@@ -1483,6 +1483,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_test"
+version = "1.0.177"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f901ee573cab6b3060453d2d5f0bae4e6d628c23c0a962ff9b5f1d7c8d4f1ed"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "serde_urlencoded"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1507,9 +1516,7 @@ dependencies = [
  "env_logger",
  "log",
  "maud",
- "serde",
  "strum",
- "strum_macros",
  "types",
 ]
 
@@ -1769,10 +1776,10 @@ name = "types"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "itertools",
  "pretty_assertions",
  "rstest",
  "serde",
+ "serde_test",
  "strum",
  "strum_macros",
 ]

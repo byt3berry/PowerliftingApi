@@ -1,4 +1,4 @@
-use anyhow::{bail, Error, Result};
+use anyhow::{Error, Result};
 use serde::de::{self, Visitor};
 use serde::{Deserialize, Deserializer};
 use std::str::FromStr;
@@ -11,7 +11,15 @@ pub struct Username {
 }
 
 impl Username {
-    fn new(name: &str, parts: Vec<String>) -> Self {
+    pub const fn empty() -> Self {
+        Self {
+            name: String::new(),
+            parts: Vec::new(),
+        }
+    }
+
+    #[must_use]
+    pub fn new(name: &str, parts: Vec<String>) -> Self {
         Self {
             name: name.to_string(),
             parts,
@@ -28,10 +36,6 @@ impl FromStr for Username {
             .filter(|w| !w.is_empty())
             .map(str::to_lowercase)
             .collect();
-
-        if parts.is_empty() {
-            bail!("Username must not be null");
-        }
 
         Ok(Self::new(s, parts))
     }
@@ -86,17 +90,10 @@ impl<'de> Deserialize<'de> for Username {
 #[cfg(test)]
 mod tests {
     use anyhow::Result;
-    use pretty_assertions::assert_eq;
+    use pretty_assertions::{assert_eq, assert_ne};
     use rstest::rstest;
 
     use super::Username;
-
-    #[test]
-    #[should_panic]
-    fn test_deserialize_failure() {
-        let input: String = String::new();
-        input.parse::<Username>().unwrap();
-    }
 
     #[rstest]
     #[case("a b", Username::new("a b", vec!["a".to_string(), "b".to_string()]))]
@@ -106,11 +103,11 @@ mod tests {
     fn test_deserialize(
         #[case] input: String,
         #[case] expected: Username,
-    ) -> Result<()> {
-        let username: Username = input.parse()?;
+    ) {
+        let result: Result<Username> = input.parse();
 
-        assert_eq!(username, expected);
-        Ok(())
+        assert!(result.is_ok());
+        assert_eq!(expected, result.unwrap());
     }
 
     #[rstest]
@@ -122,14 +119,30 @@ mod tests {
     #[case("a b c", "c a b")]
     #[case("a b c", "a b")]
     #[case("a b c", "b a")]
-    fn test_compare(
-        #[case] first: String,
-        #[case] second: String,
-    ) -> Result<()> {
-        let first_username: Username = first.parse()?;
-        let second_username: Username = second.parse()?;
+    fn test_compare_eq(
+        #[case] first: Username,
+        #[case] second: Username,
+    ) {
+        assert_eq!(first, second);
+    }
 
-        assert_eq!(first_username, second_username);
-        Ok(())
+    #[rstest]
+    #[case("", "a b")]
+    #[case("a b", "c d")]
+    fn test_compare_not_eq(
+        #[case] first: Username,
+        #[case] second: Username,
+    ) {
+        println!("{}", first);
+        println!("{}", second);
+        assert_ne!(first, second);
+    }
+
+    #[test]
+    fn test_empty() {
+        let username: Username = Username::empty();
+
+        assert_eq!(String::new(), username.name);
+        assert_eq!(Vec::<String>::new(), username.parts);
     }
 }

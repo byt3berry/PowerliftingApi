@@ -56,6 +56,7 @@ impl Dots {
         500. / Self::poly4(A, B, C, D, E, adjusted)
     }
 
+    #[must_use]
     pub fn new(sex: Sex, bodyweight: Weight, total: Weight) -> Self {
         if bodyweight.is_zero() || total.is_zero() {
             return Self(0);

@@ -1,9 +1,8 @@
 use anyhow::Result;
 use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer};
-use std::fmt::Display;
+use std::fmt::{self, Display};
 use std::str::FromStr;
-use std::{fmt, num};
 
 use crate::weight::Weight;
 
@@ -15,7 +14,7 @@ pub enum WeightClass {
 }
 
 impl FromStr for WeightClass {
-    type Err = num::ParseFloatError;
+    type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.is_empty() {
@@ -35,7 +34,7 @@ impl Display for WeightClass {
         match self {
             Self::UnderOrEqual(weight) => write!(f, "{weight}"),
             Self::Over(weight) => write!(f, "+{weight}"),
-            Self::None => todo!(),
+            Self::None => write!(f, ""),
         }
     }
 }
@@ -70,6 +69,7 @@ mod tests {
     use super::WeightClass;
 
     #[rstest]
+    #[case("", WeightClass::None)]
     #[case("43", WeightClass::UnderOrEqual(Weight(43.)))]
     #[case("44", WeightClass::UnderOrEqual(Weight(44.)))]
     #[case("47", WeightClass::UnderOrEqual(Weight(47.)))]
@@ -97,12 +97,25 @@ mod tests {
     #[case("105+", WeightClass::Over(Weight(105.)))]
     #[case("120+", WeightClass::Over(Weight(120.)))]
     fn test_deserialize(
-        #[case] weight_class: &str,
+        #[case] input: &str,
         #[case] expected: WeightClass,
-    ) -> Result<()> {
-        let weight_class: WeightClass = weight_class.parse::<WeightClass>()?;
+    ) {
+        let result: Result<WeightClass> = input.parse::<WeightClass>();
 
-        assert_eq!(weight_class, expected);
-        Ok(())
+        assert!(result.is_ok());
+        assert_eq!(expected, result.unwrap());
+    }
+
+    #[rstest]
+    #[case(WeightClass::None, String::new())]
+    #[case(WeightClass::UnderOrEqual(Weight(83.)), "83".to_string())]
+    #[case(WeightClass::Over(Weight(120.)), "+120".to_string())]
+    fn test_display(
+        #[case] input: WeightClass,
+        #[case] expected: String
+    ) {
+        let result: String = format!("{}", input);
+
+        assert_eq!(expected, result);
     }
 }

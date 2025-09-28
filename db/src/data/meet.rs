@@ -1,17 +1,15 @@
-use serde::Deserialize;
-use types::Country;
-use types::Federation;
+use crate::data::meet_data::MeetData;
+use crate::data::meet_entry::MeetEntry;
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Meet {
-    #[serde(rename(deserialize = "Federation"))]
-    #[serde(default)]
-    pub federation: Federation,
+    pub data: MeetData,
+    pub entries: Vec<MeetEntry>,
+}
 
-    #[serde(rename(deserialize = "MeetCountry"))]
-    #[serde(default)]
-    pub country: Country,
-
-    #[serde(rename(deserialize = "MeetName"))]
-    pub name: String,
+impl Meet {
+    #[must_use]
+    pub const fn new(data: MeetData, entries: Vec<MeetEntry>) -> Self {
+        Self { data, entries }
+    }
 }

@@ -2,11 +2,10 @@ use anyhow::Result;
 use serde::de::{Error, Visitor};
 use serde::{Deserialize, Deserializer};
 use std::cmp::Ordering;
-use std::fmt::Display;
+use std::fmt::{self, Display};
 use std::str::FromStr;
-use std::{fmt, num};
 
-#[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Weight(pub f32);
 
 impl From<i64> for Weight {
@@ -42,7 +41,7 @@ impl From<Weight> for f64 {
 }
 
 impl FromStr for Weight {
-    type Err = num::ParseFloatError;
+    type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.is_empty() {
@@ -69,6 +68,12 @@ impl Ord for Weight {
     }
 }
 
+impl PartialOrd for Weight {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
 impl Display for Weight {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
@@ -82,6 +87,7 @@ impl<'de> Deserialize<'de> for Weight {
 }
 
 impl Weight {
+    #[must_use]
     pub fn is_zero(self) -> bool {
         self == Self::from(0.)
     }
@@ -115,21 +121,127 @@ impl Visitor<'_> for WeightVisitor {
 
 #[cfg(test)]
 mod tests {
+    use anyhow::Result;
     use pretty_assertions::Comparison;
     use rstest::rstest;
     use std::cmp::Ordering;
+    use std::str::FromStr;
 
     use super::Weight;
 
     #[rstest]
-    #[case(Weight::from(1.), Weight::from(2.), Ordering::Less)]
-    #[case(Weight::from(2.), Weight::from(1.), Ordering::Greater)]
-    #[case(Weight::from(1.), Weight::from(1.), Ordering::Equal)]
+    #[case("1", Weight(1.))]
+    #[case("1.5", Weight(1.5))]
+    #[case("-1", Weight(-1.))]
+    #[case("-1.5", Weight(-1.5))]
+    fn test_deserialize(
+        #[case] input: &str,
+        #[case] expected: Weight,
+    ) {
+        let result: Result<Weight> = input.parse::<Weight>();
+
+        assert!(result.is_ok());
+        assert_eq!(expected, result.unwrap());
+    }
+
+    #[rstest]
+    #[case("Test")]
+    fn test_deserialize_fail(
+        #[case] input: &str
+    ) {
+        let result: Result<Weight> = input.parse::<Weight>();
+
+        assert!(result.is_err(), "{:?}", result);
+    }
+
+    #[rstest]
+    #[case(Weight(1.), "1".to_string())]
+    #[case(Weight(1.6), "1.6".to_string())]
+    fn test_display(
+        #[case] input: Weight,
+        #[case] expected: String
+    ) {
+        let result: String = format!("{}", input);
+
+        assert_eq!(expected, result);
+    }
+
+    #[rstest]
+    #[case(Weight(1.), Weight(2.), Ordering::Less)]
+    #[case(Weight(2.), Weight(1.), Ordering::Greater)]
+    #[case(Weight(1.), Weight(1.), Ordering::Equal)]
     fn test_ord(
         #[case] weight1: Weight,
         #[case] weight2: Weight,
         #[case] expected: Ordering,
     ) {
-        assert_eq!(weight1.cmp(&weight2), expected, "{}", Comparison::new(&weight1, &weight2));
+        assert_eq!(expected, weight1.cmp(&weight2), "{}", Comparison::new(&weight1, &weight2));
+    }
+
+    #[rstest]
+    #[case(1, Weight(1.))]
+    fn test_from_i64(
+        #[case] input: i64,
+        #[case] expected: Weight,
+    ) {
+        let result: Weight = Weight::from(input);
+
+        assert_eq!(expected, result);
+    }
+
+    #[rstest]
+    #[case(1, Weight(1.))]
+    fn test_from_u64(
+        #[case] input: u64,
+        #[case] expected: Weight,
+    ) {
+        let result: Weight = Weight::from(input);
+
+        assert_eq!(expected, result);
+    }
+
+    #[rstest]
+    #[case(1., Weight(1.))]
+    #[case(f64::INFINITY, Weight(0.))]
+    fn test_from_f64(
+        #[case] input: f64,
+        #[case] expected: Weight,
+    ) {
+        let result: Weight = Weight::from(input);
+
+        assert_eq!(expected, result);
+    }
+
+    #[rstest]
+    #[case(Weight(1.), 1.)]
+    fn test_to_f64(
+        #[case] input: Weight,
+        #[case] expected: f64,
+    ) {
+        let result: f64 = f64::from(input);
+
+        assert_eq!(expected, result);
+    }
+
+    #[rstest]
+    #[case("", Weight(0.))]
+    #[case("1", Weight(1.))]
+    fn test_from_str(
+        #[case] input: &str,
+        #[case] expected: Weight,
+    ) {
+        let result: Result<Weight> = Weight::from_str(input);
+
+        assert!(result.is_ok());
+        assert_eq!(expected, result.unwrap());
+    }
+
+    #[test]
+    fn test_is_zero() {
+        let input: Weight = Weight(0.);
+
+        let result: bool = input.is_zero();
+
+        assert!(result);
     }
 }

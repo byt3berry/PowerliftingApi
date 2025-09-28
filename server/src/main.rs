@@ -1,9 +1,9 @@
 use actix_web::dev::Server;
 use anyhow::Result;
 use clap::Parser;
-use db::{LifterDatabase, MeetDatabase};
-use log::info;
 use cli::Args;
+use db::Database;
+use log::info;
 
 use crate::server::{start_server, ServerData};
 
@@ -39,10 +39,9 @@ async fn main() -> Result<()> {
     let args: Args = Args::parse();
     args.validate()?;
 
-    let meet_database: MeetDatabase = MeetDatabase::from_folder(&args.path)?;
-    let lifter_database: LifterDatabase = LifterDatabase::from(&meet_database);
+    let database: Database = Database::from_directory(&args.path)?;
     let data: ServerData = ServerData {
-        lifter_database,
+        database,
     };
     let server: Server = start_server(args.ip, args.port, data)?;
 
