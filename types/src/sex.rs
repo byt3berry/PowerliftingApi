@@ -1,7 +1,9 @@
 use serde::Deserialize;
 use strum_macros::{Display, EnumIter};
 
-#[derive(Clone, Copy, Debug, Display, Deserialize, Eq, EnumIter)]
+use crate::{Matches, MatchesQuery, Query};
+
+#[derive(Clone, Copy, Debug, Display, Deserialize, Eq, EnumIter, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Sex {
     #[strum(to_string = "Any")]
@@ -19,8 +21,8 @@ pub enum Sex {
     F,
 }
 
-impl PartialEq for Sex {
-    fn eq(&self, other: &Self) -> bool {
+impl Matches for Sex {
+    fn matches(&self, other: &Self) -> bool {
         match (self, other) {
             (Self::Any, _) => true,
             (_, Self::Any) => true,
@@ -28,6 +30,12 @@ impl PartialEq for Sex {
             (Self::M, Self::M) => true,
             _ => false,
         }
+    }
+}
+
+impl MatchesQuery for Sex {
+    fn matches_query(&self, query: &Query) -> bool {
+        self.matches(&query.sex_choice)
     }
 }
 

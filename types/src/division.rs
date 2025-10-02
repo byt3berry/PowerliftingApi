@@ -1,7 +1,9 @@
 use serde::Deserialize;
 use strum_macros::{Display, EnumIter};
 
-#[derive(Clone, Copy, Debug, Display, Deserialize, Eq, EnumIter)]
+use crate::{Matches, MatchesQuery, Query};
+
+#[derive(Clone, Copy, Debug, Display, Deserialize, Eq, EnumIter, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Division {
     #[strum(to_string = "Any")]
@@ -62,8 +64,8 @@ pub enum Division {
     Masters4,
 }
 
-impl PartialEq for Division {
-    fn eq(&self, other: &Self) -> bool {
+impl Matches for Division {
+    fn matches(&self, other: &Self) -> bool {
         match (self, other) {
             (Self::Any, _) => true,
             (Self::Open, Self::Open) => true,
@@ -80,6 +82,12 @@ impl PartialEq for Division {
             (Self::Seniors, Self::Seniors) => true,
             _ => false,
         }
+    }
+}
+
+impl MatchesQuery for Division {
+    fn matches_query(&self, other: &Query) -> bool {
+        self.matches(&other.division_choice)
     }
 }
 

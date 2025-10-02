@@ -6,12 +6,13 @@ use itertools::Itertools;
 use std::fs::File;
 use std::ops::Deref;
 use std::path::{Path, PathBuf};
+use types::{Federation, Query};
 use walkdir::WalkDir;
 
+use crate::ExportRow;
 use crate::data::meet::Meet;
 use crate::data::meet_data::MeetData;
 use crate::data::meet_entry::MeetEntry;
-use crate::{ExportRow, Query};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct MeetDatabase(Vec<Meet>);
@@ -48,7 +49,7 @@ impl MeetDatabase {
         Ok(data)
     }
 
-    fn from_entries_csv(path: &PathBuf) -> Result<Vec<MeetEntry>> {
+    fn from_entries_csv(path: &PathBuf, meet_data: Option<&MeetData>) -> Result<Vec<MeetEntry>> {
         if !path.exists() {
             bail!("path \"{}\" should exist", path.display());
         }
@@ -61,13 +62,19 @@ impl MeetDatabase {
             bail!("extension of \"{}\" should be \"{}\"", path.display(), CSV_EXTENSION);
         }
 
+        let federation: Federation = match meet_data {
+            Some(data) => data.federation,
+            None => Federation::OTHER,
+        };
+
         let mut reader: Reader<File> = ReaderBuilder::new()
             .quoting(false)
             .from_path(path)
             .expect("verifications before should be enough");
         let mut entries: Vec<MeetEntry> = Vec::with_capacity(50_000);
         for entry in reader.deserialize() {
-            let entry: MeetEntry = entry?;
+            let mut entry: MeetEntry = entry?;
+            entry.with_federation(federation);
             entries.push(entry);
         }
 
@@ -76,6 +83,7 @@ impl MeetDatabase {
         }
 
         entries.shrink_to_fit();
+
         Ok(entries)
     }
 
@@ -103,21 +111,18 @@ impl MeetDatabase {
                 let entries_path: PathBuf = path.join(&entries_filename);
                 let data_path: PathBuf = path.join(&data_filename);
 
-                let result_entries: Result<Vec<MeetEntry>> = Self::from_entries_csv(&entries_path);
-                let result_data: Result<MeetData> = Self::from_data_csv(&data_path);
-
-                let entries = match result_entries {
-                    Ok(entries) => entries,
+                let data = match Self::from_data_csv(&data_path) {
+                    Ok(data) => data,
                     Err(e) => {
-                        #[cfg(not(debug_assertions))] warn!("file {} can't be used: {:?}", entries_path.display(), e);
+                        #[cfg(not(debug_assertions))] warn!("file {} can't be used: {:?}", data_path.display(), e);
                         bail!(e);
                     }
                 };
 
-                let data = match result_data {
-                    Ok(data) => data,
+                let entries = match Self::from_entries_csv(&entries_path, Some(&data)) {
+                    Ok(entries) => entries,
                     Err(e) => {
-                        #[cfg(not(debug_assertions))] warn!("file {} can't be used: {:?}", data_path.display(), e);
+                        #[cfg(not(debug_assertions))] warn!("file {} can't be used: {:?}", entries_path.display(), e);
                         bail!(e);
                     }
                 };
@@ -165,11 +170,11 @@ mod tests {
     #[case("test1/entries.csv")]
     #[case("test2/entries.csv")]
     fn test_from_entries_csv_no_error(
-        #[case] file: &str
+        #[case] entries: &str
     ) {
-        let test_file: PathBuf = Path::new(TEST_PATH).join(file);
+        let test_file: PathBuf = Path::new(TEST_PATH).join(entries);
 
-        let result: Result<Vec<MeetEntry>> = MeetDatabase::from_entries_csv(&test_file);
+        let result: Result<Vec<MeetEntry>> = MeetDatabase::from_entries_csv(&test_file, None);
 
         assert!(result.is_ok(), "{}", result.unwrap_err());
     }
@@ -184,7 +189,7 @@ mod tests {
     ) {
         let test_file: PathBuf = Path::new(TEST_PATH).join(file);
 
-        let result: Result<Vec<MeetEntry>> = MeetDatabase::from_entries_csv(&test_file);
+        let result: Result<Vec<MeetEntry>> = MeetDatabase::from_entries_csv(&test_file, None);
 
         assert!(result.is_err());
     }
@@ -213,10 +218,11 @@ mod tests {
                 deadlift3: Some(Weight(9.)),
                 best3deadlift: Some(Weight(9.)),
                 total: Weight(18.),
+                federation: Federation::OTHER,
             },
         ];
 
-        let result: Result<Vec<MeetEntry>> = MeetDatabase::from_entries_csv(&test_file);
+        let result: Result<Vec<MeetEntry>> = MeetDatabase::from_entries_csv(&test_file, None);
 
         assert!(result.is_ok());
         assert_eq!(expected, result.unwrap());
@@ -246,6 +252,7 @@ mod tests {
                 deadlift3: Some(Weight(9.)),
                 best3deadlift: Some(Weight(9.)),
                 total: Weight(18.),
+                federation: Federation::OTHER,
             },
             MeetEntry {
                 name: Username::from_str("Powerlifter 2").unwrap(),
@@ -267,10 +274,11 @@ mod tests {
                 deadlift3: Some(Weight(18.)),
                 best3deadlift: Some(Weight(18.)),
                 total: Weight(45.),
+                federation: Federation::OTHER,
             },
         ];
 
-        let result: Result<Vec<MeetEntry>> = MeetDatabase::from_entries_csv(&test_file);
+        let result: Result<Vec<MeetEntry>> = MeetDatabase::from_entries_csv(&test_file, None);
 
         assert!(result.is_ok());
         assert_eq!(expected, result.unwrap());
@@ -396,10 +404,11 @@ mod tests {
                         deadlift3: Some(Weight(9.)),
                         best3deadlift: Some(Weight(9.)),
                         total: Weight(18.),
-                    },
-                    ],
-            },
-            ]);
+                        federation: Federation::FFForce,
+                    }
+                ],
+            }
+        ]);
 
         let result: Result<MeetDatabase> = MeetDatabase::from_directory(&test_directory);
 
@@ -440,6 +449,7 @@ mod tests {
                         deadlift3: Some(Weight(9.)),
                         best3deadlift: Some(Weight(9.)),
                         total: Weight(18.),
+                        federation: Federation::IPF,
                     },
                     MeetEntry {
                         name: Username::from_str("Powerlifter 2").unwrap(),
@@ -461,8 +471,9 @@ mod tests {
                         deadlift3: Some(Weight(18.)),
                         best3deadlift: Some(Weight(18.)),
                         total: Weight(45.),
-                    },
-                    ],
+                        federation: Federation::IPF,
+                    }
+                ],
             }
         ]);
 
@@ -506,8 +517,9 @@ mod tests {
                         deadlift3: Some(Weight(9.)),
                         best3deadlift: Some(Weight(9.)),
                         total: Weight(18.),
-                    },
-                    ],
+                        federation: Federation::FFForce,
+                    }
+                ],
             },
             Meet {
                 data: MeetData {
@@ -538,6 +550,7 @@ mod tests {
                         deadlift3: Some(Weight(9.)),
                         best3deadlift: Some(Weight(9.)),
                         total: Weight(18.),
+                        federation: Federation::IPF,
                     },
                     MeetEntry {
                         name: Username::from_str("Powerlifter 2").unwrap(),
@@ -559,8 +572,9 @@ mod tests {
                         deadlift3: Some(Weight(18.)),
                         best3deadlift: Some(Weight(18.)),
                         total: Weight(45.),
-                    },
-                    ],
+                        federation: Federation::IPF,
+                    }
+                ],
             }
         ]);
 

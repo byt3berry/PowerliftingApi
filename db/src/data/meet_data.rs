@@ -1,6 +1,8 @@
 use serde::Deserialize;
 use types::Country;
 use types::Federation;
+use types::MatchesQuery;
+use types::Query;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
 pub struct MeetData {
@@ -23,4 +25,18 @@ pub struct MeetData {
     #[serde(rename(deserialize = "MeetName"))]
     #[serde(default)]
     pub name: String,
+}
+
+impl MatchesQuery for MeetData {
+    fn matches_query(&self, query: &Query) -> bool {
+        if self.federation.matches_query(query) {
+            return false;
+        }
+
+        if self.country.matches_query(query) {
+            return false;
+        }
+
+        return true;
+    }
 }

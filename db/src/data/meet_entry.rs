@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use types::{Division, Dots, Equipment, Sex, Username, Weight, WeightClass};
+use types::{Division, Dots, Equipment, Federation, Matches, MatchesQuery, Query, Sex, Username, Weight, WeightClass};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
 pub struct MeetEntry {
@@ -59,10 +59,30 @@ pub struct MeetEntry {
 
     #[serde(rename(deserialize = "TotalKg"))]
     pub total: Weight,
+
+    #[serde(skip)]
+    pub federation: Federation,
 }
 
 impl MeetEntry {
-    pub fn dots(&self) ->Dots {
+    pub fn with_federation(&mut self, federation: Federation) -> &mut Self {
+        self.federation = federation;
+        self
+    }
+
+    pub fn dots(&self) -> Dots {
         Dots::new(self.sex, self.bodyweight, self.total)
+    }
+}
+
+impl MatchesQuery for MeetEntry {
+    fn matches_query(&self, query: &Query) -> bool {
+        if !self.federation.matches(&query.federation_choice) { return false; }
+        if !self.equipment.matches(&query.equipment_choice) { return false; }
+        if !self.sex.matches(&query.sex_choice) { return false; }
+        if !self.division.matches(&query.division_choice) { return false; }
+        if !self.name.matches_str(&query.powerlifters) { return false; }
+
+        true
     }
 }

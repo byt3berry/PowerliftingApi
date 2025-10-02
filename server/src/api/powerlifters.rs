@@ -1,8 +1,9 @@
 use actix_web::web::{Data, Form};
 use actix_web::{post, HttpResponse, Responder};
-use db::{ExportRow, Query};
+use db::ExportRow;
 use log::debug;
 use maud::{html, Markup};
+use types::Query;
 
 use crate::server::ServerData;
 use crate::POWERLIFTER_TABLE_HEADERS;

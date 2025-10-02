@@ -4,6 +4,8 @@ use serde::{Deserialize, Deserializer};
 use std::str::FromStr;
 use std::fmt::{self, Display};
 
+use crate::{Matches, MatchesQuery, Query};
+
 #[derive(Clone, Debug, Ord, PartialOrd)]
 pub struct Username {
     pub name: String,
@@ -16,7 +18,7 @@ impl Username {
             name: String::new(),
             parts: Vec::new(),
         }
-    }
+}
 
     #[must_use]
     pub fn new(name: &str, parts: Vec<String>) -> Self {
@@ -24,6 +26,40 @@ impl Username {
             name: name.to_string(),
             parts,
         }
+    }
+
+    pub fn matches_str(&self, input: &str) -> bool {
+        input
+            .lines()
+            .map(Username::from_str)
+            .filter_map(Result::ok)
+            .any(|username| self.matches(&username))
+    }
+}
+
+impl Matches for Username {
+    fn matches(&self, other: &Self) -> bool {
+        if self.parts.len() < other.parts.len() {
+            return false;
+        }
+
+        for part in &other.parts {
+            if !self.parts.contains(part) {
+                return false;
+            }
+        }
+
+        true
+    }
+}
+
+impl MatchesQuery for Username {
+    fn matches_query(&self, query: &Query) -> bool {
+        query.powerlifters
+            .lines()
+            .map(Username::from_str)
+            .filter_map(Result::ok)
+            .any(|query| self.matches(&query))
     }
 }
 
@@ -47,17 +83,7 @@ impl PartialEq for Username {
     /// `self` is the entry in the opl-data csv files
     /// `other` is the powerlifter name requested
     fn eq(&self, other: &Self) -> bool {
-        if self.parts.len() < other.parts.len() {
-            return false;
-        }
-
-        for part in &other.parts {
-            if !self.parts.contains(part) {
-                return false;
-            }
-        }
-
-        true
+        self.parts.eq(&other.parts)
     }
 }
 
@@ -90,8 +116,10 @@ impl<'de> Deserialize<'de> for Username {
 #[cfg(test)]
 mod tests {
     use anyhow::Result;
-    use pretty_assertions::{assert_eq, assert_ne};
+    use pretty_assertions::{assert_eq, Comparison};
     use rstest::rstest;
+
+    use crate::Matches;
 
     use super::Username;
 
@@ -123,7 +151,9 @@ mod tests {
         #[case] first: Username,
         #[case] second: Username,
     ) {
-        assert_eq!(first, second);
+        let result: bool = first.matches(&second);
+
+        assert!(result, "{}", Comparison::new(&first, &second));
     }
 
     #[rstest]
@@ -133,9 +163,9 @@ mod tests {
         #[case] first: Username,
         #[case] second: Username,
     ) {
-        println!("{}", first);
-        println!("{}", second);
-        assert_ne!(first, second);
+        let result: bool = first.matches(&second);
+
+        assert!(!result, "{}", Comparison::new(&first, &second));
     }
 
     #[test]

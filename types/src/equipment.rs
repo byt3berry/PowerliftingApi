@@ -1,7 +1,9 @@
 use serde::Deserialize;
 use strum_macros::{Display, EnumIter};
 
-#[derive(Clone, Copy, Debug, Deserialize, Display, EnumIter)]
+use crate::{Matches, MatchesQuery, Query};
+
+#[derive(Clone, Copy, Debug, Deserialize, Display, EnumIter, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Equipment {
     #[strum(to_string = "Any")]
@@ -42,22 +44,15 @@ pub enum Equipment {
     Unlimited,
 }
 
-impl Eq for Equipment { }
+impl Matches for Equipment {
+    fn matches(&self, other: &Self) -> bool {
+        Self::Any.eq(&other) || self.eq(other)
+    }
+}
 
-impl PartialEq for Equipment {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (Self::Any, _) => true,
-            (Self::Raw, Self::Raw) => true,
-            (Self::Wraps, Self::Wraps) => true,
-            (Self::Single, Self::Single) => true,
-            (Self::Multi, Self::Multi) => true,
-            (Self::Bare, Self::Bare) => true,
-            (Self::Sleeves, Self::Sleeves) => true,
-            (Self::Straps, Self::Straps) => true,
-            (Self::Unlimited, Self::Unlimited) => true,
-            _ => false,
-        }
+impl MatchesQuery for Equipment {
+    fn matches_query(&self, query: &Query) -> bool {
+        self.matches(&query.equipment_choice)
     }
 }
 
@@ -69,7 +64,6 @@ mod tests {
     use super::Equipment;
 
     #[rstest]
-
     #[case("Any", Equipment::Any)]
     #[case("Raw", Equipment::Raw)]
     #[case("Wraps", Equipment::Wraps)]

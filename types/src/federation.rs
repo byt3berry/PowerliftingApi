@@ -1,6 +1,8 @@
 use serde::Deserialize;
 use strum_macros::{Display, EnumIter};
 
+use crate::{Matches, MatchesQuery, Query};
+
 #[derive(Copy, Clone, Debug, Deserialize, Default, Display, Eq, PartialEq, EnumIter)]
 #[serde(rename_all = "lowercase")]
 pub enum Federation {
@@ -24,6 +26,18 @@ pub enum Federation {
     #[serde(other)]
     #[default]
     OTHER,
+}
+
+impl Matches for Federation {
+    fn matches(&self, other: &Self) -> bool {
+        self.eq(&other)
+    }
+}
+
+impl MatchesQuery for Federation {
+    fn matches_query(&self, query: &Query) -> bool {
+        self.matches(&query.federation_choice)
+    }
 }
 
 #[cfg(test)]

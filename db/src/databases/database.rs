@@ -1,14 +1,14 @@
 use anyhow::Result;
 use itertools::Itertools;
-use types::Username;
+use types::{Query, Username};
 use std::path::PathBuf;
 use std::str::FromStr;
 
+use crate::ExportRow;
 use crate::data::meet_entry::MeetEntry;
 use crate::databases::lifter_database::LifterDatabase;
 use crate::databases::meet_database::MeetDatabase;
 use crate::entries::search_result::SearchResult;
-use crate::{ExportRow, Query};
 
 #[derive(Clone, Debug)]
 pub struct Database {
@@ -79,10 +79,9 @@ mod tests {
     use pretty_assertions::assert_eq;
     use std::path::{Path, PathBuf};
     use std::str::FromStr;
-    use types::{Division, Equipment, Sex, Username, Weight, WeightClass};
+    use types::{Division, Equipment, Federation, Query, Sex, Username, Weight, WeightClass};
                     
     use crate::data::meet_entry::MeetEntry;
-    use crate::data::query::Query;
     use crate::entries::search_result::SearchResult;
 
     use super::Database;
@@ -97,6 +96,7 @@ mod tests {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::M,
             division_choice: Division::Masters,
+            federation_choice: Federation::FFForce,
             powerlifters: "Powerlifter".to_string(),
         };
         let expected: SearchResult = SearchResult {
@@ -119,6 +119,7 @@ mod tests {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::M,
             division_choice: Division::Masters,
+            federation_choice: Federation::FFForce,
             powerlifters: "FirstName LastName".to_string(),
         };
         let expected_meet: MeetEntry = MeetEntry {
@@ -141,6 +142,7 @@ mod tests {
             deadlift3: Weight(9.).into(),
             best3deadlift: Weight(9.).into(),
             total: Weight(18.),
+            federation: Federation::FFForce,
         };
         let expected: Option<MeetEntry> = Some(expected_meet);
 
@@ -158,6 +160,7 @@ mod tests {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::M,
             division_choice: Division::Masters,
+            federation_choice: Federation::FFForce,
             powerlifters: "LastName FirstName".to_string(),
         };
         let expected_meet: MeetEntry = MeetEntry {
@@ -180,6 +183,7 @@ mod tests {
             deadlift3: Weight(9.).into(),
             best3deadlift: Weight(9.).into(),
             total: Weight(18.),
+            federation: Federation::FFForce,
         };
         let expected: Option<MeetEntry> = Some(expected_meet);
 
@@ -197,6 +201,7 @@ mod tests {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::M,
             division_choice: Division::Juniors,
+            federation_choice: Federation::FFForce,
             powerlifters: "Powerlifter 2".to_string(),
         };
         let expected_meet: MeetEntry = MeetEntry {
@@ -219,6 +224,7 @@ mod tests {
             deadlift3: Weight(36.).into(),
             best3deadlift: Weight(36.).into(),
             total: Weight(99.),
+            federation: Federation::FFForce,
         };
         let expected: Option<MeetEntry> = Some(expected_meet);
 
@@ -236,6 +242,7 @@ mod tests {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::Any,
             division_choice: Division::Juniors,
+            federation_choice: Federation::FFForce,
             powerlifters: "Powerlifter 2".to_string(),
         };
         let expected_meet: MeetEntry = MeetEntry {
@@ -258,6 +265,7 @@ mod tests {
             deadlift3: Weight(36.).into(),
             best3deadlift: Weight(36.).into(),
             total: Weight(99.),
+            federation: Federation::FFForce,
         };
         let expected: Option<MeetEntry> = Some(expected_meet);
 
@@ -275,6 +283,7 @@ mod tests {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::Any,
             division_choice: Division::Juniors,
+            federation_choice: Federation::FFForce,
             powerlifters: "Powerlifter 1".to_string(),
         };
         let expected: Option<usize> = Some(3);
@@ -293,6 +302,7 @@ mod tests {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::Any,
             division_choice: Division::Juniors,
+            federation_choice: Federation::FFForce,
             powerlifters: "Powerlifter 2".to_string(),
         };
         let expected: Option<usize> = Some(2);
@@ -311,6 +321,7 @@ mod tests {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::Any,
             division_choice: Division::Juniors,
+            federation_choice: Federation::FFForce,
             powerlifters: "Powerlifter 3".to_string(),
         };
         let expected: Option<usize> = Some(1);
@@ -329,6 +340,7 @@ mod tests {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::Any,
             division_choice: Division::Juniors,
+            federation_choice: Federation::FFForce,
             powerlifters: "Powerlifter 1".to_string(),
         };
         let expected: Option<usize> = Some(2);
@@ -347,6 +359,7 @@ mod tests {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::Any,
             division_choice: Division::Masters,
+            federation_choice: Federation::FFForce,
             powerlifters: "Powerlifter 2".to_string(),
         };
         let expected: Option<usize> = Some(1);
@@ -365,6 +378,7 @@ mod tests {
             equipment_choice: Equipment::Raw,
             sex_choice: Sex::Any,
             division_choice: Division::Juniors,
+            federation_choice: Federation::FFForce,
             powerlifters: "Powerlifter 3".to_string(),
         };
         let expected: Option<usize> = Some(1);

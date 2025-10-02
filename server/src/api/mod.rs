@@ -1,6 +1,6 @@
 use maud::{html, Markup};
 use strum::IntoEnumIterator;
-use types::{Division, Equipment, Sex};
+use types::{Division, Equipment, Federation, Sex};
 
 pub mod powerlifters;
 pub mod root;
@@ -117,6 +117,12 @@ fn input_div() -> Markup {
         div {
             form hx-post="/powerlifters" hx-target="#result" {
                 div {
+                    select id="federation_choice" name="federation_choice" {
+                        @for value in Federation::iter() {
+                            option value=(value) { (value) }
+                        }
+                    }
+
                     select id="equipment_choice" name="equipment_choice" {
                         @for value in Equipment::iter() {
                             option value=(value) { (value) }

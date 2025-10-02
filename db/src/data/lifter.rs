@@ -1,7 +1,6 @@
-use types::Username;
+use types::{Query, Username};
 
 use crate::data::meet_entry::MeetEntry;
-use crate::data::query::Query;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Lifter {
@@ -31,6 +30,7 @@ impl Lifter {
 mod tests {
     use anyhow::Result;
     use pretty_assertions::assert_eq;
+    use types::Federation;
     use std::str::FromStr;
     use types::{Division, Equipment, Sex, Username, Weight, WeightClass};
                         
@@ -60,9 +60,10 @@ mod tests {
                 deadlift2: Some(Weight(8.)),
                 deadlift3: Some(Weight(9.)),
                 best3deadlift: Some(Weight(9.)),
-                total: Weight(18.)
-            },
-            ];
+                total: Weight(18.),
+                federation: Federation::FFForce,
+            }
+        ];
         let expected: Lifter = Lifter {
             name: Username::from_str("Powerlifter").unwrap(),
             meets: vec![
@@ -85,9 +86,10 @@ mod tests {
                     deadlift2: Some(Weight(8.)),
                     deadlift3: Some(Weight(9.)),
                     best3deadlift: Some(Weight(9.)),
-                    total: Weight(18.)
-                },
-                ],
+                    total: Weight(18.),
+                    federation: Federation::FFForce,
+                }
+            ],
         };
 
         let lifter: Lifter = Lifter::new(username, data);
@@ -119,7 +121,8 @@ mod tests {
                 deadlift2: Some(Weight(8.)),
                 deadlift3: Some(Weight(9.)),
                 best3deadlift: Some(Weight(9.)),
-                total: Weight(18.)
+                total: Weight(18.),
+                federation: Federation::FFForce,
             },
             MeetEntry {
                 name: Username::from_str("Powerlifter").unwrap(),
@@ -140,9 +143,10 @@ mod tests {
                 deadlift2: Some(Weight(9.)),
                 deadlift3: Some(Weight(10.)),
                 best3deadlift: Some(Weight(10.)),
-                total: Weight(21.)
-            },
-            ];
+                total: Weight(21.),
+                federation: Federation::FFForce,
+            }
+        ];
         let expected: Lifter = Lifter {
             name: Username::from_str("Powerlifter").unwrap(),
             meets: vec![
@@ -165,7 +169,8 @@ mod tests {
                     deadlift2: Some(Weight(8.)),
                     deadlift3: Some(Weight(9.)),
                     best3deadlift: Some(Weight(9.)),
-                    total: Weight(18.)
+                    total: Weight(18.),
+                    federation: Federation::FFForce,
                 },
                 MeetEntry {
                     name: Username::from_str("Powerlifter").unwrap(),
@@ -186,9 +191,10 @@ mod tests {
                     deadlift2: Some(Weight(9.)),
                     deadlift3: Some(Weight(10.)),
                     best3deadlift: Some(Weight(10.)),
-                    total: Weight(21.)
-                },
-                ],
+                    total: Weight(21.),
+                    federation: Federation::FFForce,
+                }
+            ],
         };
 
         let lifter: Lifter = Lifter::new(username, data);

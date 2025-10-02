@@ -1,6 +1,8 @@
 use serde::Deserialize;
 use strum_macros::EnumIter;
 
+use crate::{Matches, MatchesQuery, Query};
+
 #[derive(Copy, Clone, Debug, Default, Deserialize, EnumIter, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Country {
@@ -12,6 +14,18 @@ pub enum Country {
     #[serde(other)]
     #[default]
     OTHER,
+}
+
+impl Matches for Country {
+    fn matches(&self, _: &Self) -> bool {
+        true
+    }
+}
+
+impl MatchesQuery for Country {
+    fn matches_query(&self, _: &Query) -> bool {
+        true
+    }
 }
 
 #[cfg(test)]
