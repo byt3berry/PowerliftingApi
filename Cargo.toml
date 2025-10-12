@@ -3,7 +3,7 @@ resolver = "3"
 members = [
     "server",
     "db",
-    "types",
+    "types", "repository",
 ]
 
 [profile.profiling]

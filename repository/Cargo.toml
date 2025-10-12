@@ -1,0 +1,11 @@
+[package]
+name = "repository"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.98"
+bigdecimal = "0.4.8"
+diesel = { version = "2.3.2", features = ["numeric", "postgres"] }
+dotenvy = "0.15.7"
+types = { path="../types/" }

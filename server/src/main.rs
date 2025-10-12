@@ -4,6 +4,8 @@ use clap::Parser;
 use cli::Args;
 use db::Database;
 use log::info;
+use repository::write_only_repository::WriteOnlyRepository;
+use types::MeetDto;
 
 use crate::server::{start_server, ServerData};
 
@@ -40,12 +42,31 @@ async fn main() -> Result<()> {
     args.validate()?;
 
     let database: Database = Database::from_directory(&args.path)?;
-    let data: ServerData = ServerData {
-        database,
-    };
-    let server: Server = start_server(args.ip, args.port, data)?;
 
-    server.await?;
+    let mut write_only_repository = WriteOnlyRepository::new()?;
+
+    write_only_repository.clean()?;
+
+    database.meets
+        .iter()
+        .for_each(|meet| {
+            let meet_dto: MeetDto = MeetDto { 
+                name: meet.data.name.clone(),
+                federation: meet.data.federation,
+                country: meet.data.country,
+                state: meet.data.state.clone(),
+                town: meet.data.town.clone(),
+            };
+
+            write_only_repository.create_meet_with_posts(meet_dto, Vec::new()).unwrap();
+        });
+
+    // let data: ServerData = ServerData {
+    //     database,
+    // };
+    // let server: Server = start_server(args.ip, args.port, data)?;
+
+    // server.await?;
 
     info!("Server exited cleanly");
     Ok(())

@@ -12,8 +12,8 @@ use crate::entries::search_result::SearchResult;
 
 #[derive(Clone, Debug)]
 pub struct Database {
-    meets: MeetDatabase,
-    lifters: LifterDatabase,
+    pub meets: MeetDatabase,
+    pub lifters: LifterDatabase,
 }
 
 impl Database {
