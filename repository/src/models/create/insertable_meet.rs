@@ -1,13 +1,9 @@
-use diesel::Insertable;
-use types::MeetDto;
+use types::Meet;
 
 use crate::models::types::country::Country;
 use crate::models::types::federation::Federation;
-use crate::schema;
 
-#[derive(Insertable)]
-#[diesel(table_name = schema::meets)]
-pub struct NewMeet {
+pub struct InsertableMeet {
     name: String,
     federation: Federation,
     country: Country,
@@ -15,8 +11,8 @@ pub struct NewMeet {
     town: String,
 }
 
-impl NewMeet {
-    pub fn from(meet: &MeetDto) -> Self {
+impl InsertableMeet {
+    pub fn from(meet: &Meet) -> Self {
         Self {
             name: meet.name.clone(),
             federation: meet.federation.into(),

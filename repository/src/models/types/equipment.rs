@@ -1,13 +1,6 @@
-use diesel::deserialize::{self, FromSql, FromSqlRow};
-use diesel::expression::AsExpression;
-use diesel::pg::{Pg, PgValue};
-use diesel::serialize::{self, IsNull, Output, ToSql};
-use std::io::Write;
+use crate::models::SeaEquipment;
 
-use crate::schema::sql_types;
-
-#[derive(Debug, AsExpression, FromSqlRow)]
-#[diesel(sql_type = sql_types::Equipment)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Equipment {
     Any,
     Raw,
@@ -18,41 +11,6 @@ pub enum Equipment {
     Sleeves,
     Bare,
     Unlimited
-}
-
-impl ToSql<sql_types::Equipment, Pg> for Equipment {
-    fn to_sql<'b>(&'b self, output: &mut Output<'b, '_, Pg>) -> serialize::Result {
-        match *self {
-            Self::Any => output.write_all(b"Any")?,
-            Self::Raw => output.write_all(b"Raw")?,
-            Self::Wraps => output.write_all(b"Wraps")?,
-            Self::Single => output.write_all(b"Single")?,
-            Self::Multi => output.write_all(b"Multi")?,
-            Self::Straps => output.write_all(b"Straps")?,
-            Self::Sleeves => output.write_all(b"Sleeves")?,
-            Self::Bare => output.write_all(b"Bare")?,
-            Self::Unlimited => output.write_all(b"Unlimited")?,
-        }
-
-        Ok(IsNull::No)
-    }
-}
-
-impl FromSql<sql_types::Equipment, Pg> for Equipment {
-    fn from_sql<'b>(bytes: PgValue) -> deserialize::Result<Self> {
-        match bytes.as_bytes() {
-            b"Any" => Ok(Self::Any),
-            b"Raw" => Ok(Self::Raw),
-            b"Wraps" => Ok(Self::Wraps),
-            b"Single" => Ok(Self::Single),
-            b"Multi" => Ok(Self::Multi),
-            b"Straps" => Ok(Self::Straps),
-            b"Sleeves" => Ok(Self::Sleeves),
-            b"Bare" => Ok(Self::Bare),
-            b"Unlimited" => Ok(Self::Unlimited),
-            _ => Err("Unrecognized enum variant".into()),
-        }
-    }
 }
 
 impl From<types::Equipment> for Equipment {
@@ -67,6 +25,38 @@ impl From<types::Equipment> for Equipment {
             types::Equipment::Sleeves => Self::Sleeves,
             types::Equipment::Bare => Self::Bare,
             types::Equipment::Unlimited => Self::Unlimited,
+        }
+    }
+}
+
+impl From<SeaEquipment> for Equipment {
+    fn from(value: SeaEquipment) -> Self {
+        match value {
+            SeaEquipment::Any => Self::Any,
+            SeaEquipment::Raw => Self::Raw,
+            SeaEquipment::Wraps => Self::Wraps,
+            SeaEquipment::Single => Self::Single,
+            SeaEquipment::Multi => Self::Multi,
+            SeaEquipment::Straps => Self::Straps,
+            SeaEquipment::Sleeves => Self::Sleeves,
+            SeaEquipment::Bare => Self::Bare,
+            SeaEquipment::Unlimited => Self::Unlimited,
+        }
+    }
+}
+
+impl Into<SeaEquipment> for Equipment {
+    fn into(self) -> SeaEquipment {
+        match self {
+            Self::Any => SeaEquipment::Any,
+            Self::Raw => SeaEquipment::Raw,
+            Self::Wraps => SeaEquipment::Wraps,
+            Self::Single => SeaEquipment::Single,
+            Self::Multi => SeaEquipment::Multi,
+            Self::Straps => SeaEquipment::Straps,
+            Self::Sleeves => SeaEquipment::Sleeves,
+            Self::Bare => SeaEquipment::Bare,
+            Self::Unlimited => SeaEquipment::Unlimited,
         }
     }
 }

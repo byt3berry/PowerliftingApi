@@ -1,60 +1,76 @@
-use anyhow::Result;
-use diesel::RunQueryDsl;
-use diesel::result::Error;
-use diesel::{Connection, PgConnection};
+use anyhow::{Result};
 use dotenvy::dotenv;
+use migration::{Migrator, MigratorTrait};
+use sea_orm::{ActiveModelTrait, ConnectOptions, Database, DatabaseConnection, DbErr, EntityTrait, TransactionError, TransactionTrait};
+use tracing::info;
 use std::env;
-use types::{EntryDto, MeetDto};
+use types;
 
-use crate::schema::entries;
-use crate::schema::meets;
+use crate::models::types::entry::Entry;
+use crate::models::types::meet::Meet;
+use crate::models::{SeaActiveEntry, SeaActiveMeet, SeaColumnEntry, SeaEntityEntry, SeaEntityMeet};
 
-use crate::models::create::new_entry::NewEntry;
-use crate::models::create::new_meet::NewMeet;
-use crate::models::read::meet::Meet;
+const DEFAULT_SCHEMA: &str = "public";
 
 pub struct WriteOnlyRepository {
-    connection: PgConnection,
+    connection: DatabaseConnection,
 }
 
 impl WriteOnlyRepository {
-    pub fn new() -> Result<Self> {
+    fn build_connection_options() -> Result<ConnectOptions> {
         dotenv()?;
         let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-        let connection: PgConnection = PgConnection::establish(&database_url)?;
+        let database_schema = env::var("DATABASE_SCHEMA").unwrap_or(DEFAULT_SCHEMA.to_string());
+        let mut connection: ConnectOptions = ConnectOptions::new(database_url);
+        connection.set_schema_search_path(database_schema)
+                  .sqlx_logging(false);
+
+        Ok(connection)
+    }
+
+    pub async fn new() -> Result<Self> {
+        let options: ConnectOptions = Self::build_connection_options()?;
+        let connection: DatabaseConnection = Database::connect(options).await?;
 
         Ok(Self {
             connection,
         })
     }
 
-    pub fn create_meet_with_posts(&mut self, meet: MeetDto, entries: Vec<EntryDto>) -> Result<(), Error> {
-        let new_meet: NewMeet = NewMeet::from(&meet);
-
-        self.connection.transaction(|connection| {
-            let meet: Meet = diesel::insert_into(meets::table)
-                .values(&new_meet)
-                .get_result(connection)?;
-
-            let new_entries: Vec<NewEntry> = entries
-                .iter()
-                .map(|entry| NewEntry::from(meet.id, entry))
-                .collect();
-
-            diesel::insert_into(entries::table)
-                .values(&new_entries)
-                .execute(connection)?;
-
-            Ok(())
-        })
+    pub async fn close(self) -> Result<(), DbErr> {
+        self.connection.close().await
     }
 
-    pub fn clean(&mut self) -> Result<(), Error> {
-        self.connection.transaction(|connection| {
-            diesel::delete(meets::table).execute(connection)?;
-            diesel::delete(entries::table).execute(connection)?;
+    pub async fn refresh_migrations(&self)-> Result<(), DbErr> {
+        Migrator::fresh(&self.connection).await?;
+        Ok(())
+    }
 
-            Ok(())
+    pub async fn insert_meet_with_posts(&mut self, meet: types::Meet, entries: Vec<types::Entry>) -> Result<(), TransactionError<DbErr>> {
+        info!("Inserting meet {}", meet.name);
+        let new_meet: SeaActiveMeet = Meet::from(meet).into();
+
+        self.connection.transaction(|connection| {
+            Box::pin(async move {
+                let inserted_id: i32 = SeaEntityMeet::insert(new_meet)
+                    .exec_with_returning_keys(connection)
+                    .await?
+                    .first()
+                    .expect("insertion should success")
+                    .clone();
+
+                for entry in entries {
+                    let mut new_entry: SeaActiveEntry = Entry::from(entry)
+                        .into();
+                    new_entry.set(SeaColumnEntry::MeetId, inserted_id.into());
+                    SeaEntityEntry::insert(new_entry)
+                        .exec(connection)
+                        .await?;
+                }
+
+                Ok(())
+            })
         })
+        .await
     }
 }

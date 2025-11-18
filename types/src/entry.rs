@@ -1,7 +1,7 @@
 use crate::{Division, Equipment, Sex, Username, Weight, WeightClass};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct EntryDto {
+pub struct Entry {
     pub name: Username,
     pub division: Division,
     pub equipment: Equipment,

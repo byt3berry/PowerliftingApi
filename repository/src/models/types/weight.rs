@@ -1,44 +1,49 @@
-use bigdecimal::{BigDecimal, FromPrimitive};
-use diesel::deserialize::{self, FromSql, FromSqlRow};
-use diesel::expression::AsExpression;
-use diesel::pg::{Pg, PgValue};
-use diesel::serialize::{self, Output, ToSql};
-use diesel::sql_types::Numeric;
+use rust_decimal::Decimal;
+use rust_decimal::prelude::{FromPrimitive, Zero};
 
-use crate::schema::sql_types;
+const SCALE: u32 = 4;
 
-#[derive(Clone, Debug, AsExpression, FromSqlRow)]
-#[diesel(sql_type = sql_types::Weight)]
-pub struct Weight(pub BigDecimal);
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Weight(pub Decimal);
 
-impl ToSql<sql_types::Weight, Pg> for Weight {
-    fn to_sql<'b>(&'b self, output: &mut Output<'b, '_, Pg>) -> serialize::Result {
-        <BigDecimal as ToSql<Numeric, Pg>>::to_sql(&self.0, output)
-    }
-}
-
-impl FromSql<sql_types::Weight, Pg> for Weight {
-    fn from_sql<'b>(bytes: PgValue) -> deserialize::Result<Self> {
-        let weight: BigDecimal = <BigDecimal as FromSql<Numeric, Pg>>::from_sql(bytes)?;
-
-        Ok(Self(weight))
+impl Weight {
+    pub fn zero() -> Self {
+        Self::from(Decimal::zero())
     }
 }
 
 impl From<types::Weight> for Weight {
     fn from(value: types::Weight) -> Self {
-        match BigDecimal::from_f32(value.0) {
-            Some(value) => Self(value),
-            None => panic!("invalid weight value {}", value.0),
-        }
+        Self::from(value.0)
     }
 }
 
 impl From<Option<types::Weight>> for Weight {
     fn from(value: Option<types::Weight>) -> Self {
         match value {
-            Some(value) => value.into(),
-            None => Self(BigDecimal::from(0)),
+            Some(value) => Self::from(value),
+            None => Self::zero(),
         }
+    }
+}
+
+impl From<f32> for Weight {
+    fn from(value: f32) -> Self {
+        match Decimal::from_f32(value) {
+            Some(value) => Self(value.trunc_with_scale(SCALE)),
+            None => panic!("invalid weight value {}", value),
+        }
+    }
+}
+
+impl From<Decimal> for Weight {
+    fn from(value: Decimal) -> Self {
+        Self(value)
+    }
+}
+
+impl Into<Decimal> for Weight {
+    fn into(self) -> Decimal {
+        self.0
     }
 }

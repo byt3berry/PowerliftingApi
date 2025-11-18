@@ -1,13 +1,5 @@
-use diesel::deserialize::{self, FromSql, FromSqlRow};
-use diesel::expression::AsExpression;
-use diesel::pg::{Pg, PgValue};
-use diesel::serialize::{self, IsNull, Output, ToSql};
-use std::io::Write;
+use crate::models::SeaFederation;
 
-use crate::schema::sql_types;
-
-#[derive(Debug, AsExpression, FromSqlRow)]
-#[diesel(sql_type = sql_types::Federation)]
 pub enum Federation {
     FFForce,
     EPF,
@@ -16,29 +8,26 @@ pub enum Federation {
     OTHER,
 }
 
-impl ToSql<sql_types::Federation, Pg> for Federation {
-    fn to_sql<'b>(&'b self, output: &mut Output<'b, '_, Pg>) -> serialize::Result {
-        match *self {
-            Self::FFForce => output.write_all(b"FFFORCE")?,
-            Self::EPF => output.write_all(b"EPF")?,
-            Self::IPF => output.write_all(b"IPF")?,
-            Self::FFHMFAC => output.write_all(b"FFHMFAC")?,
-            Self::OTHER => output.write_all(b"Other")?,
+impl From<SeaFederation> for Federation {
+    fn from(value: SeaFederation) -> Self {
+        match value {
+            SeaFederation::Ffforce => Self::FFForce,
+            SeaFederation::Epf => Self::EPF,
+            SeaFederation::Ipf => Self::IPF,
+            SeaFederation::Ffhmfac => Self::FFHMFAC,
+            SeaFederation::Other => Self::OTHER,
         }
-
-        Ok(IsNull::No)
     }
 }
 
-impl FromSql<sql_types::Federation, Pg> for Federation {
-    fn from_sql<'b>(bytes: PgValue) -> deserialize::Result<Self> {
-        match bytes.as_bytes() {
-            b"FFFORCE" => Ok(Self::FFForce),
-            b"EPF" => Ok(Self::EPF),
-            b"IPF" => Ok(Self::IPF),
-            b"FFHMFAC" => Ok(Self::FFHMFAC),
-            b"Other" => Ok(Self::OTHER),
-            _ => Err("Unrecognized enum variant".into()),
+impl Into<SeaFederation> for Federation {
+    fn into(self) -> SeaFederation {
+        match self {
+            Self::FFForce => SeaFederation::Ffforce,
+            Self::EPF => SeaFederation::Epf,
+            Self::IPF => SeaFederation::Ipf,
+            Self::FFHMFAC => SeaFederation::Ffhmfac,
+            Self::OTHER => SeaFederation::Other,
         }
     }
 }

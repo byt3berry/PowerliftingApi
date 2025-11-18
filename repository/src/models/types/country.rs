@@ -1,35 +1,24 @@
-use diesel::deserialize::{self, FromSql, FromSqlRow};
-use diesel::expression::AsExpression;
-use diesel::pg::{Pg, PgValue};
-use diesel::serialize::{self, IsNull, Output, ToSql};
-use std::io::Write;
+use crate::models::SeaCountry;
 
-use crate::schema::sql_types;
-
-#[derive(Debug, AsExpression, FromSqlRow)]
-#[diesel(sql_type = sql_types::Country)]
 pub enum Country {
     FRANCE,
     OTHER,
 }
 
-impl ToSql<sql_types::Country, Pg> for Country {
-    fn to_sql<'b>(&'b self, output: &mut Output<'b, '_, Pg>) -> serialize::Result {
-        match *self {
-            Self::FRANCE => output.write_all(b"FRANCE")?,
-            Self::OTHER => output.write_all(b"OTHER")?,
+impl From<SeaCountry> for Country {
+    fn from(value: SeaCountry) -> Self {
+        match value {
+            SeaCountry::France => Self::FRANCE,
+            SeaCountry::Other => Self::OTHER,
         }
-
-        Ok(IsNull::No)
     }
 }
 
-impl FromSql<sql_types::Country, Pg> for Country {
-    fn from_sql<'b>(bytes: PgValue) -> deserialize::Result<Self> {
-        match bytes.as_bytes() {
-            b"FRANCE" => Ok(Self::FRANCE),
-            b"OTHER" => Ok(Self::OTHER),
-            _ => Err("Unrecognized enum variant".into()),
+impl Into<SeaCountry> for Country {
+    fn into(self) -> SeaCountry {
+        match self {
+            Self::FRANCE => SeaCountry::France,
+            Self::OTHER => SeaCountry::Other,
         }
     }
 }

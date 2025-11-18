@@ -4,8 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-anyhow = "1.0.98"
-bigdecimal = "0.4.8"
-diesel = { version = "2.3.2", features = ["numeric", "postgres"] }
+anyhow = "1.0.100"
 dotenvy = "0.15.7"
+rust_decimal = "1.39.0"
+sea-orm = { version = "1.1.19", features = ["runtime-tokio-native-tls", "sqlx-postgres"] }
 types = { path="../types/" }
+migrations = { path="../migrations/" }
+tracing = "0.1.41"

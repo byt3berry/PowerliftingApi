@@ -1,6 +1,8 @@
 pub mod country;
 pub mod division;
 pub mod equipment;
+pub mod entry;
+pub mod meet;
 pub mod federation;
 pub mod sex;
 pub mod weight;

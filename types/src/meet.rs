@@ -1,6 +1,6 @@
 use crate::{Country, Federation};
 
-pub struct MeetDto {
+pub struct Meet {
     pub federation: Federation,
     pub country: Country,
     pub state: String,

@@ -2,6 +2,7 @@
 name = "server"
 version = "0.7.0"
 edition = "2024"
+default-run = "server"
 
 [dependencies]
 actix-files = "0.6.6"
@@ -13,6 +14,7 @@ db = { path="../db/" }
 env_logger = "0.11.8"
 log = "0.4.27"
 maud = { version = "*", features = ["actix-web"] }
+migrations = { path="../migrations/" }
 repository = { version = "0.1.0", path = "../repository" }
 strum = "0.27.2"
 types = { path="../types/" }
