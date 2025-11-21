@@ -1,4 +1,5 @@
 use sea_orm::ActiveValue::Set;
+use types::MeetDto;
 
 use crate::models::{SeaActiveMeet, SeaMeet};
 use crate::models::types::country::Country;
@@ -12,14 +13,14 @@ pub struct Meet {
     pub town: String,
 }
 
-impl From<types::Meet> for Meet {
-    fn from(meet: types::Meet) -> Self {
+impl From<MeetDto> for Meet {
+    fn from(meet: MeetDto) -> Self {
         Self {
-            name: meet.name.clone(),
+            name: meet.name,
             federation: meet.federation.into(),
             country: meet.country.into(),
-            state: meet.state.clone(),
-            town: meet.town.clone(),
+            state: meet.state,
+            town: meet.town,
         }
     }
 }
@@ -27,23 +28,23 @@ impl From<types::Meet> for Meet {
 impl From<SeaMeet> for Meet {
     fn from(value: SeaMeet) -> Self {
         Self {
+            name: value.name,
             federation: value.federation.into(),
             country: value.country.into(),
-            state: value.state.into(),
-            town: value.town.into(),
-            name: value.name.into(),
+            state: value.state,
+            town: value.town,
         }
     }
 }
 
-impl Into<SeaActiveMeet> for Meet {
-    fn into(self) -> SeaActiveMeet {
-        SeaActiveMeet {
-            federation: Set(self.federation.into()),
-            country: Set(self.country.into()),
-            state: Set(self.state.into()),
-            town: Set(self.town.into()),
-            name: Set(self.name.into()),
+impl From<Meet> for SeaActiveMeet {
+    fn from(value: Meet) -> Self {
+        Self {
+            name: Set(value.name),
+            federation: Set(value.federation.into()),
+            country: Set(value.country.into()),
+            state: Set(value.state),
+            town: Set(value.town),
             ..Default::default()
         }
     }

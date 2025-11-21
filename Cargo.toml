@@ -1,11 +1,12 @@
 [workspace]
 resolver = "3"
 members = [
-    "server",
-    "db",
-    "types",
-    "repository",
+    "backend",
+    "data_parsing",
+    "frontend",
     "migrations",
+    "repository",
+    "types",
 ]
 
 [profile.profiling]

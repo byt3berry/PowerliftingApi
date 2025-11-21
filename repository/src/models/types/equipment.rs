@@ -1,3 +1,5 @@
+use types::EquipmentDto;
+
 use crate::models::SeaEquipment;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -13,18 +15,18 @@ pub enum Equipment {
     Unlimited
 }
 
-impl From<types::Equipment> for Equipment {
-    fn from(value: types::Equipment) -> Self {
+impl From<EquipmentDto> for Equipment {
+    fn from(value: EquipmentDto) -> Self {
         match value {
-            types::Equipment::Any => Self::Any,
-            types::Equipment::Raw => Self::Raw,
-            types::Equipment::Wraps => Self::Wraps,
-            types::Equipment::Single => Self::Single,
-            types::Equipment::Multi => Self::Multi,
-            types::Equipment::Straps => Self::Straps,
-            types::Equipment::Sleeves => Self::Sleeves,
-            types::Equipment::Bare => Self::Bare,
-            types::Equipment::Unlimited => Self::Unlimited,
+            types::EquipmentDto::Any => Self::Any,
+            types::EquipmentDto::Raw => Self::Raw,
+            types::EquipmentDto::Wraps => Self::Wraps,
+            types::EquipmentDto::Single => Self::Single,
+            types::EquipmentDto::Multi => Self::Multi,
+            types::EquipmentDto::Straps => Self::Straps,
+            types::EquipmentDto::Sleeves => Self::Sleeves,
+            types::EquipmentDto::Bare => Self::Bare,
+            types::EquipmentDto::Unlimited => Self::Unlimited,
         }
     }
 }
@@ -45,18 +47,18 @@ impl From<SeaEquipment> for Equipment {
     }
 }
 
-impl Into<SeaEquipment> for Equipment {
-    fn into(self) -> SeaEquipment {
-        match self {
-            Self::Any => SeaEquipment::Any,
-            Self::Raw => SeaEquipment::Raw,
-            Self::Wraps => SeaEquipment::Wraps,
-            Self::Single => SeaEquipment::Single,
-            Self::Multi => SeaEquipment::Multi,
-            Self::Straps => SeaEquipment::Straps,
-            Self::Sleeves => SeaEquipment::Sleeves,
-            Self::Bare => SeaEquipment::Bare,
-            Self::Unlimited => SeaEquipment::Unlimited,
+impl From<Equipment> for SeaEquipment {
+    fn from(value: Equipment) -> Self {
+        match value {
+            Equipment::Any => Self::Any,
+            Equipment::Raw => Self::Raw,
+            Equipment::Wraps => Self::Wraps,
+            Equipment::Single => Self::Single,
+            Equipment::Multi => Self::Multi,
+            Equipment::Straps => Self::Straps,
+            Equipment::Sleeves => Self::Sleeves,
+            Equipment::Bare => Self::Bare,
+            Equipment::Unlimited => Self::Unlimited,
         }
     }
 }

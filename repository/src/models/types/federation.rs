@@ -1,45 +1,47 @@
+use types::FederationDto;
+
 use crate::models::SeaFederation;
 
 pub enum Federation {
-    FFForce,
-    EPF,
-    IPF,
-    FFHMFAC,
-    OTHER,
+    Ffforce,
+    Epf,
+    Ipf,
+    Ffhmfac,
+    Other,
+}
+
+impl From<FederationDto> for Federation {
+    fn from(value: FederationDto) -> Self {
+        match value {
+            types::FederationDto::FFForce => Self::Ffforce,
+            types::FederationDto::EPF => Self::Epf,
+            types::FederationDto::IPF => Self::Ipf,
+            types::FederationDto::FFHMFAC => Self::Ffhmfac,
+            types::FederationDto::OTHER => Self::Other,
+        }
+    }
 }
 
 impl From<SeaFederation> for Federation {
     fn from(value: SeaFederation) -> Self {
         match value {
-            SeaFederation::Ffforce => Self::FFForce,
-            SeaFederation::Epf => Self::EPF,
-            SeaFederation::Ipf => Self::IPF,
-            SeaFederation::Ffhmfac => Self::FFHMFAC,
-            SeaFederation::Other => Self::OTHER,
+            SeaFederation::Ffforce => Self::Ffforce,
+            SeaFederation::Epf => Self::Epf,
+            SeaFederation::Ipf => Self::Ipf,
+            SeaFederation::Ffhmfac => Self::Ffhmfac,
+            SeaFederation::Other => Self::Other,
         }
     }
 }
 
-impl Into<SeaFederation> for Federation {
-    fn into(self) -> SeaFederation {
-        match self {
-            Self::FFForce => SeaFederation::Ffforce,
-            Self::EPF => SeaFederation::Epf,
-            Self::IPF => SeaFederation::Ipf,
-            Self::FFHMFAC => SeaFederation::Ffhmfac,
-            Self::OTHER => SeaFederation::Other,
-        }
-    }
-}
-
-impl From<types::Federation> for Federation {
-    fn from(value: types::Federation) -> Self {
+impl From<Federation> for SeaFederation {
+    fn from(value: Federation) -> Self {
         match value {
-            types::Federation::FFForce => Self::FFForce,
-            types::Federation::EPF => Self::EPF,
-            types::Federation::IPF => Self::IPF,
-            types::Federation::FFHMFAC => Self::FFHMFAC,
-            types::Federation::OTHER => Self::OTHER,
+            Federation::Ffforce => Self::Ffforce,
+            Federation::Epf => Self::Epf,
+            Federation::Ipf => Self::Ipf,
+            Federation::Ffhmfac => Self::Ffhmfac,
+            Federation::Other => Self::Other,
         }
     }
 }

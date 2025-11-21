@@ -20,6 +20,7 @@ impl EntityName for Entity {
 #[derive(Clone, Debug, PartialEq, DeriveModel, DeriveActiveModel, Eq)]
 pub struct Model {
     pub id: i32,
+    pub meet_id: i32,
     pub name: String,
     pub division: Division,
     pub equipment: Equipment,
@@ -42,12 +43,12 @@ pub struct Model {
     pub best_bench: Decimal,
     pub best_deadlift: Decimal,
     pub total: Decimal,
-    pub meet_id: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
 pub enum Column {
     Id,
+    MeetId,
     Name,
     Division,
     Equipment,
@@ -70,7 +71,6 @@ pub enum Column {
     BestBench,
     BestDeadlift,
     Total,
-    MeetId,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DerivePrimaryKey)]
@@ -95,6 +95,7 @@ impl ColumnTrait for Column {
     fn def(&self) -> ColumnDef {
         match self {
             Self::Id => ColumnType::Integer.def(),
+            Self::MeetId => ColumnType::Integer.def(),
             Self::Name => ColumnType::String(StringLen::N(256u32)).def(),
             Self::Division => Division::db_type().get_column_type().to_owned().def(),
             Self::Equipment => Equipment::db_type().get_column_type().to_owned().def(),
@@ -117,7 +118,6 @@ impl ColumnTrait for Column {
             Self::BestBench => ColumnType::Decimal(Some((8u32, 4u32))).def(),
             Self::BestDeadlift => ColumnType::Decimal(Some((8u32, 4u32))).def(),
             Self::Total => ColumnType::Decimal(Some((8u32, 4u32))).def(),
-            Self::MeetId => ColumnType::Integer.def().unique(),
         }
     }
 }

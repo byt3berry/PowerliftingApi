@@ -1,4 +1,5 @@
 use sea_orm::ActiveValue::{NotSet, Set};
+use types::EntryDto;
 
 use crate::models::{SeaActiveEntry, SeaEntry};
 use crate::models::types::division::Division;
@@ -33,10 +34,10 @@ pub struct Entry {
     pub total: Weight,
 }
 
-impl From<types::Entry> for Entry {
-    fn from(entry: types::Entry) -> Self {
+impl From<EntryDto> for Entry {
+    fn from(entry: EntryDto) -> Self {
         Self {
-            name: entry.name.name.clone(),
+            name: entry.name.name,
             division : entry.division.into(),
             equipment : entry.equipment.into(),
             sex : entry.sex.into(),
@@ -65,7 +66,7 @@ impl From<types::Entry> for Entry {
 impl From<SeaEntry> for Entry {
     fn from(value: SeaEntry) -> Self {
         Self {
-            name: value.name.into(),
+            name: value.name,
             division: value.division.into(),
             equipment: value.equipment.into(),
             sex: value.sex.into(),
@@ -91,33 +92,33 @@ impl From<SeaEntry> for Entry {
     }
 }
 
-impl Into<SeaActiveEntry> for Entry {
-    fn into(self) -> SeaActiveEntry {
-        SeaActiveEntry {
+impl From<Entry> for SeaActiveEntry {
+    fn from(value: Entry) -> Self {
+        Self {
             id: NotSet,
             meet_id: NotSet,
-            name: Set(self.name.into()),
-            division: Set(self.division.into()),
-            equipment: Set(self.equipment.into()),
-            sex: Set(self.sex.into()),
-            bodyweight: Set(self.bodyweight.into()),
-            weight_class: Set(self.weight_class.into()),
-            squat1: Set(self.squat1.into()),
-            squat2: Set(self.squat2.into()),
-            squat3: Set(self.squat3.into()),
-            squat4: Set(self.squat4.into()),
-            bench1: Set(self.bench1.into()),
-            bench2: Set(self.bench2.into()),
-            bench3: Set(self.bench3.into()),
-            bench4: Set(self.bench4.into()),
-            deadlift1: Set(self.deadlift1.into()),
-            deadlift2: Set(self.deadlift2.into()),
-            deadlift3: Set(self.deadlift3.into()),
-            deadlift4: Set(self.deadlift4.into()),
-            best_squat: Set(self.best_squat.into()),
-            best_bench: Set(self.best_bench.into()),
-            best_deadlift: Set(self.best_deadlift.into()),
-            total: Set(self.total.into()),
+            name: Set(value.name),
+            division: Set(value.division.into()),
+            equipment: Set(value.equipment.into()),
+            sex: Set(value.sex.into()),
+            bodyweight: Set(value.bodyweight.into()),
+            weight_class: Set(value.weight_class.into()),
+            squat1: Set(value.squat1.into()),
+            squat2: Set(value.squat2.into()),
+            squat3: Set(value.squat3.into()),
+            squat4: Set(value.squat4.into()),
+            bench1: Set(value.bench1.into()),
+            bench2: Set(value.bench2.into()),
+            bench3: Set(value.bench3.into()),
+            bench4: Set(value.bench4.into()),
+            deadlift1: Set(value.deadlift1.into()),
+            deadlift2: Set(value.deadlift2.into()),
+            deadlift3: Set(value.deadlift3.into()),
+            deadlift4: Set(value.deadlift4.into()),
+            best_squat: Set(value.best_squat.into()),
+            best_bench: Set(value.best_bench.into()),
+            best_deadlift: Set(value.best_deadlift.into()),
+            total: Set(value.total.into()),
         }
     }
 }

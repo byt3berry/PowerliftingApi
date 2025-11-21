@@ -1,0 +1,18 @@
+[package]
+name = "backend"
+version = "0.7.0"
+edition = "2024"
+default-run = "backend"
+
+[dependencies]
+actix-files = "0.6.6"
+actix-htmx = "0.3.0"
+actix-web = "4.11.0"
+anyhow = "1.0.98"
+clap = { version = "4.5.41", features = ["derive"] }
+data_parsing = { path="../data_parsing/" }
+env_logger = "0.11.8"
+frontend = { version = "0.1.0", path = "../frontend" }
+log = "0.4.27"
+repository = { version = "0.1.0", path = "../repository" }
+types = { path="../types/" }

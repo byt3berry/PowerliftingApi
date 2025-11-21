@@ -70,7 +70,7 @@ impl ColumnTrait for Column {
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
-            Self::Entries => Entity::has_one(super::entries::Entity).into(),
+            Self::Entries => Entity::has_many(super::entries::Entity).into(),
         }
     }
 }

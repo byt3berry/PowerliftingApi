@@ -14,13 +14,13 @@ impl MigrationTrait for Migration {
         manager
             .create_type(
                 Type::create()
-                    .as_enum(Federation::FEDERATION)
+                    .as_enum(Federation::Federation)
                     .values([
-                        Federation::FFFORCE,
-                        Federation::EPF,
-                        Federation::IPF,
-                        Federation::FFHMFAC,
-                        Federation::OTHER,
+                        Federation::Ffforce,
+                        Federation::Epf,
+                        Federation::Ipf,
+                        Federation::Ffhmfac,
+                        Federation::Other,
                     ])
                     .to_owned()
             )
@@ -29,10 +29,10 @@ impl MigrationTrait for Migration {
         manager
             .create_type(
                 Type::create()
-                    .as_enum(Country::COUNTRY)
+                    .as_enum(Country::Country)
                     .values([
-                        Country::FRANCE,
-                        Country::OTHER,
+                        Country::France,
+                        Country::Other,
                     ])
                     .to_owned()
             )
@@ -41,21 +41,21 @@ impl MigrationTrait for Migration {
         manager
             .create_type(
                 Type::create()
-                    .as_enum(Division::DIVISION)
+                    .as_enum(Division::Division)
                     .values([
-                        Division::ANY,
-                        Division::OPEN,
+                        Division::Any,
+                        Division::Open,
                         Division::G,
-                        Division::CADET,
-                        Division::ELITE,
-                        Division::SUBJUNIORS,
-                        Division::JUNIORS,
-                        Division::SENIORS,
-                        Division::MASTERS,
-                        Division::MASTERS1,
-                        Division::MASTERS2,
-                        Division::MASTERS3,
-                        Division::MASTERS4,
+                        Division::Cadet,
+                        Division::Elite,
+                        Division::Subjuniors,
+                        Division::Juniors,
+                        Division::Seniors,
+                        Division::Masters,
+                        Division::Masters1,
+                        Division::Masters2,
+                        Division::Masters3,
+                        Division::Masters4,
                     ])
                     .to_owned()
             )
@@ -64,17 +64,17 @@ impl MigrationTrait for Migration {
         manager
             .create_type(
                 Type::create()
-                    .as_enum(Equipment::EQUIPMENT)
+                    .as_enum(Equipment::Equipment)
                     .values([
-                        Equipment::ANY,
-                        Equipment::RAW,
-                        Equipment::WRAPS,
-                        Equipment::SINGLE,
-                        Equipment::MULTI,
-                        Equipment::STRAPS,
-                        Equipment::SLEEVES,
-                        Equipment::BARE,
-                        Equipment::UNLIMITED,
+                        Equipment::Any,
+                        Equipment::Raw,
+                        Equipment::Wraps,
+                        Equipment::Single,
+                        Equipment::Multi,
+                        Equipment::Straps,
+                        Equipment::Sleeves,
+                        Equipment::Bare,
+                        Equipment::Unlimited,
                     ])
                     .to_owned()
             )
@@ -83,7 +83,7 @@ impl MigrationTrait for Migration {
         manager
             .create_type(
                 Type::create()
-                    .as_enum(Sex::SEX)
+                    .as_enum(Sex::Sex)
                     .values([
                         Sex::M,
                         Sex::F,
@@ -95,14 +95,14 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(Meets::MEETS)
+                    .table(Meets::Meets)
                     .if_not_exists()
-                    .col(ColumnDef::new(Meets::ID).integer().unique_key().primary_key().auto_increment().not_null())
-                    .col(ColumnDef::new(Meets::NAME).string_len(256).not_null())
-                    .col(ColumnDef::new(Meets::FEDERATION).custom(Federation::FEDERATION).not_null())
-                    .col(ColumnDef::new(Meets::COUNTRY).custom(Country::COUNTRY).not_null())
-                    .col(ColumnDef::new(Meets::STATE).string_len(256).not_null())
-                    .col(ColumnDef::new(Meets::TOWN).string_len(256).not_null())
+                    .col(ColumnDef::new(Meets::Id).integer().unique_key().primary_key().auto_increment().not_null())
+                    .col(ColumnDef::new(Meets::Name).string_len(256).not_null())
+                    .col(ColumnDef::new(Meets::Federation).custom(Federation::Federation).not_null())
+                    .col(ColumnDef::new(Meets::Country).custom(Country::Country).not_null())
+                    .col(ColumnDef::new(Meets::State).string_len(256).not_null())
+                    .col(ColumnDef::new(Meets::Town).string_len(256).not_null())
                     .to_owned()
             )
             .await?;
@@ -110,36 +110,36 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                .table(Entries::ENTRIES)
+                .table(Entries::Entries)
                 .if_not_exists()
-                .col(ColumnDef::new(Entries::ID).integer().unique_key().primary_key().auto_increment().not_null())
-                .col(ColumnDef::new(Entries::NAME).string_len(256).not_null())
-                .col(ColumnDef::new(Entries::DIVISION).custom(Division::DIVISION).not_null())
-                .col(ColumnDef::new(Entries::EQUIPMENT).custom(Equipment::EQUIPMENT).not_null())
-                .col(ColumnDef::new(Entries::SEX).custom(Sex::SEX).not_null())
-                .col(ColumnDef::new(Entries::BODYWEIGHT).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::WEIGHTCLASS).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::SQUAT1).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::SQUAT2).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::SQUAT3).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::SQUAT4).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::BENCH1).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::BENCH2).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::BENCH3).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::BENCH4).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::DEADLIFT1).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::DEADLIFT2).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::DEADLIFT3).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::DEADLIFT4).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::BESTSQUAT).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::BESTBENCH).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::BESTDEADLIFT).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::TOTAL).decimal_len(PRECISION, SCALE).not_null())
-                .col(ColumnDef::new(Entries::MEETID).integer().not_null())
+                .col(ColumnDef::new(Entries::Id).integer().unique_key().primary_key().auto_increment().not_null())
+                .col(ColumnDef::new(Entries::Meetid).integer().not_null())
+                .col(ColumnDef::new(Entries::Name).string_len(256).not_null())
+                .col(ColumnDef::new(Entries::Division).custom(Division::Division).not_null())
+                .col(ColumnDef::new(Entries::Equipment).custom(Equipment::Equipment).not_null())
+                .col(ColumnDef::new(Entries::Sex).custom(Sex::Sex).not_null())
+                .col(ColumnDef::new(Entries::Bodyweight).decimal_len(PRECISION, SCALE).not_null())
+                .col(ColumnDef::new(Entries::Weightclass).decimal_len(PRECISION, SCALE).not_null())
+                .col(ColumnDef::new(Entries::Squat1).decimal_len(PRECISION, SCALE).not_null())
+                .col(ColumnDef::new(Entries::Squat2).decimal_len(PRECISION, SCALE).not_null())
+                .col(ColumnDef::new(Entries::Squat3).decimal_len(PRECISION, SCALE).not_null())
+                .col(ColumnDef::new(Entries::Squat4).decimal_len(PRECISION, SCALE).not_null())
+                .col(ColumnDef::new(Entries::Bench1).decimal_len(PRECISION, SCALE).not_null())
+                .col(ColumnDef::new(Entries::Bench2).decimal_len(PRECISION, SCALE).not_null())
+                .col(ColumnDef::new(Entries::Bench3).decimal_len(PRECISION, SCALE).not_null())
+                .col(ColumnDef::new(Entries::Bench4).decimal_len(PRECISION, SCALE).not_null())
+                .col(ColumnDef::new(Entries::Deadlift1).decimal_len(PRECISION, SCALE).not_null())
+                .col(ColumnDef::new(Entries::Deadlift2).decimal_len(PRECISION, SCALE).not_null())
+                .col(ColumnDef::new(Entries::Deadlift3).decimal_len(PRECISION, SCALE).not_null())
+                .col(ColumnDef::new(Entries::Deadlift4).decimal_len(PRECISION, SCALE).not_null())
+                .col(ColumnDef::new(Entries::Bestsquat).decimal_len(PRECISION, SCALE).not_null())
+                .col(ColumnDef::new(Entries::Bestbench).decimal_len(PRECISION, SCALE).not_null())
+                .col(ColumnDef::new(Entries::BestDeadlift).decimal_len(PRECISION, SCALE).not_null())
+                .col(ColumnDef::new(Entries::Total).decimal_len(PRECISION, SCALE).not_null())
                 .foreign_key(
                     ForeignKey::create()
-                    .from(Entries::ENTRIES, Entries::MEETID)
-                    .to(Meets::MEETS, Meets::ID)
+                    .from(Entries::Entries, Entries::Meetid)
+                    .to(Meets::Meets, Meets::Id)
                     .on_delete(ForeignKeyAction::Cascade)
                     .on_update(ForeignKeyAction::Cascade)
                 )
@@ -154,7 +154,7 @@ impl MigrationTrait for Migration {
         manager
             .drop_table(
                 Table::drop()
-                    .table(Entries::ENTRIES)
+                    .table(Entries::Entries)
                     .if_exists()
                     .to_owned()
             )
@@ -163,7 +163,7 @@ impl MigrationTrait for Migration {
         manager
             .drop_table(
                 Table::drop()
-                    .table(Meets::MEETS)
+                    .table(Meets::Meets)
                     .if_exists()
                     .to_owned()
             )
@@ -172,7 +172,7 @@ impl MigrationTrait for Migration {
         manager
             .drop_type(
                 Type::drop()
-                .name(Sex::SEX)
+                .name(Sex::Sex)
                 .if_exists()
                 .to_owned()
             )
@@ -181,7 +181,7 @@ impl MigrationTrait for Migration {
         manager
             .drop_type(
                 Type::drop()
-                .name(Equipment::EQUIPMENT)
+                .name(Equipment::Equipment)
                 .if_exists()
                 .to_owned()
             )
@@ -190,7 +190,7 @@ impl MigrationTrait for Migration {
         manager
             .drop_type(
                 Type::drop()
-                    .name(Division::DIVISION)
+                    .name(Division::Division)
                     .if_exists()
                     .to_owned()
             )
@@ -199,7 +199,7 @@ impl MigrationTrait for Migration {
         manager
             .drop_type(
                 Type::drop()
-                    .name(Country::COUNTRY)
+                    .name(Country::Country)
                     .if_exists()
                     .to_owned()
             )
@@ -208,7 +208,7 @@ impl MigrationTrait for Migration {
         manager
             .drop_type(
                 Type::drop()
-                    .name(Federation::FEDERATION)
+                    .name(Federation::Federation)
                     .if_exists()
                     .to_owned()
             )
@@ -220,60 +220,60 @@ impl MigrationTrait for Migration {
 
 #[derive(DeriveIden)]
 enum Federation {
-    FEDERATION,
+    Federation,
 
-    FFFORCE,
-    EPF,
-    IPF,
-    FFHMFAC,
-    OTHER,
+    Ffforce,
+    Epf,
+    Ipf,
+    Ffhmfac,
+    Other,
 }
 
 #[derive(DeriveIden)]
 enum Country  {
-    COUNTRY,
+    Country,
 
-    FRANCE,
-    OTHER,
+    France,
+    Other,
 }
 
 #[derive(DeriveIden)]
 enum Division {
-    DIVISION,
+    Division,
 
-    ANY,
-    OPEN,
+    Any,
+    Open,
     G,
-    CADET,
-    ELITE,
-    SUBJUNIORS,
-    JUNIORS,
-    SENIORS,
-    MASTERS,
-    MASTERS1,
-    MASTERS2,
-    MASTERS3,
-    MASTERS4
+    Cadet,
+    Elite,
+    Subjuniors,
+    Juniors,
+    Seniors,
+    Masters,
+    Masters1,
+    Masters2,
+    Masters3,
+    Masters4
 }
 
 #[derive(DeriveIden)]
 enum Equipment {
-    EQUIPMENT,
+    Equipment,
 
-    ANY,
-    RAW,
-    WRAPS,
-    SINGLE,
-    MULTI,
-    STRAPS,
-    SLEEVES,
-    BARE,
-    UNLIMITED
+    Any,
+    Raw,
+    Wraps,
+    Single,
+    Multi,
+    Straps,
+    Sleeves,
+    Bare,
+    Unlimited
 }
 
 #[derive(DeriveIden)]
 enum Sex {
-    SEX,
+    Sex,
 
     M,
     F,
@@ -282,47 +282,47 @@ enum Sex {
 #[derive(DeriveIden)]
 #[sea_orm(enum_name = "entries")]
 enum Entries {
-    ENTRIES,
+    Entries,
 
-    ID,
+    Id,
     #[sea_orm(iden = "meet_id")]
-    MEETID,
-    NAME,
-    DIVISION,
-    EQUIPMENT,
-    SEX,
-    BODYWEIGHT,
+    Meetid,
+    Name,
+    Division,
+    Equipment,
+    Sex,
+    Bodyweight,
     #[sea_orm(iden = "weight_class")]
-    WEIGHTCLASS,
-    SQUAT1,
-    SQUAT2,
-    SQUAT3,
-    SQUAT4,
-    BENCH1,
-    BENCH2,
-    BENCH3,
-    BENCH4,
-    DEADLIFT1,
-    DEADLIFT2,
-    DEADLIFT3,
-    DEADLIFT4,
+    Weightclass,
+    Squat1,
+    Squat2,
+    Squat3,
+    Squat4,
+    Bench1,
+    Bench2,
+    Bench3,
+    Bench4,
+    Deadlift1,
+    Deadlift2,
+    Deadlift3,
+    Deadlift4,
     #[sea_orm(iden = "best_squat")]
-    BESTSQUAT,
+    Bestsquat,
     #[sea_orm(iden = "best_bench")]
-    BESTBENCH,
+    Bestbench,
     #[sea_orm(iden = "best_deadlift")]
-    BESTDEADLIFT,
-    TOTAL,
+    BestDeadlift,
+    Total,
 }
 
 #[derive(DeriveIden)]
 enum Meets {
-    MEETS,
+    Meets,
 
-    ID,
-    NAME,
-    FEDERATION,
-    COUNTRY,
-    STATE,
-    TOWN,
+    Id,
+    Name,
+    Federation,
+    Country,
+    State,
+    Town,
 }
