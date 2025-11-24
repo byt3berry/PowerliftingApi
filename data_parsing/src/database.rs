@@ -2,10 +2,11 @@ use anyhow::{Result, bail};
 use csv::{Reader, ReaderBuilder};
 use itertools::Itertools;
 use log::warn;
+use repository::write_only_repository::WriteOnlyRepository;
 use std::fs::File;
 use std::ops::Deref;
 use std::path::{Path, PathBuf};
-use types::FederationDto;
+use types::{FederationDto, MeetDto};
 use walkdir::WalkDir;
 
 use crate::data::meet::Meet;
@@ -131,6 +132,20 @@ impl Database {
             .collect();
 
         Ok(Self(meets))
+    }
+
+    pub async fn save(&self) -> Result<()> {
+        let mut write_only_repository = WriteOnlyRepository::new().await?;
+        write_only_repository.push_migrations().await?;
+
+        for meet in self.iter() {
+            let meet_dto: MeetDto = meet.clone().into();
+            write_only_repository.insert_meet_with_posts(meet_dto).await?;
+        }
+
+        write_only_repository.close().await?;
+
+        Ok(())
     }
 }
 

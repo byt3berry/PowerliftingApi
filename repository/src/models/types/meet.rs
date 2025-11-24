@@ -1,5 +1,5 @@
 use sea_orm::ActiveValue::Set;
-use types::MeetDto;
+use types::MeetDataDto;
 
 use crate::models::{SeaActiveMeet, SeaMeet};
 use crate::models::types::country::Country;
@@ -13,8 +13,8 @@ pub struct Meet {
     pub town: String,
 }
 
-impl From<MeetDto> for Meet {
-    fn from(meet: MeetDto) -> Self {
+impl From<MeetDataDto> for Meet {
+    fn from(meet: MeetDataDto) -> Self {
         Self {
             name: meet.name,
             federation: meet.federation.into(),

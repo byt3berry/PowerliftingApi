@@ -1,4 +1,4 @@
-use types::{MatchesQuery, Query};
+use types::{EntryDto, MatchesQuery, MeetDto, Query};
 
 use crate::data::meet_data::MeetData;
 use crate::data::meet_entry::MeetEntry;
@@ -24,6 +24,15 @@ impl Meet {
             .iter()
             .filter(|entry| entry.matches_query(query))
             .collect()
+    }
+}
+
+impl From<Meet> for MeetDto {
+    fn from(value: Meet) -> Self {
+        Self {
+            data: value.data.into(),
+            entries: value.entries.into_iter().map(EntryDto::from).collect(),
+        }
     }
 }
 

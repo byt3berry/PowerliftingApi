@@ -4,7 +4,7 @@ use migrations::{Migrator, MigratorTrait};
 use sea_orm::{ActiveModelTrait, ConnectOptions, Database, DatabaseConnection, DbErr, EntityTrait, TransactionError, TransactionTrait};
 use std::env;
 use tracing::info;
-use types::{EntryDto, MeetDto};
+use types::{EntryDto, MeetDataDto, MeetDto};
 
 use crate::models::types::entry::Entry;
 use crate::models::types::meet::Meet;
@@ -41,14 +41,14 @@ impl WriteOnlyRepository {
         self.connection.close().await
     }
 
-    pub async fn refresh_migrations(&self)-> Result<(), DbErr> {
-        Migrator::fresh(&self.connection).await?;
+    pub async fn push_migrations(&self)-> Result<(), DbErr> {
+        Migrator::up(&self.connection, None).await?;
         Ok(())
     }
 
-    pub async fn insert_meet_with_posts(&mut self, meet: MeetDto, entries: Vec<EntryDto>) -> Result<(), TransactionError<DbErr>> {
-        info!("Inserting meet {}", meet.name);
-        let new_meet: SeaActiveMeet = Meet::from(meet).into();
+    pub async fn insert_meet_with_posts(&mut self, meet: MeetDto) -> Result<(), TransactionError<DbErr>> {
+        info!("Inserting meet {}", meet.data.name);
+        let new_meet: SeaActiveMeet = Meet::from(meet.data).into();
 
         self.connection.transaction(|connection| {
             Box::pin(async move {
@@ -59,7 +59,7 @@ impl WriteOnlyRepository {
                     .cloned();
 
                 if let Some(inserted_id) = inserted_id {
-                    for entry in entries {
+                    for entry in meet.entries {
                         let mut new_entry: SeaActiveEntry = Entry::from(entry)
                             .into();
                         new_entry.set(SeaColumnEntry::MeetId, inserted_id.into());

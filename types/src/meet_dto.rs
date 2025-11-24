@@ -1,9 +1,6 @@
-use crate::{CountryDto, FederationDto};
+use crate::{EntryDto, MeetDataDto};
 
 pub struct MeetDto {
-    pub name: String,
-    pub federation: FederationDto,
-    pub country: CountryDto,
-    pub state: String,
-    pub town: String,
+    pub data: MeetDataDto,
+    pub entries: Vec<EntryDto>,
 }

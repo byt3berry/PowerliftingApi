@@ -972,6 +972,7 @@ dependencies = [
  "itertools",
  "log",
  "pretty_assertions",
+ "repository",
  "rstest",
  "serde",
  "types",

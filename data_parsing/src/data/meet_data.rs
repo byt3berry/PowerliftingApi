@@ -2,7 +2,7 @@ use serde::Deserialize;
 use types::CountryDto;
 use types::FederationDto;
 use types::MatchesQuery;
-use types::MeetDto;
+use types::MeetDataDto;
 use types::Query;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
@@ -42,9 +42,9 @@ impl MatchesQuery for MeetData {
     }
 }
 
-impl From<MeetData> for MeetDto {
+impl From<MeetData> for MeetDataDto {
     fn from(value: MeetData) -> Self {
-        MeetDto { 
+        Self {
             name: value.name,
             federation: value.federation,
             country: value.country,

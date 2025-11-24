@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use types::{DivisionDto, DotsDto, EntryDto, EquipmentDto, FederationDto, Matches, MatchesQuery, MeetDto, Query, SexDto, UsernameDto, WeightClassDto, WeightDto};
+use types::{DivisionDto, DotsDto, EntryDto, EquipmentDto, FederationDto, Matches, MatchesQuery, MeetDataDto, Query, SexDto, UsernameDto, WeightClassDto, WeightDto};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
 pub struct MeetEntry {
@@ -89,7 +89,7 @@ impl MatchesQuery for MeetEntry {
 
 impl From<MeetEntry> for EntryDto {
     fn from(value: MeetEntry) -> Self {
-        EntryDto {
+        Self {
             name: value.name.clone(),
             division: value.division.into(),
             equipment: value.equipment.into(),

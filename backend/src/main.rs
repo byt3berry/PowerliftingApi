@@ -4,8 +4,6 @@ use clap::Parser;
 use cli::Args;
 use data_parsing::Database;
 use log::info;
-use repository::write_only_repository::WriteOnlyRepository;
-use types::{EntryDto, MeetDto};
 
 use crate::server::{start_server, ServerData};
 
@@ -26,23 +24,7 @@ async fn main() -> Result<()> {
     let args: Args = Args::parse();
     args.validate()?;
 
-    let mut write_only_repository = WriteOnlyRepository::new().await?;
-    let database: Database = Database::from_directory(&args.path)?;
-
-    write_only_repository.refresh_migrations().await?;
-
-    for meet in database.iter() {
-        let meet_dto: MeetDto = meet.data.clone().into();
-        let entries_dto: Vec<EntryDto> = meet
-        .entries
-        .iter()
-        .map(|entry| EntryDto::from(entry.clone()))
-        .collect();
-
-        write_only_repository.insert_meet_with_posts(meet_dto, entries_dto).await?;
-    }
-
-    write_only_repository.close().await?;
+    Database::from_directory(&args.path)?.save().await?;
 
     // let data: ServerData = ServerData {
     //     database,
