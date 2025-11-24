@@ -1,8 +1,9 @@
 use actix_web::dev::Server;
-use anyhow::Result;
+use anyhow::{bail, Result};
 use clap::Parser;
 use cli::Args;
 use data_parsing::Database;
+use dotenvy::dotenv;
 use log::info;
 
 use crate::server::{start_server, ServerData};
@@ -20,19 +21,27 @@ async fn main() -> Result<()> {
         std::env::set_var("RUST_LOG", "debug");
     }
     env_logger::init();
+    dotenv()?;
 
-    let args: Args = Args::parse();
+    let args: Args = match Args::try_parse() {
+        Ok(args) => args,
+        Err(e) => bail!(e),
+    };
     args.validate()?;
 
-    Database::from_directory(&args.path)?.save().await?;
+    if args.migrate.is_some_and(|migrate| migrate) {
+        Database::from_directory(&args.path.as_ref().unwrap())?.save().await?;
+    }
 
-    // let data: ServerData = ServerData {
-    //     database,
-    // };
-    // let server: Server = start_server(args.ip, args.port, data)?;
+    if args.start_server.is_some_and(|start_server| start_server) {
+        // let data: ServerData = ServerData {
+        //     database,
+        // };
+        // let server: Server = start_server(args.ip.unwrap(), args.port.unwrap(), data)?;
 
-    // server.await?;
+        // server.await?;
 
-    info!("Server exited cleanly");
+        info!("Server exited cleanly");
+    }
     Ok(())
 }

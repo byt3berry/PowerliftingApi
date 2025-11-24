@@ -8,20 +8,41 @@ use clap::Parser;
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 pub struct Args {
+    /// Path to data
+    #[arg(long, env = "DATA")]
+    pub path: Option<PathBuf>,
+
     /// IP
-    pub ip: IpAddr,
+    #[arg(long, env = "IP", requires = "port")]
+    pub ip: Option<IpAddr>,
 
     /// Port
-    pub port: u16,
+    #[arg(long, env = "PORT", requires = "ip")]
+    pub port: Option<u16>,
 
-    /// Path to data
-    pub path: PathBuf,
+    /// Apply migrations
+    #[arg(short, long, default_value = "true")]
+    pub start_server: Option<bool>,
+
+    /// Apply migrations
+    #[arg(short, long, default_value = "true")]
+    pub migrate: Option<bool>,
 }
 
 impl Args {
     pub fn validate(&self) -> Result<()> {
-        if !self.path.exists() {
-            bail!("path must exist");
+        if self.path.as_ref().is_none_or(|path| !path.exists()) {
+            bail!("path \"{:?}\" must exist", self.path);
+        }
+
+        if self.start_server.is_some_and(|start_server| start_server) {
+            if self.ip.is_none() {
+                bail!("ip must be set to start the server");
+            }
+
+            if self.port.is_none() {
+                bail!("port must be set to start the server");
+            }
         }
 
         Ok(())

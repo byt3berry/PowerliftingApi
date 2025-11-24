@@ -5,7 +5,7 @@ members = [
     "data_parsing",
     "frontend",
     "migrations",
-    "repository",
+    "repository", "search",
     "types",
 ]
 
