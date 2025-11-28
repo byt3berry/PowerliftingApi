@@ -1,10 +1,11 @@
-use anyhow::{Result};
+use anyhow::{anyhow, bail, Context, Error, Result};
 use dotenvy::dotenv;
 use migrations::{Migrator, MigratorTrait};
 use sea_orm::{ActiveModelTrait, ConnectOptions, Database, DatabaseConnection, DbErr, EntityTrait, TransactionError, TransactionTrait};
 use std::env;
+use std::time::Duration;
 use tracing::info;
-use types::{EntryDto, MeetDataDto, MeetDto};
+use types::MeetDto;
 
 use crate::models::types::entry::Entry;
 use crate::models::types::meet::Meet;
@@ -13,7 +14,8 @@ use crate::models::{SeaActiveEntry, SeaActiveMeet, SeaColumnEntry, SeaEntityEntr
 const DEFAULT_SCHEMA: &str = "public";
 
 pub struct WriteOnlyRepository {
-    connection: DatabaseConnection,
+    options: ConnectOptions,
+    connection: Option<DatabaseConnection>,
 }
 
 impl WriteOnlyRepository {
@@ -23,6 +25,9 @@ impl WriteOnlyRepository {
         let database_schema = env::var("DATABASE_SCHEMA").unwrap_or_else(|_| DEFAULT_SCHEMA.to_string());
         let mut connection: ConnectOptions = ConnectOptions::new(database_url);
         connection.set_schema_search_path(database_schema)
+                  .acquire_timeout(Duration::from_secs(3))
+                  .test_before_acquire(true)
+                  .connect_lazy(true)
                   .sqlx_logging(false);
 
         Ok(connection)
@@ -30,28 +35,49 @@ impl WriteOnlyRepository {
 
     pub async fn new() -> Result<Self> {
         let options: ConnectOptions = Self::build_connection_options()?;
-        let connection: DatabaseConnection = Database::connect(options).await?;
 
         Ok(Self {
-            connection,
+            options,
+            connection: None,
         })
     }
 
-    pub async fn close(self) -> Result<(), DbErr> {
-        self.connection.close().await
+    pub async fn connect(&mut self) -> Result<()> {
+        match Database::connect(self.options.clone()).await {
+            Ok(connection) => {
+                self.connection = Some(connection);
+                Ok(())
+            },
+            Err(e) => Err(e).context("failed to connect to database"),
+        }
     }
 
-    pub async fn push_migrations(&self)-> Result<(), DbErr> {
-        Migrator::up(&self.connection, None).await?;
+    pub async fn disconnect(self) -> Result<()> {
+        if let Some(connection) = self.connection {
+            connection.close().await?;
+        }
+
         Ok(())
     }
 
-    pub async fn insert_meet_with_posts(&mut self, meet: MeetDto) -> Result<(), TransactionError<DbErr>> {
-        info!("Inserting meet {}", meet.data.name);
-        let new_meet: SeaActiveMeet = Meet::from(meet.data).into();
+    pub async fn push_migrations(&self)-> Result<()> {
+        match self.connection {
+            Some(ref connection) => Migrator::up(connection, None).await.context("failed to apply migrations"),
+            None => bail!("Can't apply migrations without connecting to the database"),
+        }
+    }
 
-        self.connection.transaction(|connection| {
+    pub async fn insert_meet(&mut self, meet: MeetDto) -> Result<()> {
+        let meet_name: String = meet.data.name.clone();
+        info!("Inserting meet {}", meet_name);
+
+        let Some(ref connection) = self.connection else {
+            bail!("Can't insert meet without connecting to the database")
+        };
+
+        connection.transaction::<_, (), Error>(|connection| {
             Box::pin(async move {
+                let new_meet: SeaActiveMeet = Meet::from(meet.data).into();
                 let inserted_id: Option<i32> = SeaEntityMeet::insert(new_meet)
                     .exec_with_returning_keys(connection)
                     .await?
@@ -74,5 +100,6 @@ impl WriteOnlyRepository {
             })
         })
         .await
+        .context(format!("failed to insert meet {}", meet_name))
     }
 }

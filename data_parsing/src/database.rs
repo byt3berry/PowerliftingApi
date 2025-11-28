@@ -136,14 +136,15 @@ impl Database {
 
     pub async fn save(&self) -> Result<()> {
         let mut write_only_repository = WriteOnlyRepository::new().await?;
+        write_only_repository.connect().await?;
         write_only_repository.push_migrations().await?;
 
         for meet in self.iter() {
             let meet_dto: MeetDto = meet.clone().into();
-            write_only_repository.insert_meet_with_posts(meet_dto).await?;
+            write_only_repository.insert_meet(meet_dto).await?;
         }
 
-        write_only_repository.close().await?;
+        write_only_repository.disconnect().await?;
 
         Ok(())
     }
