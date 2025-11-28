@@ -2,7 +2,7 @@ use anyhow::{Result, bail};
 use csv::{Reader, ReaderBuilder};
 use itertools::Itertools;
 use log::warn;
-use repository::write_only_repository::WriteOnlyRepository;
+use repository::{Repository, WriteOnlyRepository};
 use std::fs::File;
 use std::ops::Deref;
 use std::path::{Path, PathBuf};
@@ -137,7 +137,7 @@ impl Database {
     pub async fn save(&self) -> Result<()> {
         let mut write_only_repository = WriteOnlyRepository::new().await?;
         write_only_repository.connect().await?;
-        write_only_repository.push_migrations().await?;
+        write_only_repository.refresh_migrations().await?;
 
         for meet in self.iter() {
             let meet_dto: MeetDto = meet.clone().into();
