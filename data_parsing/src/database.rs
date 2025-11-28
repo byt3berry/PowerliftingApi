@@ -6,7 +6,7 @@ use repository::write_only_repository::WriteOnlyRepository;
 use std::fs::File;
 use std::ops::Deref;
 use std::path::{Path, PathBuf};
-use types::{FederationDto, MeetDto};
+use types::prelude::*;
 use walkdir::WalkDir;
 
 use crate::data::meet::Meet;
@@ -165,7 +165,7 @@ mod tests {
     use rstest::rstest;
     use std::path::{Path, PathBuf};
     use std::str::FromStr;
-    use types::{CountryDto, DivisionDto, EquipmentDto, FederationDto, SexDto, UsernameDto, WeightDto, WeightClassDto};
+    use types::prelude::*;
 
     use crate::data::meet::Meet;
     use crate::data::meet_data::MeetData;

@@ -1,9 +1,5 @@
 use serde::Deserialize;
-use types::CountryDto;
-use types::FederationDto;
-use types::MatchesQuery;
-use types::MeetDataDto;
-use types::Query;
+use types::prelude::*;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
 pub struct MeetData {

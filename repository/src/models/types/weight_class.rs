@@ -1,8 +1,7 @@
 use rust_decimal::Decimal;
-use types::WeightClassDto;
+use types::prelude::*;
 
-use crate::models::types::weight::Weight;
-use crate::models::types::weight_class_kind::WeightClassKind;
+use crate::models::types::{Weight, WeightClassKind};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct WeightClass {
@@ -22,21 +21,21 @@ impl WeightClass {
 impl From<WeightClassDto> for WeightClass {
     fn from(value: WeightClassDto) -> Self {
         match value {
-            types::WeightClassDto::UnderOrEqual(weight) => Self {
+            WeightClassDto::UnderOrEqual(weight) => Self {
                 kind: WeightClassKind::UnderOrEqual,
                 weight: weight.into(),
             },
-            types::WeightClassDto::Over(weight) => Self {
+            WeightClassDto::Over(weight) => Self {
                 kind: WeightClassKind::Over,
                 weight: weight.into(),
             },
-            types::WeightClassDto::None => Self::zero(),
+            WeightClassDto::None => Self::zero(),
         }
     }
 }
 
-impl From<Option<types::WeightClassDto>> for WeightClass {
-    fn from(value: Option<types::WeightClassDto>) -> Self {
+impl From<Option<WeightClassDto>> for WeightClass {
+    fn from(value: Option<WeightClassDto>) -> Self {
         match value {
             Some(value) => Self::from(value),
             None => Self::zero(),

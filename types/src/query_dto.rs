@@ -1,6 +1,4 @@
-use serde::Deserialize;
-
-use crate::{DivisionDto, EquipmentDto, FederationDto, SexDto};
+use crate::prelude::*;
 
 #[derive(Debug, Deserialize)]
 pub struct Query {

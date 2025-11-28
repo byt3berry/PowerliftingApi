@@ -1,14 +1,13 @@
-use anyhow::{anyhow, bail, Context, Error, Result};
+use anyhow::{bail, Context, Error, Result};
 use dotenvy::dotenv;
 use migrations::{Migrator, MigratorTrait};
-use sea_orm::{ActiveModelTrait, ConnectOptions, Database, DatabaseConnection, DbErr, EntityTrait, TransactionError, TransactionTrait};
+use sea_orm::{ActiveModelTrait, ConnectOptions, Database, DatabaseConnection, EntityTrait, TransactionTrait};
 use std::env;
 use std::time::Duration;
 use tracing::info;
-use types::MeetDto;
+use types::prelude::*;
 
-use crate::models::types::entry::Entry;
-use crate::models::types::meet::Meet;
+use crate::models::types::{Entry, Meet};
 use crate::models::{SeaActiveEntry, SeaActiveMeet, SeaColumnEntry, SeaEntityEntry, SeaEntityMeet};
 
 const DEFAULT_SCHEMA: &str = "public";
@@ -86,13 +85,12 @@ impl WriteOnlyRepository {
 
                 if let Some(inserted_id) = inserted_id {
                     for entry in meet.entries {
-                        let mut new_entry: SeaActiveEntry = Entry::from(entry)
-                            .into();
+                        let mut new_entry: SeaActiveEntry = Entry::from(entry).into();
                         new_entry.set(SeaColumnEntry::MeetId, inserted_id.into());
                         SeaEntityEntry::insert(new_entry)
                             .exec(connection)
                             .await?;
-                        }
+                    }
                 }
 
 

@@ -1,4 +1,4 @@
-use types::FederationDto;
+use types::prelude::*;
 
 use crate::models::SeaFederation;
 
@@ -13,11 +13,11 @@ pub enum Federation {
 impl From<FederationDto> for Federation {
     fn from(value: FederationDto) -> Self {
         match value {
-            types::FederationDto::FFForce => Self::Ffforce,
-            types::FederationDto::EPF => Self::Epf,
-            types::FederationDto::IPF => Self::Ipf,
-            types::FederationDto::FFHMFAC => Self::Ffhmfac,
-            types::FederationDto::OTHER => Self::Other,
+            FederationDto::FFForce => Self::Ffforce,
+            FederationDto::EPF => Self::Epf,
+            FederationDto::IPF => Self::Ipf,
+            FederationDto::FFHMFAC => Self::Ffhmfac,
+            FederationDto::OTHER => Self::Other,
         }
     }
 }

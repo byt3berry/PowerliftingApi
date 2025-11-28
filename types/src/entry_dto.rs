@@ -1,4 +1,4 @@
-use crate::{DivisionDto, EquipmentDto, SexDto, UsernameDto, WeightDto, WeightClassDto};
+use crate::prelude::*;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct EntryDto {

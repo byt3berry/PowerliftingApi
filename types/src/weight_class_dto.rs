@@ -1,10 +1,4 @@
-use anyhow::Result;
-use serde::de::{Error, Visitor};
-use serde::{Deserialize, Deserializer};
-use std::fmt::{self, Display};
-use std::str::FromStr;
-
-use crate::weight_dto::WeightDto;
+use crate::prelude::*;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum WeightClassDto {
@@ -48,7 +42,7 @@ impl Visitor<'_> for WeightClassVisitor {
         formatter.write_str("a valid weight class")
     }
 
-    fn visit_str<E: Error>(self, value: &str) -> Result<WeightClassDto, E> {
+    fn visit_str<E: de::Error>(self, value: &str) -> Result<WeightClassDto, E> {
         WeightClassDto::from_str(value).map_err(E::custom)
     }
 }

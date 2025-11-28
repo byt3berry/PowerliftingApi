@@ -1,9 +1,4 @@
-use anyhow::Result;
-use serde::de::{Error, Visitor};
-use serde::{Deserialize, Deserializer};
-use std::cmp::Ordering;
-use std::fmt::{self, Display};
-use std::str::FromStr;
+use crate::prelude::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WeightDto(pub f32);
@@ -102,19 +97,19 @@ impl Visitor<'_> for WeightVisitor {
         formatter.write_str("a number or numeric string")
     }
 
-    fn visit_i64<E: Error>(self, i: i64) -> Result<Self::Value, E> {
+    fn visit_i64<E: de::Error>(self, i: i64) -> Result<Self::Value, E> {
         Ok(Self::Value::from(i))
     }
 
-    fn visit_u64<E: Error>(self, u: u64) -> Result<Self::Value, E> {
+    fn visit_u64<E: de::Error>(self, u: u64) -> Result<Self::Value, E> {
         Ok(Self::Value::from(u))
     }
 
-    fn visit_f64<E: Error>(self, f: f64) -> Result<Self::Value, E> {
+    fn visit_f64<E: de::Error>(self, f: f64) -> Result<Self::Value, E> {
         Ok(Self::Value::from(f))
     }
 
-    fn visit_str<E: Error>(self, v: &str) -> Result<Self::Value, E> {
+    fn visit_str<E: de::Error>(self, v: &str) -> Result<Self::Value, E> {
         Self::Value::from_str(v).map_err(E::custom)
     }
 }

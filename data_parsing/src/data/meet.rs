@@ -1,4 +1,4 @@
-use types::{EntryDto, MatchesQuery, MeetDto, Query};
+use types::prelude::*;
 
 use crate::data::meet_data::MeetData;
 use crate::data::meet_entry::MeetEntry;
@@ -41,7 +41,7 @@ mod tests {
     use std::str::FromStr;
 
     use pretty_assertions::assert_eq;
-    use types::{DivisionDto, EquipmentDto, FederationDto, Query, SexDto, UsernameDto, WeightDto, WeightClassDto};
+    use types::prelude::*;
 
     use crate::data::meet_data::MeetData;
     use crate::data::meet_entry::MeetEntry;
@@ -53,7 +53,7 @@ mod tests {
         let meet: Meet = Meet {
             data: MeetData {
                 federation: FederationDto::IPF,
-                country: types::CountryDto::FRANCE,
+                country: CountryDto::FRANCE,
                 state: String::new(),
                 town: String::new(),
                 name: String::new(),
@@ -102,7 +102,7 @@ mod tests {
         let meet: Meet = Meet {
             data: MeetData {
                 federation: FederationDto::FFForce,
-                country: types::CountryDto::FRANCE,
+                country: CountryDto::FRANCE,
                 state: String::new(),
                 town: String::new(),
                 name: String::new(),
@@ -151,7 +151,7 @@ mod tests {
         let meet: Meet = Meet {
             data: MeetData {
                 federation: FederationDto::FFForce,
-                country: types::CountryDto::FRANCE,
+                country: CountryDto::FRANCE,
                 state: String::new(),
                 town: String::new(),
                 name: String::new(),

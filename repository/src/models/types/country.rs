@@ -1,4 +1,4 @@
-use types::CountryDto;
+use types::prelude::*;
 
 use crate::models::SeaCountry;
 

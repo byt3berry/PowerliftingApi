@@ -1,9 +1,8 @@
 use sea_orm::ActiveValue::Set;
-use types::MeetDataDto;
+use types::prelude::*;
 
+use crate::models::types::{Country, Federation};
 use crate::models::{SeaActiveMeet, SeaMeet};
-use crate::models::types::country::Country;
-use crate::models::types::federation::Federation;
 
 pub struct Meet {
     pub name: String,

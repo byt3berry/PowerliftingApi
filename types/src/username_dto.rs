@@ -1,10 +1,4 @@
-use anyhow::{Error, Result};
-use serde::de::{self, Visitor};
-use serde::{Deserialize, Deserializer};
-use std::str::FromStr;
-use std::fmt::{self, Display};
-
-use crate::{Matches, MatchesQuery, Query};
+use crate::prelude::*;
 
 #[derive(Clone, Debug, Ord, PartialOrd)]
 pub struct UsernameDto {
@@ -119,7 +113,7 @@ mod tests {
     use pretty_assertions::{assert_eq, Comparison};
     use rstest::rstest;
 
-    use crate::Matches;
+    use crate::prelude::*;
 
     use super::UsernameDto;
 

@@ -1,4 +1,4 @@
-use types::DivisionDto;
+use types::prelude::*;
 
 use crate::models::SeaDivision;
 
@@ -22,19 +22,19 @@ pub enum Division {
 impl From<DivisionDto> for Division {
     fn from(value: DivisionDto) -> Self {
         match value {
-            types::DivisionDto::Any => Self::Any,
-            types::DivisionDto::Open => Self::Open,
-            types::DivisionDto::G => Self::G,
-            types::DivisionDto::Cadet => Self::Cadet,
-            types::DivisionDto::Elite => Self::Elite,
-            types::DivisionDto::SubJuniors => Self::SubJuniors,
-            types::DivisionDto::Juniors => Self::Juniors,
-            types::DivisionDto::Masters => Self::Masters,
-            types::DivisionDto::Seniors => Self::Seniors,
-            types::DivisionDto::Masters1 => Self::Masters1,
-            types::DivisionDto::Masters2 => Self::Masters2,
-            types::DivisionDto::Masters3 => Self::Masters3,
-            types::DivisionDto::Masters4 => Self::Masters4,
+            DivisionDto::Any => Self::Any,
+            DivisionDto::Open => Self::Open,
+            DivisionDto::G => Self::G,
+            DivisionDto::Cadet => Self::Cadet,
+            DivisionDto::Elite => Self::Elite,
+            DivisionDto::SubJuniors => Self::SubJuniors,
+            DivisionDto::Juniors => Self::Juniors,
+            DivisionDto::Masters => Self::Masters,
+            DivisionDto::Seniors => Self::Seniors,
+            DivisionDto::Masters1 => Self::Masters1,
+            DivisionDto::Masters2 => Self::Masters2,
+            DivisionDto::Masters3 => Self::Masters3,
+            DivisionDto::Masters4 => Self::Masters4,
         }
     }
 }

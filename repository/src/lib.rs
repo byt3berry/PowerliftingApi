@@ -1,2 +1,2 @@
 pub mod write_only_repository;
-mod models;
+pub mod models;

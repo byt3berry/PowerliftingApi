@@ -1,7 +1,4 @@
-use serde::Deserialize;
-
-use crate::sex_dto::SexDto;
-use crate::weight_dto::WeightDto;
+use crate::prelude::*;
 
 #[derive(Debug, Default, Deserialize, Eq, PartialEq)]
 pub struct DotsDto(i32);

@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use types::{DivisionDto, DotsDto, EntryDto, EquipmentDto, FederationDto, Matches, MatchesQuery, MeetDataDto, Query, SexDto, UsernameDto, WeightClassDto, WeightDto};
+use types::prelude::*;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
 pub struct MeetEntry {

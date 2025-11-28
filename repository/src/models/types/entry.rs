@@ -1,12 +1,8 @@
 use sea_orm::ActiveValue::{NotSet, Set};
-use types::EntryDto;
+use types::prelude::*;
 
+use crate::models::types::{Division, Equipment, Sex, Weight, WeightClass};
 use crate::models::{SeaActiveEntry, SeaEntry};
-use crate::models::types::division::Division;
-use crate::models::types::equipment::Equipment;
-use crate::models::types::sex::Sex;
-use crate::models::types::weight::Weight;
-use crate::models::types::weight_class::WeightClass;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Entry {

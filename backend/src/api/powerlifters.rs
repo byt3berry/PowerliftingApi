@@ -1,9 +1,8 @@
 use actix_web::web::{Data, Form};
 use actix_web::{post, HttpResponse, Responder};
-use types::ExportRow;
 use frontend::api::powerlifters::build_table;
 use log::debug;
-use types::Query;
+use types::prelude::*;
 
 use crate::server::ServerData;
 

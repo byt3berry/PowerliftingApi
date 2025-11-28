@@ -1,5 +1,5 @@
 use strum::IntoEnumIterator;
-use types::{DivisionDto, EquipmentDto, FederationDto, SexDto};
+use types::prelude::*;
 use maud::{html, Markup, DOCTYPE};
 
 pub mod powerlifters;

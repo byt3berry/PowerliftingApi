@@ -1,4 +1,4 @@
-use types::EquipmentDto;
+use types::prelude::*;
 
 use crate::models::SeaEquipment;
 
@@ -18,15 +18,15 @@ pub enum Equipment {
 impl From<EquipmentDto> for Equipment {
     fn from(value: EquipmentDto) -> Self {
         match value {
-            types::EquipmentDto::Any => Self::Any,
-            types::EquipmentDto::Raw => Self::Raw,
-            types::EquipmentDto::Wraps => Self::Wraps,
-            types::EquipmentDto::Single => Self::Single,
-            types::EquipmentDto::Multi => Self::Multi,
-            types::EquipmentDto::Straps => Self::Straps,
-            types::EquipmentDto::Sleeves => Self::Sleeves,
-            types::EquipmentDto::Bare => Self::Bare,
-            types::EquipmentDto::Unlimited => Self::Unlimited,
+            EquipmentDto::Any => Self::Any,
+            EquipmentDto::Raw => Self::Raw,
+            EquipmentDto::Wraps => Self::Wraps,
+            EquipmentDto::Single => Self::Single,
+            EquipmentDto::Multi => Self::Multi,
+            EquipmentDto::Straps => Self::Straps,
+            EquipmentDto::Sleeves => Self::Sleeves,
+            EquipmentDto::Bare => Self::Bare,
+            EquipmentDto::Unlimited => Self::Unlimited,
         }
     }
 }

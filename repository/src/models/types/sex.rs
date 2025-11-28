@@ -1,4 +1,4 @@
-use types::SexDto;
+use types::prelude::*;
 
 use crate::models::SeaSex;
 
@@ -11,9 +11,9 @@ pub enum Sex {
 impl From<SexDto> for Sex {
     fn from(value: SexDto) -> Self {
         match value {
-            types::SexDto::M => Self::M,
-            types::SexDto::F => Self::F,
-            types::SexDto::Any => panic!("Sex::Any cannot be stored in the database"),
+            SexDto::M => Self::M,
+            SexDto::F => Self::F,
+            SexDto::Any => panic!("Sex::Any cannot be stored in the database"),
         }
     }
 }

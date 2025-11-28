@@ -1,4 +1,4 @@
-use types::{Query, UsernameDto};
+use types::prelude::*;
 
 use crate::data::meet_entry::MeetEntry;
 
@@ -30,10 +30,9 @@ impl Lifter {
 mod tests {
     use anyhow::Result;
     use pretty_assertions::assert_eq;
-    use types::FederationDto;
     use std::str::FromStr;
-    use types::{DivisionDto, EquipmentDto, SexDto, UsernameDto, WeightDto, WeightClassDto};
-                        
+    use types::prelude::*;
+
     use super::Lifter;
     use super::MeetEntry;
 

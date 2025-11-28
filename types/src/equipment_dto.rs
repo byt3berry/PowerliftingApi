@@ -1,7 +1,4 @@
-use serde::Deserialize;
-use strum_macros::{Display, EnumIter};
-
-use crate::{Matches, MatchesQuery, Query};
+use crate::prelude::*;
 
 #[derive(Clone, Copy, Debug, Deserialize, Display, EnumIter, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]

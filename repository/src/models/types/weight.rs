@@ -1,6 +1,6 @@
 use rust_decimal::Decimal;
 use rust_decimal::prelude::{FromPrimitive, Zero};
-use types::WeightDto;
+use types::prelude::*;
 
 const SCALE: u32 = 4;
 
@@ -19,8 +19,8 @@ impl From<WeightDto> for Weight {
     }
 }
 
-impl From<Option<types::WeightDto>> for Weight {
-    fn from(value: Option<types::WeightDto>) -> Self {
+impl From<Option<WeightDto>> for Weight {
+    fn from(value: Option<WeightDto>) -> Self {
         match value {
             Some(value) => Self::from(value),
             None => Self::zero(),
