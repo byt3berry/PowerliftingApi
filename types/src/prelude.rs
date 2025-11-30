@@ -16,7 +16,6 @@ pub use crate::federation_dto::FederationDto;
 pub use crate::meet_data_dto::MeetDataDto;
 pub use crate::meet_dto::MeetDto;
 pub use crate::place_dto::PlaceDto;
-pub use crate::query_dto::Query;
 pub use crate::sex_dto::SexDto;
 pub use crate::username_dto::UsernameDto;
 pub use crate::weight_class_dto::WeightClassDto;

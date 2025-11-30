@@ -75,18 +75,6 @@ impl MeetEntry {
     }
 }
 
-impl MatchesQuery for MeetEntry {
-    fn matches_query(&self, query: &Query) -> bool {
-        if !self.federation.matches(&query.federation_choice) { return false; }
-        if !self.equipment.matches(&query.equipment_choice) { return false; }
-        if !self.sex.matches(&query.sex_choice) { return false; }
-        if !self.division.matches(&query.division_choice) { return false; }
-        if !self.name.matches_str(&query.powerlifters) { return false; }
-
-        true
-    }
-}
-
 impl From<MeetEntry> for EntryDto {
     fn from(value: MeetEntry) -> Self {
         Self {

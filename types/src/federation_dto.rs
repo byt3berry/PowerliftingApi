@@ -25,18 +25,6 @@ pub enum FederationDto {
     OTHER,
 }
 
-impl Matches for FederationDto {
-    fn matches(&self, other: &Self) -> bool {
-        self.eq(&other)
-    }
-}
-
-impl MatchesQuery for FederationDto {
-    fn matches_query(&self, query: &Query) -> bool {
-        self.matches(&query.federation_choice)
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use rstest::rstest;
@@ -56,7 +44,7 @@ mod tests {
     ) {
         assert_de_tokens(
             &expected, 
-            &[Token::UnitVariant { name: "Federation", variant: input }]
+            &[Token::UnitVariant { name: "FederationDto", variant: input }]
         );
     }
 }

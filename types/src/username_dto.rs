@@ -1,3 +1,4 @@
+use crate::filters::Query;
 use crate::prelude::*;
 
 #[derive(Clone, Debug, Ord, PartialOrd)]

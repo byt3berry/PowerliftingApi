@@ -13,7 +13,6 @@ impl From<SexDto> for Sex {
         match value {
             SexDto::M => Self::M,
             SexDto::F => Self::F,
-            SexDto::Any => panic!("Sex::Any cannot be stored in the database"),
         }
     }
 }

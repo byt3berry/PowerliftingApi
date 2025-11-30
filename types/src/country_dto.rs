@@ -13,18 +13,6 @@ pub enum CountryDto {
     OTHER,
 }
 
-impl Matches for CountryDto {
-    fn matches(&self, _: &Self) -> bool {
-        true
-    }
-}
-
-impl MatchesQuery for CountryDto {
-    fn matches_query(&self, _: &Query) -> bool {
-        true
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use rstest::rstest;
@@ -41,7 +29,7 @@ mod tests {
     ) {
         assert_de_tokens(
             &expected, 
-            &[Token::UnitVariant { name: "Country", variant: input }]
+            &[Token::UnitVariant { name: "CountryDto", variant: input }]
         );
     }
 }

@@ -24,20 +24,6 @@ pub struct MeetData {
     pub name: String,
 }
 
-impl MatchesQuery for MeetData {
-    fn matches_query(&self, query: &Query) -> bool {
-        if self.federation.matches_query(query) {
-            return false;
-        }
-
-        if self.country.matches_query(query) {
-            return false;
-        }
-
-        return true;
-    }
-}
-
 impl From<MeetData> for MeetDataDto {
     fn from(value: MeetData) -> Self {
         Self {

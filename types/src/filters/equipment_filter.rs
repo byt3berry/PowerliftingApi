@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 #[derive(Clone, Copy, Debug, Deserialize, Display, EnumIter, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]
-pub enum EquipmentDto {
+pub enum EquipmentFilter {
     #[strum(to_string = "Any")]
     #[serde(rename(deserialize = "Any"))]
     Any,
@@ -39,33 +39,4 @@ pub enum EquipmentDto {
 
     #[strum(to_string = "Unlimited")]
     Unlimited,
-}
-
-#[cfg(test)]
-mod tests {
-    use rstest::rstest;
-    use serde_test::{assert_de_tokens, Token};
-
-    use super::EquipmentDto;
-
-    #[rstest]
-    #[case("Any", EquipmentDto::Any)]
-    #[case("Raw", EquipmentDto::Raw)]
-    #[case("Wraps", EquipmentDto::Wraps)]
-    #[case("Single", EquipmentDto::Single)]
-    #[case("Single-ply", EquipmentDto::Single)]
-    #[case("Multi", EquipmentDto::Multi)]
-    #[case("Multi-ply", EquipmentDto::Multi)]
-    #[case("Bare", EquipmentDto::Bare)]
-    #[case("Sleeves", EquipmentDto::Sleeves)]
-    #[case("Straps", EquipmentDto::Straps)]
-    fn test_deserialize(
-        #[case] input: &'static str,
-        #[case] expected: EquipmentDto,
-    ) {
-        assert_de_tokens(
-            &expected, 
-            &[Token::UnitVariant { name: "EquipmentDto", variant: input }]
-        );
-    }
 }

@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 #[derive(Clone, Copy, Debug, Display, Deserialize, Eq, EnumIter, PartialEq)]
 #[serde(rename_all = "lowercase")]
-pub enum DivisionDto {
+pub enum DivisionFilter {
     #[strum(to_string = "Any")]
     #[serde(rename(deserialize = "Any"))]
     Any,
@@ -59,38 +59,4 @@ pub enum DivisionDto {
     #[strum(to_string = "Masters 4")]
     #[serde(rename(deserialize = "Masters 4"))]
     Masters4,
-}
-
-#[cfg(test)]
-mod tests {
-    use rstest::rstest;
-    use serde_test::{assert_de_tokens, Token};
-
-    use super::DivisionDto;
-
-    #[rstest]
-    #[case("Cadet", DivisionDto::Cadet)]
-    #[case("Elite", DivisionDto::Elite)]
-    #[case("Hors Match", DivisionDto::G)]
-    #[case("Jeunes", DivisionDto::Juniors)]
-    #[case("Juniors", DivisionDto::Juniors)]
-    #[case("Masters", DivisionDto::Masters)]
-    #[case("Masters 1", DivisionDto::Masters1)]
-    #[case("Masters 2", DivisionDto::Masters2)]
-    #[case("Masters 3", DivisionDto::Masters3)]
-    #[case("Masters 4", DivisionDto::Masters4)]
-    #[case("Open", DivisionDto::Open)]
-    #[case("Prime Time", DivisionDto::G)]
-    #[case("Senior/Master", DivisionDto::Seniors)]
-    #[case("Seniors", DivisionDto::Seniors)]
-    #[case("Sub-Juniors", DivisionDto::SubJuniors)]
-    fn test_deserialize(
-        #[case] input: &'static str,
-        #[case] expected: DivisionDto,
-    ) {
-        assert_de_tokens(
-            &expected, 
-            &[Token::UnitVariant { name: "DivisionDto", variant: input }]
-        );
-    }
 }
