@@ -6,6 +6,7 @@ edition = "2024"
 [dev-dependencies]
 pretty_assertions = "1.4.1"
 rstest = "0.25.0"
+serde_test = "1.0.177"
 
 [dependencies]
 anyhow = "1.0.98"
@@ -14,5 +15,7 @@ itertools = "0.14.0"
 log = "0.4.27"
 repository = { path="../repository/" }
 serde = { version = "1.0.219", features = ["derive"] }
+strum = "0.27.2"
+strum_macros = "0.27.2"
 types = { path="../types/" }
 walkdir = "2.5.0"

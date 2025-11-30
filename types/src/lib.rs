@@ -15,5 +15,3 @@ mod weight_dto;
 
 pub mod filters;
 pub mod prelude;
-
-mod traits;

@@ -3,15 +3,15 @@ use csv::{Reader, ReaderBuilder};
 use itertools::Itertools;
 use log::warn;
 use repository::Repository;
+use types::prelude::MeetDto;
 use std::fs::File;
 use std::ops::Deref;
 use std::path::{Path, PathBuf};
-use types::prelude::*;
 use walkdir::WalkDir;
 
-use crate::data::meet::Meet;
-use crate::data::meet_data::MeetData;
-use crate::data::meet_entry::MeetEntry;
+use crate::types::Meet;
+use crate::types::MeetData;
+use crate::types::Entry;
 
 const ENTRIES_FILE_NAME: &str = "entries";
 const MEET_FILE_NAME: &str = "meet";
@@ -48,7 +48,7 @@ impl Database {
         Ok(data)
     }
 
-    fn from_entries_csv(path: &PathBuf, meet_data: Option<&MeetData>) -> Result<Vec<MeetEntry>> {
+    fn from_entries_csv(path: &PathBuf, meet_data: Option<&MeetData>) -> Result<Vec<Entry>> {
         if !path.exists() {
             bail!("path \"{}\" should exist", path.display());
         }
@@ -61,19 +61,13 @@ impl Database {
             bail!("extension of \"{}\" should be \"{}\"", path.display(), CSV_EXTENSION);
         }
 
-        let federation: FederationDto = match meet_data {
-            Some(data) => data.federation,
-            None => FederationDto::OTHER,
-        };
-
         let mut reader: Reader<File> = ReaderBuilder::new()
             .quoting(false)
             .from_path(path)
             .expect("verifications before should be enough");
-        let mut entries: Vec<MeetEntry> = Vec::with_capacity(50_000);
+        let mut entries: Vec<Entry> = Vec::with_capacity(50_000);
         for entry in reader.deserialize() {
-            let mut entry: MeetEntry = entry?;
-            entry.with_federation(federation);
+            let entry: Entry = entry?;
             entries.push(entry);
         }
 
@@ -165,11 +159,10 @@ mod tests {
     use rstest::rstest;
     use std::path::{Path, PathBuf};
     use std::str::FromStr;
-    use types::prelude::*;
 
-    use crate::data::meet::Meet;
-    use crate::data::meet_data::MeetData;
-    use crate::data::meet_entry::MeetEntry;
+    use crate::types::{Country, Division, Equipment, Federation, Meet, Sex, Username, Weight, WeightClass};
+    use crate::types::MeetData;
+    use crate::types::Entry;
 
 
     use super::Database;
@@ -184,7 +177,7 @@ mod tests {
     ) {
         let test_file: PathBuf = Path::new(TEST_PATH).join(entries);
 
-        let result: Result<Vec<MeetEntry>> = Database::from_entries_csv(&test_file, None);
+        let result: Result<Vec<Entry>> = Database::from_entries_csv(&test_file, None);
 
         assert!(result.is_ok(), "{}", result.unwrap_err());
     }
@@ -199,7 +192,7 @@ mod tests {
     ) {
         let test_file: PathBuf = Path::new(TEST_PATH).join(file);
 
-        let result: Result<Vec<MeetEntry>> = Database::from_entries_csv(&test_file, None);
+        let result: Result<Vec<Entry>> = Database::from_entries_csv(&test_file, None);
 
         assert!(result.is_err());
     }
@@ -207,32 +200,31 @@ mod tests {
     #[test]
     fn test_from_entries_1() {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test1/entries.csv");
-        let expected: Vec<MeetEntry> = vec![
-            MeetEntry {
-                name: UsernameDto::from_str("FirstName LastName").unwrap(),
-                division: DivisionDto::Masters,
-                equipment: EquipmentDto::Raw,
-                sex: SexDto::M,
-                bodyweight: WeightDto(104.),
-                weight_class: Some(WeightClassDto::UnderOrEqual(WeightDto(105.))),
-                squat1: Some(WeightDto(1.)),
-                squat2: Some(WeightDto(2.)),
-                squat3: Some(WeightDto(3.)),
-                best3squat: Some(WeightDto(3.)),
-                bench1: Some(WeightDto(4.)),
-                bench2: Some(WeightDto(5.)),
-                bench3: Some(WeightDto(6.)),
-                best3bench: Some(WeightDto(6.)),
-                deadlift1: Some(WeightDto(7.)),
-                deadlift2: Some(WeightDto(8.)),
-                deadlift3: Some(WeightDto(9.)),
-                best3deadlift: Some(WeightDto(9.)),
-                total: WeightDto(18.),
-                federation: FederationDto::OTHER,
+        let expected: Vec<Entry> = vec![
+            Entry {
+                name: Username::from_str("FirstName LastName").unwrap(),
+                division: Division::Masters,
+                equipment: Equipment::Raw,
+                sex: Sex::M,
+                bodyweight: Weight(104.),
+                weight_class: Some(WeightClass::UnderOrEqual(Weight(105.))),
+                squat1: Some(Weight(1.)),
+                squat2: Some(Weight(2.)),
+                squat3: Some(Weight(3.)),
+                best3squat: Some(Weight(3.)),
+                bench1: Some(Weight(4.)),
+                bench2: Some(Weight(5.)),
+                bench3: Some(Weight(6.)),
+                best3bench: Some(Weight(6.)),
+                deadlift1: Some(Weight(7.)),
+                deadlift2: Some(Weight(8.)),
+                deadlift3: Some(Weight(9.)),
+                best3deadlift: Some(Weight(9.)),
+                total: Some(Weight(18.)),
             },
             ];
 
-        let result: Result<Vec<MeetEntry>> = Database::from_entries_csv(&test_file, None);
+        let result: Result<Vec<Entry>> = Database::from_entries_csv(&test_file, None);
 
         assert!(result.is_ok());
         assert_eq!(expected, result.unwrap());
@@ -241,54 +233,52 @@ mod tests {
     #[test]
     fn test_from_entries_2() {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test2/entries.csv");
-        let expected: Vec<MeetEntry> = vec![
-            MeetEntry {
-                name: UsernameDto::from_str("Powerlifter 1").unwrap(),
-                division: DivisionDto::Masters3,
-                equipment: EquipmentDto::Raw,
-                sex: SexDto::M,
-                bodyweight: WeightDto(104.),
-                weight_class: Some(WeightClassDto::UnderOrEqual(WeightDto(105.))),
-                squat1: Some(WeightDto(1.)),
-                squat2: Some(WeightDto(2.)),
-                squat3: Some(WeightDto(3.)),
-                best3squat: Some(WeightDto(3.)),
-                bench1: Some(WeightDto(4.)),
-                bench2: Some(WeightDto(5.)),
-                bench3: Some(WeightDto(6.)),
-                best3bench: Some(WeightDto(6.)),
-                deadlift1: Some(WeightDto(7.)),
-                deadlift2: Some(WeightDto(8.)),
-                deadlift3: Some(WeightDto(9.)),
-                best3deadlift: Some(WeightDto(9.)),
-                total: WeightDto(18.),
-                federation: FederationDto::OTHER,
+        let expected: Vec<Entry> = vec![
+            Entry {
+                name: Username::from_str("Powerlifter 1").unwrap(),
+                division: Division::Masters3,
+                equipment: Equipment::Raw,
+                sex: Sex::M,
+                bodyweight: Weight(104.),
+                weight_class: Some(WeightClass::UnderOrEqual(Weight(105.))),
+                squat1: Some(Weight(1.)),
+                squat2: Some(Weight(2.)),
+                squat3: Some(Weight(3.)),
+                best3squat: Some(Weight(3.)),
+                bench1: Some(Weight(4.)),
+                bench2: Some(Weight(5.)),
+                bench3: Some(Weight(6.)),
+                best3bench: Some(Weight(6.)),
+                deadlift1: Some(Weight(7.)),
+                deadlift2: Some(Weight(8.)),
+                deadlift3: Some(Weight(9.)),
+                best3deadlift: Some(Weight(9.)),
+                total: Some(Weight(18.)),
             },
-            MeetEntry {
-                name: UsernameDto::from_str("Powerlifter 2").unwrap(),
-                division: DivisionDto::Juniors,
-                equipment: EquipmentDto::Raw,
-                sex: SexDto::F,
-                bodyweight: WeightDto(80.1),
-                weight_class: Some(WeightClassDto::UnderOrEqual(WeightDto(84.))),
-                squat1: Some(WeightDto(10.)),
-                squat2: Some(WeightDto(11.)),
-                squat3: Some(WeightDto(12.)),
-                best3squat: Some(WeightDto(12.)),
-                bench1: Some(WeightDto(13.)),
-                bench2: Some(WeightDto(14.)),
-                bench3: Some(WeightDto(15.)),
-                best3bench: Some(WeightDto(15.)),
-                deadlift1: Some(WeightDto(16.)),
-                deadlift2: Some(WeightDto(17.)),
-                deadlift3: Some(WeightDto(18.)),
-                best3deadlift: Some(WeightDto(18.)),
-                total: WeightDto(45.),
-                federation: FederationDto::OTHER,
+            Entry {
+                name: Username::from_str("Powerlifter 2").unwrap(),
+                division: Division::Juniors,
+                equipment: Equipment::Raw,
+                sex: Sex::F,
+                bodyweight: Weight(80.1),
+                weight_class: Some(WeightClass::UnderOrEqual(Weight(84.))),
+                squat1: Some(Weight(10.)),
+                squat2: Some(Weight(11.)),
+                squat3: Some(Weight(12.)),
+                best3squat: Some(Weight(12.)),
+                bench1: Some(Weight(13.)),
+                bench2: Some(Weight(14.)),
+                bench3: Some(Weight(15.)),
+                best3bench: Some(Weight(15.)),
+                deadlift1: Some(Weight(16.)),
+                deadlift2: Some(Weight(17.)),
+                deadlift3: Some(Weight(18.)),
+                best3deadlift: Some(Weight(18.)),
+                total: Some(Weight(45.)),
             },
             ];
 
-        let result: Result<Vec<MeetEntry>> = Database::from_entries_csv(&test_file, None);
+        let result: Result<Vec<Entry>> = Database::from_entries_csv(&test_file, None);
 
         assert!(result.is_ok());
         assert_eq!(expected, result.unwrap());
@@ -325,8 +315,8 @@ mod tests {
     fn test_from_data_1() {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test1/meet.csv");
         let expected: MeetData = MeetData {
-            federation: FederationDto::FFForce,
-            country: CountryDto::FRANCE,
+            federation: Federation::FFForce,
+            country: Country::FRANCE,
             state: "Ile de France".to_string(),
             town: "Paris".to_string(),
             name: "Meet Name".to_string(),
@@ -342,8 +332,8 @@ mod tests {
     fn test_from_data_2() {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test2/meet.csv");
         let expected: MeetData = MeetData {
-            federation: FederationDto::IPF,
-            country: CountryDto::OTHER,
+            federation: Federation::IPF,
+            country: Country::OTHER,
             state: String::new(),
             town: String::new(),
             name: "Other Meet".to_string(),
@@ -387,34 +377,33 @@ mod tests {
         let expected: Database = Database(vec![
             Meet {
                 data: MeetData {
-                    federation: FederationDto::FFForce,
-                    country: CountryDto::FRANCE,
+                    federation: Federation::FFForce,
+                    country: Country::FRANCE,
                     state: "Ile de France".to_string(),
                     town: "Paris".to_string(),
                     name: "Meet Name".to_string(),
                 },
                 entries: vec![
-                    MeetEntry {
-                        name: UsernameDto::from_str("FirstName LastName").unwrap(),
-                        division: DivisionDto::Masters,
-                        equipment: EquipmentDto::Raw,
-                        sex: SexDto::M,
-                        bodyweight: WeightDto(104.),
-                        weight_class: Some(WeightClassDto::UnderOrEqual(WeightDto(105.))),
-                        squat1: Some(WeightDto(1.)),
-                        squat2: Some(WeightDto(2.)),
-                        squat3: Some(WeightDto(3.)),
-                        best3squat: Some(WeightDto(3.)),
-                        bench1: Some(WeightDto(4.)),
-                        bench2: Some(WeightDto(5.)),
-                        bench3: Some(WeightDto(6.)),
-                        best3bench: Some(WeightDto(6.)),
-                        deadlift1: Some(WeightDto(7.)),
-                        deadlift2: Some(WeightDto(8.)),
-                        deadlift3: Some(WeightDto(9.)),
-                        best3deadlift: Some(WeightDto(9.)),
-                        total: WeightDto(18.),
-                        federation: FederationDto::FFForce,
+                    Entry {
+                        name: Username::from_str("FirstName LastName").unwrap(),
+                        division: Division::Masters,
+                        equipment: Equipment::Raw,
+                        sex: Sex::M,
+                        bodyweight: Weight(104.),
+                        weight_class: Some(WeightClass::UnderOrEqual(Weight(105.))),
+                        squat1: Some(Weight(1.)),
+                        squat2: Some(Weight(2.)),
+                        squat3: Some(Weight(3.)),
+                        best3squat: Some(Weight(3.)),
+                        bench1: Some(Weight(4.)),
+                        bench2: Some(Weight(5.)),
+                        bench3: Some(Weight(6.)),
+                        best3bench: Some(Weight(6.)),
+                        deadlift1: Some(Weight(7.)),
+                        deadlift2: Some(Weight(8.)),
+                        deadlift3: Some(Weight(9.)),
+                        best3deadlift: Some(Weight(9.)),
+                        total: Some(Weight(18.)),
                     }
                 ],
             }
@@ -432,56 +421,54 @@ mod tests {
         let expected: Database = Database(vec![
             Meet {
                 data: MeetData {
-                    federation: FederationDto::IPF,
-                    country: CountryDto::OTHER,
+                    federation: Federation::IPF,
+                    country: Country::OTHER,
                     state: String::new(),
                     town: String::new(),
                     name: "Other Meet".to_string(),
                 },
                 entries: vec![
-                    MeetEntry {
-                        name: UsernameDto::from_str("Powerlifter 1").unwrap(),
-                        division: DivisionDto::Masters3,
-                        equipment: EquipmentDto::Raw,
-                        sex: SexDto::M,
-                        bodyweight: WeightDto(104.),
-                        weight_class: Some(WeightClassDto::UnderOrEqual(WeightDto(105.))),
-                        squat1: Some(WeightDto(1.)),
-                        squat2: Some(WeightDto(2.)),
-                        squat3: Some(WeightDto(3.)),
-                        best3squat: Some(WeightDto(3.)),
-                        bench1: Some(WeightDto(4.)),
-                        bench2: Some(WeightDto(5.)),
-                        bench3: Some(WeightDto(6.)),
-                        best3bench: Some(WeightDto(6.)),
-                        deadlift1: Some(WeightDto(7.)),
-                        deadlift2: Some(WeightDto(8.)),
-                        deadlift3: Some(WeightDto(9.)),
-                        best3deadlift: Some(WeightDto(9.)),
-                        total: WeightDto(18.),
-                        federation: FederationDto::IPF,
+                    Entry {
+                        name: Username::from_str("Powerlifter 1").unwrap(),
+                        division: Division::Masters3,
+                        equipment: Equipment::Raw,
+                        sex: Sex::M,
+                        bodyweight: Weight(104.),
+                        weight_class: Some(WeightClass::UnderOrEqual(Weight(105.))),
+                        squat1: Some(Weight(1.)),
+                        squat2: Some(Weight(2.)),
+                        squat3: Some(Weight(3.)),
+                        best3squat: Some(Weight(3.)),
+                        bench1: Some(Weight(4.)),
+                        bench2: Some(Weight(5.)),
+                        bench3: Some(Weight(6.)),
+                        best3bench: Some(Weight(6.)),
+                        deadlift1: Some(Weight(7.)),
+                        deadlift2: Some(Weight(8.)),
+                        deadlift3: Some(Weight(9.)),
+                        best3deadlift: Some(Weight(9.)),
+                        total: Some(Weight(18.)),
                     },
-                    MeetEntry {
-                        name: UsernameDto::from_str("Powerlifter 2").unwrap(),
-                        division: DivisionDto::Juniors,
-                        equipment: EquipmentDto::Raw,
-                        sex: SexDto::F,
-                        bodyweight: WeightDto(80.1),
-                        weight_class: Some(WeightClassDto::UnderOrEqual(WeightDto(84.))),
-                        squat1: Some(WeightDto(10.)),
-                        squat2: Some(WeightDto(11.)),
-                        squat3: Some(WeightDto(12.)),
-                        best3squat: Some(WeightDto(12.)),
-                        bench1: Some(WeightDto(13.)),
-                        bench2: Some(WeightDto(14.)),
-                        bench3: Some(WeightDto(15.)),
-                        best3bench: Some(WeightDto(15.)),
-                        deadlift1: Some(WeightDto(16.)),
-                        deadlift2: Some(WeightDto(17.)),
-                        deadlift3: Some(WeightDto(18.)),
-                        best3deadlift: Some(WeightDto(18.)),
-                        total: WeightDto(45.),
-                        federation: FederationDto::IPF,
+                    Entry {
+                        name: Username::from_str("Powerlifter 2").unwrap(),
+                        division: Division::Juniors,
+                        equipment: Equipment::Raw,
+                        sex: Sex::F,
+                        bodyweight: Weight(80.1),
+                        weight_class: Some(WeightClass::UnderOrEqual(Weight(84.))),
+                        squat1: Some(Weight(10.)),
+                        squat2: Some(Weight(11.)),
+                        squat3: Some(Weight(12.)),
+                        best3squat: Some(Weight(12.)),
+                        bench1: Some(Weight(13.)),
+                        bench2: Some(Weight(14.)),
+                        bench3: Some(Weight(15.)),
+                        best3bench: Some(Weight(15.)),
+                        deadlift1: Some(Weight(16.)),
+                        deadlift2: Some(Weight(17.)),
+                        deadlift3: Some(Weight(18.)),
+                        best3deadlift: Some(Weight(18.)),
+                        total: Some(Weight(45.)),
                     }
                 ],
             }
@@ -500,89 +487,86 @@ mod tests {
         let expected: Database = Database(vec![
             Meet {
                 data: MeetData {
-                    federation: FederationDto::FFForce,
-                    country: CountryDto::FRANCE,
+                    federation: Federation::FFForce,
+                    country: Country::FRANCE,
                     state: "Ile de France".to_string(),
                     town: "Paris".to_string(),
                     name: "Meet Name".to_string(),
                 },
                 entries: vec![
-                    MeetEntry {
-                        name: UsernameDto::from_str("FirstName LastName").unwrap(),
-                        division: DivisionDto::Masters,
-                        equipment: EquipmentDto::Raw,
-                        sex: SexDto::M,
-                        bodyweight: WeightDto(104.),
-                        weight_class: Some(WeightClassDto::UnderOrEqual(WeightDto(105.))),
-                        squat1: Some(WeightDto(1.)),
-                        squat2: Some(WeightDto(2.)),
-                        squat3: Some(WeightDto(3.)),
-                        best3squat: Some(WeightDto(3.)),
-                        bench1: Some(WeightDto(4.)),
-                        bench2: Some(WeightDto(5.)),
-                        bench3: Some(WeightDto(6.)),
-                        best3bench: Some(WeightDto(6.)),
-                        deadlift1: Some(WeightDto(7.)),
-                        deadlift2: Some(WeightDto(8.)),
-                        deadlift3: Some(WeightDto(9.)),
-                        best3deadlift: Some(WeightDto(9.)),
-                        total: WeightDto(18.),
-                        federation: FederationDto::FFForce,
+                    Entry {
+                        name: Username::from_str("FirstName LastName").unwrap(),
+                        division: Division::Masters,
+                        equipment: Equipment::Raw,
+                        sex: Sex::M,
+                        bodyweight: Weight(104.),
+                        weight_class: Some(WeightClass::UnderOrEqual(Weight(105.))),
+                        squat1: Some(Weight(1.)),
+                        squat2: Some(Weight(2.)),
+                        squat3: Some(Weight(3.)),
+                        best3squat: Some(Weight(3.)),
+                        bench1: Some(Weight(4.)),
+                        bench2: Some(Weight(5.)),
+                        bench3: Some(Weight(6.)),
+                        best3bench: Some(Weight(6.)),
+                        deadlift1: Some(Weight(7.)),
+                        deadlift2: Some(Weight(8.)),
+                        deadlift3: Some(Weight(9.)),
+                        best3deadlift: Some(Weight(9.)),
+                        total: Some(Weight(18.)),
                     }
                 ],
             },
             Meet {
                 data: MeetData {
-                    federation: FederationDto::IPF,
-                    country: CountryDto::OTHER,
+                    federation: Federation::IPF,
+                    country: Country::OTHER,
                     state: String::new(),
                     town: String::new(),
                     name: "Other Meet".to_string(),
                 },
                 entries: vec![
-                    MeetEntry {
-                        name: UsernameDto::from_str("Powerlifter 1").unwrap(),
-                        division: DivisionDto::Masters3,
-                        equipment: EquipmentDto::Raw,
-                        sex: SexDto::M,
-                        bodyweight: WeightDto(104.),
-                        weight_class: Some(WeightClassDto::UnderOrEqual(WeightDto(105.))),
-                        squat1: Some(WeightDto(1.)),
-                        squat2: Some(WeightDto(2.)),
-                        squat3: Some(WeightDto(3.)),
-                        best3squat: Some(WeightDto(3.)),
-                        bench1: Some(WeightDto(4.)),
-                        bench2: Some(WeightDto(5.)),
-                        bench3: Some(WeightDto(6.)),
-                        best3bench: Some(WeightDto(6.)),
-                        deadlift1: Some(WeightDto(7.)),
-                        deadlift2: Some(WeightDto(8.)),
-                        deadlift3: Some(WeightDto(9.)),
-                        best3deadlift: Some(WeightDto(9.)),
-                        total: WeightDto(18.),
-                        federation: FederationDto::IPF,
+                    Entry {
+                        name: Username::from_str("Powerlifter 1").unwrap(),
+                        division: Division::Masters3,
+                        equipment: Equipment::Raw,
+                        sex: Sex::M,
+                        bodyweight: Weight(104.),
+                        weight_class: Some(WeightClass::UnderOrEqual(Weight(105.))),
+                        squat1: Some(Weight(1.)),
+                        squat2: Some(Weight(2.)),
+                        squat3: Some(Weight(3.)),
+                        best3squat: Some(Weight(3.)),
+                        bench1: Some(Weight(4.)),
+                        bench2: Some(Weight(5.)),
+                        bench3: Some(Weight(6.)),
+                        best3bench: Some(Weight(6.)),
+                        deadlift1: Some(Weight(7.)),
+                        deadlift2: Some(Weight(8.)),
+                        deadlift3: Some(Weight(9.)),
+                        best3deadlift: Some(Weight(9.)),
+                        total: Some(Weight(18.)),
                     },
-                    MeetEntry {
-                        name: UsernameDto::from_str("Powerlifter 2").unwrap(),
-                        division: DivisionDto::Juniors,
-                        equipment: EquipmentDto::Raw,
-                        sex: SexDto::F,
-                        bodyweight: WeightDto(80.1),
-                        weight_class: Some(WeightClassDto::UnderOrEqual(WeightDto(84.))),
-                        squat1: Some(WeightDto(10.)),
-                        squat2: Some(WeightDto(11.)),
-                        squat3: Some(WeightDto(12.)),
-                        best3squat: Some(WeightDto(12.)),
-                        bench1: Some(WeightDto(13.)),
-                        bench2: Some(WeightDto(14.)),
-                        bench3: Some(WeightDto(15.)),
-                        best3bench: Some(WeightDto(15.)),
-                        deadlift1: Some(WeightDto(16.)),
-                        deadlift2: Some(WeightDto(17.)),
-                        deadlift3: Some(WeightDto(18.)),
-                        best3deadlift: Some(WeightDto(18.)),
-                        total: WeightDto(45.),
-                        federation: FederationDto::IPF,
+                    Entry {
+                        name: Username::from_str("Powerlifter 2").unwrap(),
+                        division: Division::Juniors,
+                        equipment: Equipment::Raw,
+                        sex: Sex::F,
+                        bodyweight: Weight(80.1),
+                        weight_class: Some(WeightClass::UnderOrEqual(Weight(84.))),
+                        squat1: Some(Weight(10.)),
+                        squat2: Some(Weight(11.)),
+                        squat3: Some(Weight(12.)),
+                        best3squat: Some(Weight(12.)),
+                        bench1: Some(Weight(13.)),
+                        bench2: Some(Weight(14.)),
+                        bench3: Some(Weight(15.)),
+                        best3bench: Some(Weight(15.)),
+                        deadlift1: Some(Weight(16.)),
+                        deadlift2: Some(Weight(17.)),
+                        deadlift3: Some(Weight(18.)),
+                        best3deadlift: Some(Weight(18.)),
+                        total: Some(Weight(45.)),
                     }
                 ],
             }

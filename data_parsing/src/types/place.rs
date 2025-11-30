@@ -1,5 +1,7 @@
-#[derive(Debug)]
-pub enum PlaceDto {
+use serde::Deserialize;
+
+#[derive(Debug, Default, Deserialize)]
+pub enum Place {
     /// The placing assigned to the entry.
     P(u8),
     /// Guest Lifter.
@@ -9,5 +11,6 @@ pub enum PlaceDto {
     /// Doping Disqualification.
     DD,
     /// No-Show.
+    #[default]
     NS,
 }

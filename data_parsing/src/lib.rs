@@ -1,6 +1,4 @@
-mod data;
 mod database;
+mod types;
 
 pub use database::Database;
-pub use data::meet_data::MeetData;
-pub use data::meet_entry::MeetEntry;

@@ -23,5 +23,5 @@ pub struct EntryDto {
     pub best_squat: Option<WeightDto>,
     pub best_bench: Option<WeightDto>,
     pub best_deadlift: Option<WeightDto>,
-    pub total: WeightDto,
+    pub total: Option<WeightDto>,
 }

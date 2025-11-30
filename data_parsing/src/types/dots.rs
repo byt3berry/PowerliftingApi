@@ -1,9 +1,12 @@
-use crate::prelude::*;
+use serde::Deserialize;
 
-#[derive(Debug, Default, Eq, PartialEq)]
-pub struct DotsDto(i32);
+use crate::types::sex::Sex;
+use crate::types::weight::Weight;
 
-impl From<f64> for DotsDto {
+#[derive(Debug, Default, Deserialize, Eq, PartialEq)]
+pub struct Dots(i32);
+
+impl From<f64> for Dots {
     fn from(f: f64) -> Self {
         if f.is_finite() {
             Self(f.round() as i32)
@@ -13,7 +16,7 @@ impl From<f64> for DotsDto {
     }
 }
 
-impl DotsDto {
+impl Dots {
     /// Multiply and add. On many CPUs, this is a single instruction.
     #[inline]
     fn madd(a: f64, b: f64, c: f64) -> f64 {
@@ -54,14 +57,14 @@ impl DotsDto {
     }
 
     #[must_use]
-    pub fn new(sex: SexDto, bodyweight: WeightDto, total: WeightDto) -> Self {
+    pub fn new(sex: Sex, bodyweight: Weight, total: Weight) -> Self {
         if bodyweight.is_zero() || total.is_zero() {
             return Self(0);
         }
 
         let coefficient: f64 = match sex {
-            SexDto::M => Self::dots_coefficient_men(f64::from(bodyweight)),
-            SexDto::F => Self::dots_coefficient_women(f64::from(bodyweight)),
+            Sex::M => Self::dots_coefficient_men(f64::from(bodyweight)),
+            Sex::F => Self::dots_coefficient_women(f64::from(bodyweight)),
         };
 
         Self::from(coefficient * f64::from(total))

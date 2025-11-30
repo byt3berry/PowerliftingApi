@@ -547,6 +547,7 @@ dependencies = [
  "frontend",
  "log",
  "repository",
+ "search",
  "types",
 ]
 
@@ -976,6 +977,9 @@ dependencies = [
  "repository",
  "rstest",
  "serde",
+ "serde_test",
+ "strum 0.27.2",
+ "strum_macros",
  "types",
  "walkdir",
 ]
@@ -2885,6 +2889,10 @@ checksum = "1c107b6f4780854c8b126e228ea8869f4d7b71260f962fefb57b996b8959ba6b"
 [[package]]
 name = "search"
 version = "0.1.0"
+dependencies = [
+ "serde",
+ "types",
+]
 
 [[package]]
 name = "security-framework"

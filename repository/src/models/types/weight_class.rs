@@ -34,15 +34,6 @@ impl From<WeightClassDto> for WeightClass {
     }
 }
 
-impl From<Option<WeightClassDto>> for WeightClass {
-    fn from(value: Option<WeightClassDto>) -> Self {
-        match value {
-            Some(value) => Self::from(value),
-            None => Self::zero(),
-        }
-    }
-}
-
 impl From<Decimal> for WeightClass {
     fn from(mut value: Decimal) -> Self {
         if value.is_zero() {
@@ -67,14 +58,5 @@ impl From<Decimal> for WeightClass {
 impl From<WeightClass> for Decimal {
     fn from(value: WeightClass) -> Self {
         value.weight.into()
-    }
-}
-
-impl From<Option<Decimal>> for WeightClass {
-    fn from(value: Option<Decimal>) -> Self {
-        match value {
-            Some(value) => value.into(),
-            None => Self::zero(),
-        }
     }
 }

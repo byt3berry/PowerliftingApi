@@ -1,17 +1,17 @@
 use types::prelude::*;
 
-use crate::data::meet_data::MeetData;
-use crate::data::meet_entry::MeetEntry;
+use crate::types::MeetData;
+use crate::types::Entry;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Meet {
     pub data: MeetData,
-    pub entries: Vec<MeetEntry>,
+    pub entries: Vec<Entry>,
 }
 
 impl Meet {
     #[must_use]
-    pub const fn new(data: MeetData, entries: Vec<MeetEntry>) -> Self {
+    pub const fn new(data: MeetData, entries: Vec<Entry>) -> Self {
         Self { data, entries }
     }
 }

@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 use sea_orm::{ConnectOptions, Database, DatabaseConnection};
-use types::filters::Query;
+use types::filters::QueryDto;
 use types::prelude::EntryDto;
 
 pub struct ReadOnlyRepository {
@@ -34,7 +34,7 @@ impl ReadOnlyRepository {
         Ok(())
     }
 
-    pub async fn search(&self, query: &Query) -> Result<EntryDto> {
+    pub async fn search(&self, query: &QueryDto) -> Result<EntryDto> {
         todo!();
     }
 }

@@ -1,11 +1,11 @@
-mod division_filter;
-mod equipment_filter;
-mod federation_filter;
-mod query;
-mod sex_filter;
+mod division_filter_dto;
+mod equipment_filter_dto;
+mod federation_filter_dto;
+mod sex_filter_dto;
+mod query_dto;
 
-pub use division_filter::DivisionFilter;
-pub use equipment_filter::EquipmentFilter;
-pub use federation_filter::FederationFilter;
-pub use query::Query;
-pub use sex_filter::SexFilter;
+pub use division_filter_dto::DivisionFilterDto;
+pub use equipment_filter_dto::EquipmentFilterDto;
+pub use federation_filter_dto::FederationFilterDto;
+pub use query_dto::QueryDto;
+pub use sex_filter_dto::SexFilterDto;

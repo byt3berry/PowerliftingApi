@@ -1,50 +1,8 @@
-use crate::prelude::*;
-
-#[derive(Copy, Clone, Debug, Deserialize, Default, Display, Eq, PartialEq, EnumIter)]
-#[serde(rename_all = "lowercase")]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum FederationDto {
-    #[strum(to_string = "FFForce")]
-    #[serde(rename(deserialize = "FFForce"))]
     FFForce,
-
-    #[strum(to_string = "EPF")]
-    #[serde(rename(deserialize = "EPF"))]
     EPF,
-
-    #[strum(to_string = "IPF")]
-    #[serde(rename(deserialize = "IPF"))]
     IPF,
-
-    #[strum(to_string = "FFHMFAC")]
-    #[serde(rename(deserialize = "FFHMFAC"))]
     FFHMFAC,
-
-    #[strum(to_string = "Other")]
-    #[serde(other)]
-    #[default]
     OTHER,
-}
-
-#[cfg(test)]
-mod tests {
-    use rstest::rstest;
-    use serde_test::{assert_de_tokens, Token};
-
-    use super::FederationDto;
-
-    #[rstest]
-    #[case("FFForce", FederationDto::FFForce)]
-    #[case("EPF", FederationDto::EPF)]
-    #[case("IPF", FederationDto::IPF)]
-    #[case("FFHMFAC", FederationDto::FFHMFAC)]
-    #[case("Some federation", FederationDto::OTHER)]
-    fn test_deserialize(
-        #[case] input: &'static str,
-        #[case] expected: FederationDto,
-    ) {
-        assert_de_tokens(
-            &expected, 
-            &[Token::UnitVariant { name: "FederationDto", variant: input }]
-        );
-    }
 }

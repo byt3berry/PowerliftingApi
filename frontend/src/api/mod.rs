@@ -1,6 +1,6 @@
-use strum::IntoEnumIterator;
-use types::prelude::*;
 use maud::{html, Markup, DOCTYPE};
+use strum::IntoEnumIterator;
+use types::filters::{DivisionFilterDto, EquipmentFilterDto, FederationFilterDto, SexFilterDto};
 
 pub mod powerlifters;
 
@@ -117,25 +117,25 @@ fn input_div() -> Markup {
             form hx-post="/powerlifters" hx-target="#result" {
                 div {
                     select id="federation_choice" name="federation_choice" {
-                        @for value in FederationDto::iter() {
+                        @for value in FederationFilterDto::iter() {
                             option value=(value) { (value) }
                         }
                     }
 
                     select id="equipment_choice" name="equipment_choice" {
-                        @for value in EquipmentDto::iter() {
+                        @for value in EquipmentFilterDto::iter() {
                             option value=(value) { (value) }
                         }
                     }
 
                     select id="sex_choice" name="sex_choice" {
-                        @for value in SexDto::iter() {
+                        @for value in SexFilterDto::iter() {
                             option value=(value) { (value) }
                         }
                     }
 
                     select id="division_choice" name="division_choice" {
-                        @for value in DivisionDto::iter() {
+                        @for value in DivisionFilterDto::iter() {
                             option value=(value) { (value) }
                         }
                     }

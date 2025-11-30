@@ -19,15 +19,6 @@ impl From<WeightDto> for Weight {
     }
 }
 
-impl From<Option<WeightDto>> for Weight {
-    fn from(value: Option<WeightDto>) -> Self {
-        match value {
-            Some(value) => Self::from(value),
-            None => Self::zero(),
-        }
-    }
-}
-
 impl From<f32> for Weight {
     fn from(value: f32) -> Self {
         match Decimal::from_f32(value) {

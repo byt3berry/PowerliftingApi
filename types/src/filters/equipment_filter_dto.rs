@@ -1,8 +1,9 @@
-use crate::prelude::*;
+use serde::Deserialize;
+use strum_macros::{Display, EnumIter};
 
 #[derive(Clone, Copy, Debug, Deserialize, Display, EnumIter, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]
-pub enum EquipmentFilter {
+pub enum EquipmentFilterDto {
     #[strum(to_string = "Any")]
     #[serde(rename(deserialize = "Any"))]
     Any,
