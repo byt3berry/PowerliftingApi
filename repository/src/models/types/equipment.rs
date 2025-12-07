@@ -31,6 +31,22 @@ impl From<EquipmentDto> for Equipment {
     }
 }
 
+impl From<Equipment> for EquipmentDto {
+    fn from(value: Equipment) -> Self {
+        match value {
+            Equipment::Any => Self::Any,
+            Equipment::Raw => Self::Raw,
+            Equipment::Wraps => Self::Wraps,
+            Equipment::Single => Self::Single,
+            Equipment::Multi => Self::Multi,
+            Equipment::Straps => Self::Straps,
+            Equipment::Sleeves => Self::Sleeves,
+            Equipment::Bare => Self::Bare,
+            Equipment::Unlimited => Self::Unlimited,
+        }
+    }
+}
+
 impl From<SeaEquipment> for Equipment {
     fn from(value: SeaEquipment) -> Self {
         match value {

@@ -39,6 +39,26 @@ impl From<DivisionDto> for Division {
     }
 }
 
+impl From<Division> for DivisionDto {
+    fn from(value: Division) -> Self {
+        match value {
+            Division::Any => Self::Any,
+            Division::Open => Self::Open,
+            Division::G => Self::G,
+            Division::Cadet => Self::Cadet,
+            Division::Elite => Self::Elite,
+            Division::SubJuniors => Self::SubJuniors,
+            Division::Juniors => Self::Juniors,
+            Division::Masters => Self::Masters,
+            Division::Seniors => Self::Seniors,
+            Division::Masters1 => Self::Masters1,
+            Division::Masters2 => Self::Masters2,
+            Division::Masters3 => Self::Masters3,
+            Division::Masters4 => Self::Masters4,
+        }
+    }
+}
+
 impl From<SeaDivision> for Division {
     fn from(value: SeaDivision) -> Self {
         match value {

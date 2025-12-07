@@ -17,6 +17,15 @@ impl From<SexDto> for Sex {
     }
 }
 
+impl From<Sex> for SexDto {
+    fn from(value: Sex) -> Self {
+        match value {
+            Sex::M => Self::M,
+            Sex::F => Self::F,
+        }
+    }
+}
+
 impl From<SeaSex> for Sex {
     fn from(value: SeaSex) -> Self {
         match value {

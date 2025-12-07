@@ -1,4 +1,6 @@
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+use strum_macros::Display;
+
+#[derive(Clone, Copy, Debug, Display, Eq, PartialEq)]
 pub enum DivisionDto {
     Any,
     Open,

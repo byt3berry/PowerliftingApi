@@ -11,7 +11,6 @@ use crate::types::weight::Weight;
 pub enum WeightClass {
     UnderOrEqual(Weight),
     Over(Weight),
-    None,
 }
 
 impl From<WeightClass> for WeightClassDto {
@@ -19,7 +18,6 @@ impl From<WeightClass> for WeightClassDto {
         match value {
             WeightClass::UnderOrEqual(weight) => Self::UnderOrEqual(weight.into()),
             WeightClass::Over(weight) => Self::Over(weight.into()),
-            WeightClass::None => Self::None,
         }
     }
 }
@@ -28,10 +26,6 @@ impl FromStr for WeightClass {
     type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s.is_empty() {
-            return Ok(Self::None);
-        }
-
         if let Some(v) = s.strip_suffix('+') {
             v.parse::<Weight>().map(Self::Over)
         } else {
@@ -45,7 +39,6 @@ impl Display for WeightClass {
         match self {
             Self::UnderOrEqual(weight) => write!(f, "{weight}"),
             Self::Over(weight) => write!(f, "+{weight}"),
-            Self::None => write!(f, ""),
         }
     }
 }
@@ -76,37 +69,35 @@ mod tests {
     use pretty_assertions::assert_eq;
     use rstest::rstest;
 
-    use super::Weight;
     use super::WeightClass;
 
     #[rstest]
-    #[case("", WeightClass::None)]
-    #[case("43", WeightClass::UnderOrEqual(Weight(43.)))]
-    #[case("44", WeightClass::UnderOrEqual(Weight(44.)))]
-    #[case("47", WeightClass::UnderOrEqual(Weight(47.)))]
-    #[case("48", WeightClass::UnderOrEqual(Weight(48.)))]
-    #[case("52", WeightClass::UnderOrEqual(Weight(52.)))]
-    #[case("53", WeightClass::UnderOrEqual(Weight(53.)))]
-    #[case("56", WeightClass::UnderOrEqual(Weight(56.)))]
-    #[case("57", WeightClass::UnderOrEqual(Weight(57.)))]
-    #[case("59", WeightClass::UnderOrEqual(Weight(59.)))]
-    #[case("60", WeightClass::UnderOrEqual(Weight(60.)))]
-    #[case("63", WeightClass::UnderOrEqual(Weight(63.)))]
-    #[case("66", WeightClass::UnderOrEqual(Weight(66.)))]
-    #[case("69", WeightClass::UnderOrEqual(Weight(69.)))]
-    #[case("72", WeightClass::UnderOrEqual(Weight(72.)))]
-    #[case("74", WeightClass::UnderOrEqual(Weight(74.)))]
-    #[case("76", WeightClass::UnderOrEqual(Weight(76.)))]
-    #[case("83", WeightClass::UnderOrEqual(Weight(83.)))]
-    #[case("84", WeightClass::UnderOrEqual(Weight(84.)))]
-    #[case("93", WeightClass::UnderOrEqual(Weight(93.)))]
-    #[case("105", WeightClass::UnderOrEqual(Weight(105.)))]
-    #[case("120", WeightClass::UnderOrEqual(Weight(120.)))]
-    #[case("63+", WeightClass::Over(Weight(63.)))]
-    #[case("83+", WeightClass::Over(Weight(83.)))]
-    #[case("84+", WeightClass::Over(Weight(84.)))]
-    #[case("105+", WeightClass::Over(Weight(105.)))]
-    #[case("120+", WeightClass::Over(Weight(120.)))]
+    #[case("43", WeightClass::UnderOrEqual(43.into()))]
+    #[case("44", WeightClass::UnderOrEqual(44.into()))]
+    #[case("47", WeightClass::UnderOrEqual(47.into()))]
+    #[case("48", WeightClass::UnderOrEqual(48.into()))]
+    #[case("52", WeightClass::UnderOrEqual(52.into()))]
+    #[case("53", WeightClass::UnderOrEqual(53.into()))]
+    #[case("56", WeightClass::UnderOrEqual(56.into()))]
+    #[case("57", WeightClass::UnderOrEqual(57.into()))]
+    #[case("59", WeightClass::UnderOrEqual(59.into()))]
+    #[case("60", WeightClass::UnderOrEqual(60.into()))]
+    #[case("63", WeightClass::UnderOrEqual(63.into()))]
+    #[case("66", WeightClass::UnderOrEqual(66.into()))]
+    #[case("69", WeightClass::UnderOrEqual(69.into()))]
+    #[case("72", WeightClass::UnderOrEqual(72.into()))]
+    #[case("74", WeightClass::UnderOrEqual(74.into()))]
+    #[case("76", WeightClass::UnderOrEqual(76.into()))]
+    #[case("83", WeightClass::UnderOrEqual(83.into()))]
+    #[case("84", WeightClass::UnderOrEqual(84.into()))]
+    #[case("93", WeightClass::UnderOrEqual(93.into()))]
+    #[case("105", WeightClass::UnderOrEqual(105.into()))]
+    #[case("120", WeightClass::UnderOrEqual(120.into()))]
+    #[case("63+", WeightClass::Over(63.into()))]
+    #[case("83+", WeightClass::Over(83.into()))]
+    #[case("84+", WeightClass::Over(84.into()))]
+    #[case("105+", WeightClass::Over(105.into()))]
+    #[case("120+", WeightClass::Over(120.into()))]
     fn test_deserialize(
         #[case] input: &str,
         #[case] expected: WeightClass,
@@ -118,9 +109,8 @@ mod tests {
     }
 
     #[rstest]
-    #[case(WeightClass::None, String::new())]
-    #[case(WeightClass::UnderOrEqual(Weight(83.)), "83".to_string())]
-    #[case(WeightClass::Over(Weight(120.)), "+120".to_string())]
+    #[case(WeightClass::UnderOrEqual(83.into()), "83".to_string())]
+    #[case(WeightClass::Over(120.into()), "+120".to_string())]
     fn test_display(
         #[case] input: WeightClass,
         #[case] expected: String

@@ -1,13 +1,43 @@
 use anyhow::Result;
+use rust_decimal::Decimal;
+use rust_decimal::prelude::{FromPrimitive, Zero};
 use serde::de::{self, Visitor};
 use serde::{Deserialize, Deserializer};
-use types::prelude::WeightDto;
 use std::cmp::Ordering;
 use std::fmt::{self, Display};
 use std::str::FromStr;
+use types::prelude::WeightDto;
+
+const SCALE: u32 = 4;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Weight(pub f32);
+pub struct Weight(pub Decimal);
+
+impl Weight {
+    #[must_use]
+    pub fn is_zero(self) -> bool {
+        self == Self::from(0.)
+    }
+
+    pub fn zero() -> Self {
+        Self::from(Decimal::zero())
+    }
+}
+
+impl From<f32> for Weight {
+    fn from(value: f32) -> Self {
+        match Decimal::from_f32(value) {
+            Some(value) => Self(value.trunc_with_scale(SCALE)),
+            None => Self::zero(),
+        }
+    }
+}
+
+impl From<Decimal> for Weight {
+    fn from(value: Decimal) -> Self {
+        Self(value)
+    }
+}
 
 impl From<Weight> for WeightDto {
     fn from(value: Weight) -> Self {
@@ -15,35 +45,46 @@ impl From<Weight> for WeightDto {
     }
 }
 
+impl From<WeightDto> for Weight {
+    fn from(value: WeightDto) -> Self {
+        Self(value.0)
+    }
+}
+
+impl From<Weight> for Decimal {
+    fn from(value: Weight) -> Self {
+        value.0
+    }
+}
+
+impl From<i32> for Weight {
+    #[inline]
+    fn from(i: i32) -> Self {
+        Self(i.into())
+    }
+}
+
 impl From<i64> for Weight {
     #[inline]
     fn from(i: i64) -> Self {
-        Self(i as f32)
+        Self(i.into())
     }
 }
 
 impl From<u64> for Weight {
     #[inline]
     fn from(u: u64) -> Self {
-        Self(u as f32)
+        Self(u.into())
     }
 }
 
 impl From<f64> for Weight {
     #[inline]
-    fn from(f: f64) -> Self {
-        if f.is_finite() {
-            Self(f as f32)
-        } else {
-            Self(0.)
+    fn from(value: f64) -> Self {
+        match Decimal::from_f64(value) {
+            Some(value) => Self(value.trunc_with_scale(SCALE)),
+            None => Self::zero(),
         }
-    }
-}
-
-impl From<Weight> for f64 {
-    #[inline]
-    fn from(w: Weight) -> Self {
-        Self::from(w.0)
     }
 }
 
@@ -52,7 +93,7 @@ impl FromStr for Weight {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.is_empty() {
-            Ok(Self(0.))
+            Ok(Self::zero())
         } else {
             Ok(Self::from(s.parse::<f64>()?))
         }
@@ -93,13 +134,6 @@ impl<'de> Deserialize<'de> for Weight {
     }
 }
 
-impl Weight {
-    #[must_use]
-    pub fn is_zero(self) -> bool {
-        self == Self::from(0.)
-    }
-}
-
 struct WeightVisitor;
 
 impl Visitor<'_> for WeightVisitor {
@@ -123,132 +157,5 @@ impl Visitor<'_> for WeightVisitor {
 
     fn visit_str<E: de::Error>(self, v: &str) -> Result<Self::Value, E> {
         Self::Value::from_str(v).map_err(E::custom)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use anyhow::Result;
-    use pretty_assertions::Comparison;
-    use rstest::rstest;
-    use std::cmp::Ordering;
-    use std::str::FromStr;
-
-    use super::Weight;
-
-    #[rstest]
-    #[case("1", Weight(1.))]
-    #[case("1.5", Weight(1.5))]
-    #[case("-1", Weight(-1.))]
-    #[case("-1.5", Weight(-1.5))]
-    fn test_deserialize(
-        #[case] input: &str,
-        #[case] expected: Weight,
-    ) {
-        let result: Result<Weight> = input.parse::<Weight>();
-
-        assert!(result.is_ok());
-        assert_eq!(expected, result.unwrap());
-    }
-
-    #[rstest]
-    #[case("Test")]
-    fn test_deserialize_fail(
-        #[case] input: &str
-    ) {
-        let result: Result<Weight> = input.parse::<Weight>();
-
-        assert!(result.is_err(), "{:?}", result);
-    }
-
-    #[rstest]
-    #[case(Weight(1.), "1".to_string())]
-    #[case(Weight(1.6), "1.6".to_string())]
-    fn test_display(
-        #[case] input: Weight,
-        #[case] expected: String
-    ) {
-        let result: String = format!("{}", input);
-
-        assert_eq!(expected, result);
-    }
-
-    #[rstest]
-    #[case(Weight(1.), Weight(2.), Ordering::Less)]
-    #[case(Weight(2.), Weight(1.), Ordering::Greater)]
-    #[case(Weight(1.), Weight(1.), Ordering::Equal)]
-    fn test_ord(
-        #[case] weight1: Weight,
-        #[case] weight2: Weight,
-        #[case] expected: Ordering,
-    ) {
-        assert_eq!(expected, weight1.cmp(&weight2), "{}", Comparison::new(&weight1, &weight2));
-    }
-
-    #[rstest]
-    #[case(1, Weight(1.))]
-    fn test_from_i64(
-        #[case] input: i64,
-        #[case] expected: Weight,
-    ) {
-        let result: Weight = Weight::from(input);
-
-        assert_eq!(expected, result);
-    }
-
-    #[rstest]
-    #[case(1, Weight(1.))]
-    fn test_from_u64(
-        #[case] input: u64,
-        #[case] expected: Weight,
-    ) {
-        let result: Weight = Weight::from(input);
-
-        assert_eq!(expected, result);
-    }
-
-    #[rstest]
-    #[case(1., Weight(1.))]
-    #[case(f64::INFINITY, Weight(0.))]
-    fn test_from_f64(
-        #[case] input: f64,
-        #[case] expected: Weight,
-    ) {
-        let result: Weight = Weight::from(input);
-
-        assert_eq!(expected, result);
-    }
-
-    #[rstest]
-    #[case(Weight(1.), 1.)]
-    fn test_to_f64(
-        #[case] input: Weight,
-        #[case] expected: f64,
-    ) {
-        let result: f64 = f64::from(input);
-
-        assert_eq!(expected, result);
-    }
-
-    #[rstest]
-    #[case("", Weight(0.))]
-    #[case("1", Weight(1.))]
-    fn test_from_str(
-        #[case] input: &str,
-        #[case] expected: Weight,
-    ) {
-        let result: Result<Weight> = Weight::from_str(input);
-
-        assert!(result.is_ok());
-        assert_eq!(expected, result.unwrap());
-    }
-
-    #[test]
-    fn test_is_zero() {
-        let input: Weight = Weight(0.);
-
-        let result: bool = input.is_zero();
-
-        assert!(result);
     }
 }

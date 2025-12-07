@@ -2,12 +2,12 @@ use rust_decimal::Decimal;
 use sea_orm::ActiveValue::{NotSet, Set};
 use types::prelude::*;
 
-use crate::models::types::{Division, Equipment, Sex, Weight, WeightClass};
+use crate::models::types::{Division, Equipment, Sex, Username, Weight, WeightClass};
 use crate::models::{SeaActiveEntry, SeaEntry};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Entry {
-    pub name: String,
+    pub name: Username,
     pub division: Division,
     pub equipment: Equipment,
     pub sex: Sex,
@@ -34,8 +34,8 @@ pub struct Entry {
 impl From<EntryDto> for Entry {
     fn from(entry: EntryDto) -> Self {
         Self {
-            name: entry.name.name,
-            division : entry.division.into(),
+            name: entry.name.into(),
+            division: entry.division.into(),
             equipment : entry.equipment.into(),
             sex : entry.sex.into(),
             bodyweight : entry.bodyweight.into(),
@@ -60,10 +60,39 @@ impl From<EntryDto> for Entry {
     }
 }
 
+impl From<Entry> for EntryDto {
+    fn from(entry: Entry) -> Self {
+        Self {
+            name: entry.name.into(),
+            division: entry.division.into(),
+            equipment: entry.equipment.into(),
+            sex: entry.sex.into(),
+            bodyweight: entry.bodyweight.into(),
+            weight_class: entry.weight_class.map(WeightClass::into),
+            squat1: entry.squat1.map(Weight::into),
+            squat2: entry.squat2.map(Weight::into),
+            squat3: entry.squat3.map(Weight::into),
+            squat4: entry.squat4.map(Weight::into),
+            bench1: entry.bench1.map(Weight::into),
+            bench2: entry.bench2.map(Weight::into),
+            bench3: entry.bench3.map(Weight::into),
+            bench4: entry.bench4.map(Weight::into),
+            deadlift1: entry.deadlift1.map(Weight::into),
+            deadlift2: entry.deadlift2.map(Weight::into),
+            deadlift3: entry.deadlift3.map(Weight::into),
+            deadlift4: entry.deadlift4.map(Weight::into),
+            best_squat: entry.best_squat.map(Weight::into),
+            best_bench: entry.best_bench.map(Weight::into),
+            best_deadlift: entry.best_deadlift.map(Weight::into),
+            total: entry.total.map(Weight::into),
+        }
+    }
+}
+
 impl From<SeaEntry> for Entry {
     fn from(value: SeaEntry) -> Self {
         Self {
-            name: value.name,
+            name: value.name.into(),
             division: value.division.into(),
             equipment: value.equipment.into(),
             sex: value.sex.into(),
@@ -94,7 +123,7 @@ impl From<Entry> for SeaActiveEntry {
         Self {
             id: NotSet,
             meet_id: NotSet,
-            name: Set(value.name),
+            name: Set(value.name.into()),
             division: Set(value.division.into()),
             equipment: Set(value.equipment.into()),
             sex: Set(value.sex.into()),

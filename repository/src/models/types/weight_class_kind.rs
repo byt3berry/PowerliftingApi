@@ -2,5 +2,4 @@
 pub enum WeightClassKind {
     UnderOrEqual,
     Over,
-    None,
 }

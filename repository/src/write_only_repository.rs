@@ -72,7 +72,6 @@ impl WriteOnlyRepository {
                     }
                 }
 
-
                 Ok(())
             })
         })

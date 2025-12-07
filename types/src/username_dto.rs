@@ -1,7 +1,7 @@
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub struct UsernameDto {
     pub name: String,
-    parts: Vec<String>,
+    pub parts: Vec<String>,
 }
 
 impl UsernameDto {

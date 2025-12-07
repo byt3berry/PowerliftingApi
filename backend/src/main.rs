@@ -5,6 +5,7 @@ use cli::Args;
 use data_parsing::Database;
 use dotenvy::dotenv;
 use log::info;
+use search::search_engine::SearchEngine;
 
 use crate::server::{start_server, ServerData};
 
@@ -34,12 +35,12 @@ async fn main() -> Result<()> {
     }
 
     if args.start_server.is_some_and(|start_server| start_server) {
-        // let data: ServerData = ServerData {
-        //     database,
-        // };
-        // let server: Server = start_server(args.ip.unwrap(), args.port.unwrap(), data)?;
+        let data: ServerData = ServerData {
+            search_engine: SearchEngine,
+        };
+        let server: Server = start_server(args.ip.unwrap(), args.port.unwrap(), data)?;
 
-        // server.await?;
+        server.await?;
 
         info!("Server exited cleanly");
     }

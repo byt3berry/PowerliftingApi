@@ -55,15 +55,16 @@ impl DotsDto {
 
     #[must_use]
     pub fn new(sex: SexDto, bodyweight: WeightDto, total: WeightDto) -> Self {
-        if bodyweight.is_zero() || total.is_zero() {
-            return Self(0);
-        }
+        todo!()
+        // if bodyweight.is_zero() || total.is_zero() {
+        //     return Self(0);
+        // }
 
-        let coefficient: f64 = match sex {
-            SexDto::M => Self::dots_coefficient_men(f64::from(bodyweight)),
-            SexDto::F => Self::dots_coefficient_women(f64::from(bodyweight)),
-        };
+        // let coefficient: f64 = match sex {
+        //     SexDto::M => Self::dots_coefficient_men(f64::from(bodyweight)),
+        //     SexDto::F => Self::dots_coefficient_women(f64::from(bodyweight)),
+        // };
 
-        Self::from(coefficient * f64::from(total))
+        // Self::from(coefficient * f64::from(total))
     }
 }

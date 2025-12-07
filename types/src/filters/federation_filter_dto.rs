@@ -4,6 +4,10 @@ use strum_macros::{Display, EnumIter};
 #[derive(Copy, Clone, Debug, Deserialize, Default, Display, Eq, PartialEq, EnumIter)]
 #[serde(rename_all = "lowercase")]
 pub enum FederationFilterDto {
+    #[strum(to_string = "Any")]
+    #[serde(rename(deserialize = "Any"))]
+    Any,
+
     #[strum(to_string = "FFForce")]
     #[serde(rename(deserialize = "FFForce"))]
     FFForce,

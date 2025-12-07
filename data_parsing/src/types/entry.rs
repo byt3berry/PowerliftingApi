@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use types::prelude::EntryDto;
 
-use crate::types::{Division, Dots, Equipment, Sex, Username, Weight, WeightClass};
+use crate::types::{Division, Equipment, Sex, Username, Weight, WeightClass};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
 pub struct Entry {
@@ -61,13 +61,6 @@ pub struct Entry {
 
     #[serde(rename(deserialize = "TotalKg"))]
     pub total: Option<Weight>,
-}
-
-impl Entry {
-    pub fn dots(&self) -> Dots {
-        // Dots::new(self.sex, self.bodyweight, self.total)
-        todo!()
-    }
 }
 
 impl From<Entry> for EntryDto {

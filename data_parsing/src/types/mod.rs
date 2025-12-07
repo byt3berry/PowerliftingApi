@@ -1,6 +1,5 @@
 mod country;
 mod division;
-mod dots;
 mod entry;
 mod equipment;
 mod federation;
@@ -14,7 +13,6 @@ mod weight;
 
 pub use country::Country;
 pub use division::Division;
-pub use dots::Dots;
 pub use entry::Entry;
 pub use equipment::Equipment;
 pub use federation::Federation;

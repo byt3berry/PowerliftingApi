@@ -19,6 +19,12 @@ impl From<WeightDto> for Weight {
     }
 }
 
+impl From<Weight> for WeightDto {
+    fn from(value: Weight) -> Self {
+        Self(value.0)
+    }
+}
+
 impl From<f32> for Weight {
     fn from(value: f32) -> Self {
         match Decimal::from_f32(value) {

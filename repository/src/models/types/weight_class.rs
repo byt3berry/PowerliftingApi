@@ -9,15 +9,6 @@ pub struct WeightClass {
     pub weight: Weight,
 }
 
-impl WeightClass {
-    pub fn zero() -> Self {
-        Self {
-            kind: WeightClassKind::None,
-            weight: Weight::zero(),
-        }
-    }
-}
-
 impl From<WeightClassDto> for WeightClass {
     fn from(value: WeightClassDto) -> Self {
         match value {
@@ -29,17 +20,21 @@ impl From<WeightClassDto> for WeightClass {
                 kind: WeightClassKind::Over,
                 weight: weight.into(),
             },
-            WeightClassDto::None => Self::zero(),
+        }
+    }
+}
+
+impl From<WeightClass> for WeightClassDto {
+    fn from(value: WeightClass) -> Self {
+        match value.kind {
+            WeightClassKind::UnderOrEqual => Self::UnderOrEqual(value.weight.into()),
+            WeightClassKind::Over => Self::Over(value.weight.into()),
         }
     }
 }
 
 impl From<Decimal> for WeightClass {
     fn from(mut value: Decimal) -> Self {
-        if value.is_zero() {
-            return Self::zero();
-        }
-
         if value.is_sign_positive() {
             Self {
                 kind: WeightClassKind::Over,

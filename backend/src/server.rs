@@ -3,8 +3,8 @@ use actix_web::dev::Server;
 use actix_web::middleware::{Logger, NormalizePath, TrailingSlash};
 use actix_web::{web, App, HttpResponse, HttpServer};
 use anyhow::Result;
-use data_parsing::Database;
 use log::info;
+use search::search_engine::SearchEngine;
 use std::net::IpAddr;
 
 use crate::api::powerlifters::powerlifters;
@@ -12,7 +12,7 @@ use crate::api::root::root;
 
 #[derive(Clone, Debug)]
 pub struct ServerData {
-    pub database: Database
+    pub search_engine: SearchEngine,
 }
 
 /// Start a server listening on `ip`:`port`
