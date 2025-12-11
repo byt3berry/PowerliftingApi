@@ -46,12 +46,12 @@ impl WriteOnlyRepository {
     }
 
     pub async fn insert_meet(&mut self, meet: MeetDto) -> Result<()> {
-        let meet_name: String = meet.data.name.clone();
-        info!("Inserting meet {}", meet_name);
-
         let Some(ref connection) = self.connection else {
             bail!("Can't insert meet without connecting to the database")
         };
+
+        let meet_name: String = meet.data.name.clone();
+        info!("Inserting meet {}", meet_name);
 
         connection.transaction::<_, (), Error>(|connection| {
             Box::pin(async move {
@@ -62,10 +62,10 @@ impl WriteOnlyRepository {
                     .first()
                     .cloned();
 
-                if let Some(inserted_id) = inserted_id {
+                if let Some(meet_id) = inserted_id {
                     for entry in meet.entries {
                         let mut new_entry: SeaActiveEntry = Entry::from(entry).into();
-                        new_entry.set(SeaColumnEntry::MeetId, inserted_id.into());
+                        new_entry.set(SeaColumnEntry::MeetId, meet_id.into());
                         SeaEntityEntry::insert(new_entry)
                             .exec(connection)
                             .await?;

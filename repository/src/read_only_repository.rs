@@ -1,11 +1,11 @@
 use anyhow::{bail, Context, Result};
-use sea_orm::{ColumnTrait, Condition, ConnectOptions, Database, DatabaseConnection, DbBackend, EntityTrait, JoinType, QueryFilter, QueryOrder, QuerySelect, QueryTrait, Related, Select};
+use sea_orm::{ColumnTrait, Condition, ConnectOptions, Database, DatabaseConnection, DbBackend, EntityTrait, QueryFilter, QueryOrder, QuerySelect, QueryTrait, Select};
 use tracing::debug;
 use types::filters::{DivisionFilterDto, EquipmentFilterDto, FederationFilterDto, QueryDto, SexFilterDto};
 use types::prelude::EntryDto;
 
 use crate::models::types::Entry;
-use crate::models::{SeaColumnEntry, SeaColumnMeet, SeaEntityEntry, SeaEntry};
+use crate::models::{SeaColumnEntry, SeaColumnMeet, SeaEntityEntry, SeaEntityMeet, SeaEntry};
 
 pub struct ReadOnlyRepository {
     options: ConnectOptions,
@@ -44,7 +44,7 @@ impl ReadOnlyRepository {
         };
 
         let mut result: Select<SeaEntityEntry> = SeaEntityEntry::find()
-            .join(JoinType::LeftJoin, SeaEntityEntry::to())
+            .left_join(SeaEntityMeet)
             .distinct_on([SeaColumnEntry::Name]);
 
         let mut condition: Condition = Condition::all();
@@ -70,13 +70,10 @@ impl ReadOnlyRepository {
         result = result.filter(condition)
                        .order_by_desc(SeaColumnEntry::Name)
                        .order_by_desc(SeaColumnEntry::Total);
-        debug!("sql query:\n{}", result.build(DbBackend::Postgres).to_string());
         let sea_entries: Vec<SeaEntry> = result.all(connection).await?;
 
         Ok(sea_entries
             .into_iter()
-            // .filter(|x| query.powerlifters.lines().contains(x.name.as_str()))
-            // .chunk_by(|x| x.)
             .map(Entry::from)
             .map(EntryDto::from)
             .collect())
