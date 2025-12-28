@@ -1,5 +1,3 @@
-use std::fmt::Display;
-
 use rust_decimal::prelude::{FromPrimitive, Zero};
 use rust_decimal::Decimal;
 

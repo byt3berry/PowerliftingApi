@@ -1,6 +1,3 @@
-use std::str::FromStr;
-
-use anyhow::Error;
 use types::prelude::UsernameDto;
 
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -28,13 +25,13 @@ impl Username {
 
 impl From<UsernameDto> for Username {
     fn from(value: UsernameDto) -> Self {
-        Username::new(&value.name, value.parts)
+        Self::new(&value.name, value.parts)
     }
 }
 
 impl From<Username> for UsernameDto {
     fn from(value: Username) -> Self {
-        UsernameDto::new(&value.name, value.parts)
+        Self::new(&value.name, value.parts)
     }
 }
 

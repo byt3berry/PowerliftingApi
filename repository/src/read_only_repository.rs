@@ -1,8 +1,8 @@
 use anyhow::{bail, Context, Result};
-use migrations::{Asterisk, ColumnRef, Expr, IntoIden, OrderExpr, Query, SelectStatement};
-use sea_orm::{ColumnAsExpr, ColumnTrait, Condition, ConnectOptions, ConnectionTrait, Database, DatabaseConnection, EntityTrait, JoinType, Order, OrderedStatement, Statement};
+use migrations::{Asterisk, Expr, Query, SelectStatement};
+use sea_orm::{ColumnTrait, Condition, ConnectOptions, ConnectionTrait, Database, DatabaseConnection, EntityTrait, JoinType, Order, Statement};
 use tracing::debug;
-use types::filters::{DivisionFilterDto, EquipmentFilterDto, FederationFilterDto, QueryDto, SexFilterDto};
+use types::filters::{DivisionFilterDto, FederationFilterDto, QueryDto, SexFilterDto};
 use types::prelude::EntryDto;
 
 use crate::models::read::{ranked_entry};
@@ -69,10 +69,6 @@ impl ReadOnlyRepository {
             .qualified_column(SeaColumnEntry::Id)
             .qualified_column(SeaColumnEntry::Name)
             .qualified_column(SeaColumnEntry::Total)
-            // .expr_as(
-            //     Expr::cust("DENSE_RANK() OVER (ORDER BY \"entries\".\"total\" DESC)"),
-            //     ranked_entry::Column::Rank,
-            // )
             .join(
                 JoinType::LeftJoin, 
                 SeaEntityMeet,
