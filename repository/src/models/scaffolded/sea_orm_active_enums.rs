@@ -43,8 +43,6 @@ pub enum Division {
 #[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]
 #[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "equipment")]
 pub enum Equipment {
-    #[sea_orm(string_value = "any")]
-    Any,
     #[sea_orm(string_value = "raw")]
     Raw,
     #[sea_orm(string_value = "wraps")]

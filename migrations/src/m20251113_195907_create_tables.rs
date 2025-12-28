@@ -66,7 +66,6 @@ impl MigrationTrait for Migration {
                 Type::create()
                     .as_enum(Equipment::Equipment)
                     .values([
-                        Equipment::Any,
                         Equipment::Raw,
                         Equipment::Wraps,
                         Equipment::Single,
@@ -260,7 +259,6 @@ enum Division {
 enum Equipment {
     Equipment,
 
-    Any,
     Raw,
     Wraps,
     Single,

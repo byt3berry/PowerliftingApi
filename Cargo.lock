@@ -2552,6 +2552,8 @@ dependencies = [
  "anyhow",
  "dotenvy",
  "migrations",
+ "pretty_assertions",
+ "rstest",
  "rust_decimal",
  "sea-orm",
  "tracing",

@@ -2,6 +2,7 @@ use crate::prelude::*;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct EntryDto {
+    pub rank: Option<i64>,
     pub name: UsernameDto,
     pub division: DivisionDto,
     pub equipment: EquipmentDto,
@@ -29,6 +30,7 @@ pub struct EntryDto {
 impl From<EntryDto> for ExportRow {
     fn from(value: EntryDto) -> ExportRow {
         Self {
+            rank: value.rank.map(|v| v.to_string()).unwrap_or_else(|| "None".to_string()),
             name: value.name.name.clone(),
             equipment: value.equipment.to_string(),
             sex: value.sex.to_string(),

@@ -1,6 +1,7 @@
 mod read_only_repository;
 mod write_only_repository;
 mod repository;
+mod traits;
 
 pub mod models;
 

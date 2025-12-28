@@ -2,11 +2,13 @@ use rust_decimal::Decimal;
 use sea_orm::ActiveValue::{NotSet, Set};
 use types::prelude::*;
 
+use crate::models::read::ranked_entry;
 use crate::models::types::{Division, Equipment, Sex, Username, Weight, WeightClass};
 use crate::models::{SeaActiveEntry, SeaEntry};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Entry {
+    pub rank: Option<i64>,
     pub name: Username,
     pub division: Division,
     pub equipment: Equipment,
@@ -34,6 +36,7 @@ pub struct Entry {
 impl From<EntryDto> for Entry {
     fn from(entry: EntryDto) -> Self {
         Self {
+            rank: entry.rank.into(),
             name: entry.name.into(),
             division: entry.division.into(),
             equipment : entry.equipment.into(),
@@ -63,6 +66,7 @@ impl From<EntryDto> for Entry {
 impl From<Entry> for EntryDto {
     fn from(entry: Entry) -> Self {
         Self {
+            rank: entry.rank.into(),
             name: entry.name.into(),
             division: entry.division.into(),
             equipment: entry.equipment.into(),
@@ -92,6 +96,37 @@ impl From<Entry> for EntryDto {
 impl From<SeaEntry> for Entry {
     fn from(value: SeaEntry) -> Self {
         Self {
+            rank: None,
+            name: value.name.into(),
+            division: value.division.into(),
+            equipment: value.equipment.into(),
+            sex: value.sex.into(),
+            bodyweight: value.bodyweight.into(),
+            weight_class: value.weight_class.map(Decimal::into),
+            squat1: value.squat1.map(Decimal::into),
+            squat2: value.squat2.map(Decimal::into),
+            squat3: value.squat3.map(Decimal::into),
+            squat4: value.squat4.map(Decimal::into),
+            bench1: value.bench1.map(Decimal::into),
+            bench2: value.bench2.map(Decimal::into),
+            bench3: value.bench3.map(Decimal::into),
+            bench4: value.bench4.map(Decimal::into),
+            deadlift1: value.deadlift1.map(Decimal::into),
+            deadlift2: value.deadlift2.map(Decimal::into),
+            deadlift3: value.deadlift3.map(Decimal::into),
+            deadlift4: value.deadlift4.map(Decimal::into),
+            best_squat: value.best_squat.map(Decimal::into),
+            best_bench: value.best_bench.map(Decimal::into),
+            best_deadlift: value.best_deadlift.map(Decimal::into),
+            total: value.total.map(Decimal::into),
+        }
+    }
+}
+
+impl From<ranked_entry::Model> for Entry {
+    fn from(value: ranked_entry::Model) -> Self {
+        Self {
+            rank: value.rank.into(),
             name: value.name.into(),
             division: value.division.into(),
             equipment: value.equipment.into(),

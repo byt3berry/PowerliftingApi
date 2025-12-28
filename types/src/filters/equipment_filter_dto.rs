@@ -4,10 +4,6 @@ use strum_macros::{Display, EnumIter};
 #[derive(Clone, Copy, Debug, Deserialize, Display, EnumIter, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum EquipmentFilterDto {
-    #[strum(to_string = "Any")]
-    #[serde(rename(deserialize = "Any"))]
-    Any,
-
     #[strum(to_string = "Raw")]
     #[serde(rename(deserialize = "Raw"))]
     Raw,

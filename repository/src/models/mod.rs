@@ -1,5 +1,6 @@
-mod scaffolded;
+pub(crate) mod scaffolded;
 pub mod types;
+pub mod read;
 
 pub(crate) use scaffolded::entries::ActiveModel as SeaActiveEntry;
 pub(crate) use scaffolded::entries::Column as SeaColumnEntry;

@@ -5,10 +5,6 @@ use types::prelude::EquipmentDto;
 #[derive(Clone, Copy, Debug, Deserialize, Display, EnumIter, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Equipment {
-    #[strum(to_string = "Any")]
-    #[serde(rename(deserialize = "Any"))]
-    Any,
-
     #[strum(to_string = "Raw")]
     #[serde(rename(deserialize = "Raw"))]
     Raw,
@@ -46,7 +42,6 @@ pub enum Equipment {
 impl From<Equipment> for EquipmentDto {
     fn from(value: Equipment) -> Self {
         match value {
-            Equipment::Any => Self::Any,
             Equipment::Raw => Self::Raw,
             Equipment::Wraps => Self::Wraps,
             Equipment::Single => Self::Single,
@@ -67,7 +62,6 @@ mod tests {
     use super::Equipment;
 
     #[rstest]
-    #[case("Any", Equipment::Any)]
     #[case("Raw", Equipment::Raw)]
     #[case("Wraps", Equipment::Wraps)]
     #[case("Single", Equipment::Single)]

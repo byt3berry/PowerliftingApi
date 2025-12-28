@@ -66,6 +66,7 @@ pub struct Entry {
 impl From<Entry> for EntryDto {
     fn from(value: Entry) -> Self {
         Self {
+            rank: None,
             name: value.name.into(),
             division: value.division.into(),
             equipment: value.equipment.into(),
