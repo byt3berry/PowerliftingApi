@@ -14,11 +14,11 @@ pub struct ReadOnlyRepository {
 }
 
 impl ReadOnlyRepository {
-    pub(crate) fn new(options: ConnectOptions) -> Result<Self> {
-        Ok(Self {
+    pub(crate) const fn new(options: ConnectOptions) -> Self {
+        Self {
             options,
             connection: None,
-        })
+        }
     }
 
     pub async fn connect(&mut self) -> Result<()> {
@@ -49,15 +49,15 @@ impl ReadOnlyRepository {
 
         if query.federation_choice != FederationFilterDto::Any {
             ranks_condition = ranks_condition.add(meet::Column::Federation.eq(query.federation_choice.to_string().to_lowercase()));
-        };
+        }
 
         if query.sex_choice != SexFilterDto::Any {
             ranks_condition = ranks_condition.add(ranked_entry::Column::Sex.eq(query.sex_choice.to_string().to_lowercase()));
-        };
+        }
 
         if query.division_choice != DivisionFilterDto::Any {
             ranks_condition = ranks_condition.add(ranked_entry::Column::Division.eq(query.division_choice.to_string().to_lowercase()));
-        };
+        }
 
         ranks_condition = ranks_condition.add(ranked_entry::Column::Equipment.eq(query.equipment_choice.to_string().to_lowercase()));
 

@@ -14,6 +14,6 @@ where
     U: IntoQualifiedColumn,
 {
     fn into_qualified(self) -> Vec<ColumnRef> {
-        self.map(|x| x.into_qualified()).collect()
+        self.map(IntoQualifiedColumn::into_qualified).collect()
     }
 }

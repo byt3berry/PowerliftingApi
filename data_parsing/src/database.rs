@@ -48,7 +48,7 @@ impl Database {
         Ok(data)
     }
 
-    fn from_entries_csv(path: &PathBuf, meet_data: Option<&MeetData>) -> Result<Vec<Entry>> {
+    fn from_entries_csv(path: &PathBuf) -> Result<Vec<Entry>> {
         if !path.exists() {
             bail!("path \"{}\" should exist", path.display());
         }
@@ -112,7 +112,7 @@ impl Database {
                     }
                 };
 
-                let entries = match Self::from_entries_csv(&entries_path, Some(&data)) {
+                let entries = match Self::from_entries_csv(&entries_path) {
                     Ok(entries) => entries,
                     Err(e) => {
                         warn!("file {} can't be used: {:?}", entries_path.display(), e);
@@ -177,7 +177,7 @@ mod tests {
     ) {
         let test_file: PathBuf = Path::new(TEST_PATH).join(entries);
 
-        let result: Result<Vec<Entry>> = Database::from_entries_csv(&test_file, None);
+        let result: Result<Vec<Entry>> = Database::from_entries_csv(&test_file);
 
         assert!(result.is_ok(), "{}", result.unwrap_err());
     }
@@ -192,7 +192,7 @@ mod tests {
     ) {
         let test_file: PathBuf = Path::new(TEST_PATH).join(file);
 
-        let result: Result<Vec<Entry>> = Database::from_entries_csv(&test_file, None);
+        let result: Result<Vec<Entry>> = Database::from_entries_csv(&test_file);
 
         assert!(result.is_err());
     }
@@ -224,7 +224,7 @@ mod tests {
             },
             ];
 
-        let result: Result<Vec<Entry>> = Database::from_entries_csv(&test_file, None);
+        let result: Result<Vec<Entry>> = Database::from_entries_csv(&test_file);
 
         assert!(result.is_ok());
         assert_eq!(expected, result.unwrap());
@@ -278,7 +278,7 @@ mod tests {
             },
             ];
 
-        let result: Result<Vec<Entry>> = Database::from_entries_csv(&test_file, None);
+        let result: Result<Vec<Entry>> = Database::from_entries_csv(&test_file);
 
         assert!(result.is_ok());
         assert_eq!(expected, result.unwrap());

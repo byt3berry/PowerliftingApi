@@ -18,7 +18,7 @@ impl Repository {
         let username: String = env::var("DATABASE_USERNAME").context("DATABASE_USERNAME must be set")?;
         let password: String = env::var("DATABASE_PASSWORD").context("DATABASE_PASSWORD must be set")?;
 
-        Ok(format!("postgres://{}:{}@{}/{}", username, password, host, DEFAULT_TABLE))
+        Ok(format!("postgres://{username}:{password}@{host}/{DEFAULT_TABLE}"))
     }
 
     fn build_connection_options() -> Result<ConnectOptions> {
@@ -40,12 +40,12 @@ impl Repository {
     pub fn write_only() -> Result<WriteOnlyRepository> {
         let options: ConnectOptions = Self::build_connection_options()?;
 
-        WriteOnlyRepository::new(options)
+        Ok(WriteOnlyRepository::new(options))
     }
 
     pub fn read_only() -> Result<ReadOnlyRepository> {
         let options: ConnectOptions = Self::build_connection_options()?;
 
-        ReadOnlyRepository::new(options)
+        Ok(ReadOnlyRepository::new(options))
     }
 }

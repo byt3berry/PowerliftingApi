@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use rust_decimal::Decimal;
 
 use crate::prelude::*;
@@ -8,11 +10,11 @@ pub enum WeightClassDto {
     Over(WeightDto),
 }
 
-impl ToString for WeightClassDto {
-    fn to_string(&self) -> String {
+impl Display for WeightClassDto {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            WeightClassDto::UnderOrEqual(weight) => weight.to_string(),
-            WeightClassDto::Over(weight) => weight.to_string(),
+            Self::UnderOrEqual(weight)
+                | Self::Over(weight) => f.write_str(&weight.to_string()),
         }
     }
 }
@@ -28,11 +30,11 @@ impl From<Decimal> for WeightClassDto {
     }
 }
 
-impl Into<Decimal> for WeightClassDto {
-    fn into(self) -> Decimal {
-        match self {
-            WeightClassDto::UnderOrEqual(weight) => weight.into(),
-            WeightClassDto::Over(weight) => weight.into(),
+impl From<WeightClassDto> for Decimal {
+    fn from(value: WeightClassDto) -> Self {
+        match value {
+            WeightClassDto::UnderOrEqual(weight)
+                | WeightClassDto::Over(weight) => weight.into(),
         }
     }
 }

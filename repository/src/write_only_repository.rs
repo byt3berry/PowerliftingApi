@@ -12,11 +12,11 @@ pub struct WriteOnlyRepository {
 }
 
 impl WriteOnlyRepository {
-    pub(crate) fn new(options: ConnectOptions) -> Result<Self> {
-        Ok(Self {
+    pub(crate) const fn new(options: ConnectOptions) -> Self {
+        Self {
             options,
             connection: None,
-        })
+        }
     }
 
     pub async fn connect(&mut self) -> Result<()> {
@@ -50,7 +50,7 @@ impl WriteOnlyRepository {
         };
 
         let meet_name: String = meet.data.name.clone();
-        info!("Inserting meet {}", meet_name);
+        info!("Inserting meet {meet_name}");
 
         connection.transaction::<_, (), Error>(|connection| {
             Box::pin(async move {
@@ -59,7 +59,7 @@ impl WriteOnlyRepository {
                     .exec_with_returning_keys(connection)
                     .await?
                     .first()
-                    .cloned();
+                    .copied();
 
                 if let Some(meet_id) = inserted_id {
                     for entry in meet.entries {
@@ -75,6 +75,6 @@ impl WriteOnlyRepository {
             })
         })
         .await
-        .context(format!("failed to insert meet {}", meet_name))
+        .context(format!("failed to insert meet {meet_name}"))
     }
 }

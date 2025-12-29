@@ -30,7 +30,7 @@ impl Username {
 
 impl From<Username> for UsernameDto {
     fn from(value: Username) -> Self {
-        UsernameDto::new(&value.name, value.parts)
+        Self::new(&value.name, value.parts)
     }
 }
 
