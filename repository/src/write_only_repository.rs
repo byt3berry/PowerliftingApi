@@ -4,8 +4,7 @@ use sea_orm::{ActiveModelTrait, ConnectOptions, Database, DatabaseConnection, En
 use tracing::info;
 use types::prelude::*;
 
-use crate::models::types::{Entry, Meet};
-use crate::models::{SeaActiveEntry, SeaActiveMeet, SeaColumnEntry, SeaEntityEntry, SeaEntityMeet};
+use crate::models::write::{entry, meet};
 
 pub struct WriteOnlyRepository {
     options: ConnectOptions,
@@ -55,8 +54,8 @@ impl WriteOnlyRepository {
 
         connection.transaction::<_, (), Error>(|connection| {
             Box::pin(async move {
-                let new_meet: SeaActiveMeet = Meet::from(meet.data).into();
-                let inserted_id: Option<i32> = SeaEntityMeet::insert(new_meet)
+                let new_meet: meet::ActiveModel = meet.data.into();
+                let inserted_id: Option<i32> = meet::Entity::insert(new_meet)
                     .exec_with_returning_keys(connection)
                     .await?
                     .first()
@@ -64,9 +63,9 @@ impl WriteOnlyRepository {
 
                 if let Some(meet_id) = inserted_id {
                     for entry in meet.entries {
-                        let mut new_entry: SeaActiveEntry = Entry::from(entry).into();
-                        new_entry.set(SeaColumnEntry::MeetId, meet_id.into());
-                        SeaEntityEntry::insert(new_entry)
+                        let mut new_entry: entry::ActiveModel = entry.into();
+                        new_entry.set(entry::Column::MeetId, meet_id.into());
+                        entry::Entity::insert(new_entry)
                             .exec(connection)
                             .await?;
                     }

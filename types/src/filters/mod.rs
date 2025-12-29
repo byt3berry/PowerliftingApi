@@ -1,8 +1,8 @@
 mod division_filter_dto;
 mod equipment_filter_dto;
 mod federation_filter_dto;
-mod sex_filter_dto;
 mod query_dto;
+mod sex_filter_dto;
 
 pub use division_filter_dto::DivisionFilterDto;
 pub use equipment_filter_dto::EquipmentFilterDto;

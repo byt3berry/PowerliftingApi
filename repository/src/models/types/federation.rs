@@ -1,12 +1,22 @@
-use types::prelude::*;
+use sea_orm::prelude::{DeriveActiveEnum, EnumIter};
+use types::prelude::FederationDto;
 
-use crate::models::SeaFederation;
-
+#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]
+#[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "federation")]
 pub enum Federation {
+    #[sea_orm(string_value = "ffforce")]
     Ffforce,
+
+    #[sea_orm(string_value = "epf")]
     Epf,
+
+    #[sea_orm(string_value = "ipf")]
     Ipf,
+
+    #[sea_orm(string_value = "ffhmfac")]
     Ffhmfac,
+
+    #[sea_orm(string_value = "other")]
     Other,
 }
 
@@ -18,30 +28,6 @@ impl From<FederationDto> for Federation {
             FederationDto::IPF => Self::Ipf,
             FederationDto::FFHMFAC => Self::Ffhmfac,
             FederationDto::OTHER => Self::Other,
-        }
-    }
-}
-
-impl From<SeaFederation> for Federation {
-    fn from(value: SeaFederation) -> Self {
-        match value {
-            SeaFederation::Ffforce => Self::Ffforce,
-            SeaFederation::Epf => Self::Epf,
-            SeaFederation::Ipf => Self::Ipf,
-            SeaFederation::Ffhmfac => Self::Ffhmfac,
-            SeaFederation::Other => Self::Other,
-        }
-    }
-}
-
-impl From<Federation> for SeaFederation {
-    fn from(value: Federation) -> Self {
-        match value {
-            Federation::Ffforce => Self::Ffforce,
-            Federation::Epf => Self::Epf,
-            Federation::Ipf => Self::Ipf,
-            Federation::Ffhmfac => Self::Ffhmfac,
-            Federation::Other => Self::Other,
         }
     }
 }

@@ -43,7 +43,6 @@ impl MigrationTrait for Migration {
                 Type::create()
                     .as_enum(Division::Division)
                     .values([
-                        Division::Any,
                         Division::Open,
                         Division::G,
                         Division::Cadet,
@@ -240,7 +239,6 @@ enum Country  {
 enum Division {
     Division,
 
-    Any,
     Open,
     G,
     Cadet,

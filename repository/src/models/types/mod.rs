@@ -1,22 +1,18 @@
 mod country;
 mod division;
-mod entry;
 mod equipment;
 mod federation;
-mod meet;
 mod sex;
 mod username;
 mod weight;
 mod weight_class;
 mod weight_class_kind;
 
-pub use country::Country;
-pub use division::Division;
-pub use entry::Entry;
-pub use equipment::Equipment;
-pub use federation::Federation;
-pub use meet::Meet;
-pub use sex::Sex;
+pub use country::{Country, CountryIter};
+pub use division::{Division, DivisionIter};
+pub use equipment::{Equipment, EquipmentIter};
+pub use federation::{Federation, FederationIter};
+pub use sex::{Sex, SexIter};
 pub use username::Username;
 pub use weight::Weight;
 pub use weight_class::WeightClass;

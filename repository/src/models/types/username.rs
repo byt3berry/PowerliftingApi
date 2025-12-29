@@ -12,7 +12,7 @@ impl Username {
             name: String::new(),
             parts: Vec::new(),
         }
-}
+    }
 
     #[must_use]
     pub fn new(name: &str, parts: Vec<String>) -> Self {

@@ -1,5 +1,6 @@
 use maud::{html, Markup, DOCTYPE};
 use strum::IntoEnumIterator;
+
 use types::filters::{DivisionFilterDto, EquipmentFilterDto, FederationFilterDto, SexFilterDto};
 
 pub mod powerlifters;

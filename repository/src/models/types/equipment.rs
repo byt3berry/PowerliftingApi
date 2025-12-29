@@ -1,17 +1,32 @@
-use types::prelude::*;
+use sea_orm::prelude::{DeriveActiveEnum, EnumIter};
+use types::prelude::EquipmentDto;
 
-use crate::models::SeaEquipment;
-
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]
+#[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "equipment")]
 pub enum Equipment {
+    #[sea_orm(string_value = "raw")]
     Raw,
+
+    #[sea_orm(string_value = "wraps")]
     Wraps,
+
+    #[sea_orm(string_value = "single")]
     Single,
+
+    #[sea_orm(string_value = "multi")]
     Multi,
+
+    #[sea_orm(string_value = "straps")]
     Straps,
+
+    #[sea_orm(string_value = "sleeves")]
     Sleeves,
+
+    #[sea_orm(string_value = "bare")]
     Bare,
-    Unlimited
+
+    #[sea_orm(string_value = "unlimited")]
+    Unlimited,
 }
 
 impl From<EquipmentDto> for Equipment {
@@ -30,36 +45,6 @@ impl From<EquipmentDto> for Equipment {
 }
 
 impl From<Equipment> for EquipmentDto {
-    fn from(value: Equipment) -> Self {
-        match value {
-            Equipment::Raw => Self::Raw,
-            Equipment::Wraps => Self::Wraps,
-            Equipment::Single => Self::Single,
-            Equipment::Multi => Self::Multi,
-            Equipment::Straps => Self::Straps,
-            Equipment::Sleeves => Self::Sleeves,
-            Equipment::Bare => Self::Bare,
-            Equipment::Unlimited => Self::Unlimited,
-        }
-    }
-}
-
-impl From<SeaEquipment> for Equipment {
-    fn from(value: SeaEquipment) -> Self {
-        match value {
-            SeaEquipment::Raw => Self::Raw,
-            SeaEquipment::Wraps => Self::Wraps,
-            SeaEquipment::Single => Self::Single,
-            SeaEquipment::Multi => Self::Multi,
-            SeaEquipment::Straps => Self::Straps,
-            SeaEquipment::Sleeves => Self::Sleeves,
-            SeaEquipment::Bare => Self::Bare,
-            SeaEquipment::Unlimited => Self::Unlimited,
-        }
-    }
-}
-
-impl From<Equipment> for SeaEquipment {
     fn from(value: Equipment) -> Self {
         match value {
             Equipment::Raw => Self::Raw,

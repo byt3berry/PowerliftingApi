@@ -1,33 +1,54 @@
-use types::prelude::*;
+use sea_orm::prelude::{DeriveActiveEnum, EnumIter};
+use types::prelude::DivisionDto;
 
-use crate::models::SeaDivision;
-
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]
+#[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "division")]
 pub enum Division {
-    Any,
+    #[sea_orm(string_value = "open")]
     Open,
+
+    #[sea_orm(string_value = "g")]
     G,
+
+    #[sea_orm(string_value = "cadet")]
     Cadet,
+
+    #[sea_orm(string_value = "elite")]
     Elite,
-    SubJuniors,
+
+    #[sea_orm(string_value = "subjuniors")]
+    Subjuniors,
+
+    #[sea_orm(string_value = "juniors")]
     Juniors,
+
+    #[sea_orm(string_value = "seniors")]
     Seniors,
+
+    #[sea_orm(string_value = "masters")]
     Masters,
+
+    #[sea_orm(string_value = "masters1")]
     Masters1,
+
+    #[sea_orm(string_value = "masters2")]
     Masters2,
+
+    #[sea_orm(string_value = "masters3")]
     Masters3,
-    Masters4
+
+    #[sea_orm(string_value = "masters4")]
+    Masters4,
 }
 
 impl From<DivisionDto> for Division {
     fn from(value: DivisionDto) -> Self {
         match value {
-            DivisionDto::Any => Self::Any,
             DivisionDto::Open => Self::Open,
             DivisionDto::G => Self::G,
             DivisionDto::Cadet => Self::Cadet,
             DivisionDto::Elite => Self::Elite,
-            DivisionDto::SubJuniors => Self::SubJuniors,
+            DivisionDto::SubJuniors => Self::Subjuniors,
             DivisionDto::Juniors => Self::Juniors,
             DivisionDto::Masters => Self::Masters,
             DivisionDto::Seniors => Self::Seniors,
@@ -42,52 +63,11 @@ impl From<DivisionDto> for Division {
 impl From<Division> for DivisionDto {
     fn from(value: Division) -> Self {
         match value {
-            Division::Any => Self::Any,
             Division::Open => Self::Open,
             Division::G => Self::G,
             Division::Cadet => Self::Cadet,
             Division::Elite => Self::Elite,
-            Division::SubJuniors => Self::SubJuniors,
-            Division::Juniors => Self::Juniors,
-            Division::Masters => Self::Masters,
-            Division::Seniors => Self::Seniors,
-            Division::Masters1 => Self::Masters1,
-            Division::Masters2 => Self::Masters2,
-            Division::Masters3 => Self::Masters3,
-            Division::Masters4 => Self::Masters4,
-        }
-    }
-}
-
-impl From<SeaDivision> for Division {
-    fn from(value: SeaDivision) -> Self {
-        match value {
-            SeaDivision::Any => Self::Any,
-            SeaDivision::Open => Self::Open,
-            SeaDivision::G => Self::G,
-            SeaDivision::Cadet => Self::Cadet,
-            SeaDivision::Elite => Self::Elite,
-            SeaDivision::Subjuniors => Self::SubJuniors,
-            SeaDivision::Juniors => Self::Juniors,
-            SeaDivision::Masters => Self::Masters,
-            SeaDivision::Seniors => Self::Seniors,
-            SeaDivision::Masters1 => Self::Masters1,
-            SeaDivision::Masters2 => Self::Masters2,
-            SeaDivision::Masters3 => Self::Masters3,
-            SeaDivision::Masters4 => Self::Masters4,
-        }
-    }
-}
-
-impl From<Division> for SeaDivision {
-    fn from(value: Division) -> Self {
-        match value {
-            Division::Any => Self::Any,
-            Division::Open => Self::Open,
-            Division::G => Self::G,
-            Division::Cadet => Self::Cadet,
-            Division::Elite => Self::Elite,
-            Division::SubJuniors => Self::Subjuniors,
+            Division::Subjuniors => Self::SubJuniors,
             Division::Juniors => Self::Juniors,
             Division::Masters => Self::Masters,
             Division::Seniors => Self::Seniors,

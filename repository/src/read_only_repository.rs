@@ -5,9 +5,7 @@ use tracing::debug;
 use types::filters::{DivisionFilterDto, FederationFilterDto, QueryDto, SexFilterDto};
 use types::prelude::EntryDto;
 
-use crate::models::read::{ranked_entry};
-use crate::models::types::Entry;
-use crate::models::{SeaColumnEntry, SeaColumnMeet, SeaEntityEntry, SeaEntityMeet};
+use crate::models::read::{meet, ranked_entry};
 use crate::traits::{IntoQualifiedColumn, QualifiedColumn};
 
 pub struct ReadOnlyRepository {
@@ -47,39 +45,38 @@ impl ReadOnlyRepository {
         };
 
         let mut ranks_condition: Condition = Condition::all()
-            .add(SeaColumnEntry::Total.is_not_null());
+            .add(ranked_entry::Column::Total.is_not_null());
 
         if query.federation_choice != FederationFilterDto::Any {
-            ranks_condition = ranks_condition.add(SeaColumnMeet::Federation.eq(query.federation_choice.to_string().to_lowercase()));
+            ranks_condition = ranks_condition.add(meet::Column::Federation.eq(query.federation_choice.to_string().to_lowercase()));
         };
 
         if query.sex_choice != SexFilterDto::Any {
-            ranks_condition = ranks_condition.add(SeaColumnEntry::Sex.eq(query.sex_choice.to_string().to_lowercase()));
+            ranks_condition = ranks_condition.add(ranked_entry::Column::Sex.eq(query.sex_choice.to_string().to_lowercase()));
         };
 
         if query.division_choice != DivisionFilterDto::Any {
-            ranks_condition = ranks_condition.add(SeaColumnEntry::Division.eq(query.division_choice.to_string().to_lowercase()));
+            ranks_condition = ranks_condition.add(ranked_entry::Column::Division.eq(query.division_choice.to_string().to_lowercase()));
         };
 
-        ranks_condition = ranks_condition.add(SeaColumnEntry::Equipment.eq(query.equipment_choice.to_string().to_lowercase()));
+        ranks_condition = ranks_condition.add(ranked_entry::Column::Equipment.eq(query.equipment_choice.to_string().to_lowercase()));
 
         let ranks: SelectStatement = Query::select()
-            .from(SeaEntityEntry)
-            .distinct_on([SeaColumnEntry::Name.into_qualified()])
-            .qualified_column(SeaColumnEntry::Id)
-            .qualified_column(SeaColumnEntry::Name)
-            .qualified_column(SeaColumnEntry::Total)
+            .from(ranked_entry::Entity)
+            .distinct_on([ranked_entry::Column::Name.into_qualified()])
+            .qualified_column(ranked_entry::Column::Id)
+            .qualified_column(ranked_entry::Column::Name)
+            .qualified_column(ranked_entry::Column::Total)
             .join(
                 JoinType::LeftJoin, 
-                SeaEntityMeet,
-                Expr::col(SeaColumnEntry::MeetId.into_qualified())
-                    .equals(SeaColumnMeet::Id.into_qualified())
+                meet::Entity,
+                Expr::col(ranked_entry::Column::MeetId.into_qualified())
+                    .equals(meet::Column::Id.into_qualified())
             )
             .cond_where(ranks_condition)
             .order_by_columns([
-                (SeaColumnEntry::Name.into_qualified(), Order::Asc),
-                (SeaColumnEntry::Total.into_qualified(), Order::Desc),
-                // (ColumnRef::Column(ranked_entry::Column::Rank.into_iden()), Order::Asc),
+                (ranked_entry::Column::Name.into_qualified(), Order::Asc),
+                (ranked_entry::Column::Total.into_qualified(), Order::Desc),
             ])
             .to_owned();
 
@@ -91,7 +88,7 @@ impl ReadOnlyRepository {
                 ranked_entry::Column::Rank,
             )
             .order_by_columns([
-                (SeaColumnEntry::Total, Order::Desc),
+                (ranked_entry::Column::Total, Order::Desc),
             ])
             .to_owned();
 
@@ -101,45 +98,45 @@ impl ReadOnlyRepository {
             let mut part_condition = Condition::all();
 
             for part in line.split_whitespace() {
-                part_condition = part_condition.add(SeaColumnEntry::Name.contains(part));
+                part_condition = part_condition.add(ranked_entry::Column::Name.contains(part));
             }
 
             condition = condition.add(part_condition);
         }
 
         let result: SelectStatement = Query::select()
-            .from(SeaEntityEntry)
+            .from(ranked_entry::Entity)
             .column(ranked_entry::Column::Rank)
-            .qualified_column(SeaColumnEntry::Id)
-            .qualified_column(SeaColumnEntry::MeetId)
-            .qualified_column(SeaColumnEntry::Name)
-            .qualified_column_casted(SeaColumnEntry::Division, "text")
-            .qualified_column_casted(SeaColumnEntry::Equipment, "text")
-            .qualified_column_casted(SeaColumnEntry::Sex, "text")
-            .qualified_column(SeaColumnEntry::Bodyweight)
-            .qualified_column(SeaColumnEntry::WeightClass)
-            .qualified_column(SeaColumnEntry::Squat1)
-            .qualified_column(SeaColumnEntry::Squat2)
-            .qualified_column(SeaColumnEntry::Squat3)
-            .qualified_column(SeaColumnEntry::Squat4)
-            .qualified_column(SeaColumnEntry::Bench1)
-            .qualified_column(SeaColumnEntry::Bench2)
-            .qualified_column(SeaColumnEntry::Bench3)
-            .qualified_column(SeaColumnEntry::Bench4)
-            .qualified_column(SeaColumnEntry::Deadlift1)
-            .qualified_column(SeaColumnEntry::Deadlift2)
-            .qualified_column(SeaColumnEntry::Deadlift3)
-            .qualified_column(SeaColumnEntry::Deadlift4)
-            .qualified_column(SeaColumnEntry::BestSquat)
-            .qualified_column(SeaColumnEntry::BestBench)
-            .qualified_column(SeaColumnEntry::BestDeadlift)
-            .qualified_column(SeaColumnEntry::Total)
+            .qualified_column(ranked_entry::Column::Id)
+            .qualified_column(ranked_entry::Column::MeetId)
+            .qualified_column(ranked_entry::Column::Name)
+            .qualified_column_casted(ranked_entry::Column::Division, "text")
+            .qualified_column_casted(ranked_entry::Column::Equipment, "text")
+            .qualified_column_casted(ranked_entry::Column::Sex, "text")
+            .qualified_column(ranked_entry::Column::Bodyweight)
+            .qualified_column(ranked_entry::Column::WeightClass)
+            .qualified_column(ranked_entry::Column::Squat1)
+            .qualified_column(ranked_entry::Column::Squat2)
+            .qualified_column(ranked_entry::Column::Squat3)
+            .qualified_column(ranked_entry::Column::Squat4)
+            .qualified_column(ranked_entry::Column::Bench1)
+            .qualified_column(ranked_entry::Column::Bench2)
+            .qualified_column(ranked_entry::Column::Bench3)
+            .qualified_column(ranked_entry::Column::Bench4)
+            .qualified_column(ranked_entry::Column::Deadlift1)
+            .qualified_column(ranked_entry::Column::Deadlift2)
+            .qualified_column(ranked_entry::Column::Deadlift3)
+            .qualified_column(ranked_entry::Column::Deadlift4)
+            .qualified_column(ranked_entry::Column::BestSquat)
+            .qualified_column(ranked_entry::Column::BestBench)
+            .qualified_column(ranked_entry::Column::BestDeadlift)
+            .qualified_column(ranked_entry::Column::Total)
             .join_subquery(
                 JoinType::RightJoin, 
                 ranks,
                 "ranks", 
                 Expr::col(("ranks", ranked_entry::Column::Id))
-                .equals(SeaColumnEntry::Id.into_qualified())
+                .equals(ranked_entry::Column::Id.into_qualified())
             )
             .order_by(ranked_entry::Column::Rank, sea_orm::Order::Asc)
             .cond_where(condition)
@@ -152,8 +149,7 @@ impl ReadOnlyRepository {
             .all(connection)
             .await?
             .into_iter()
-            .map(Entry::from)
-            .map(EntryDto::from)
+            .map(ranked_entry::Model::into)
             .collect();
 
         Ok(sea_entries)

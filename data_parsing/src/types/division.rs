@@ -5,10 +5,6 @@ use types::prelude::DivisionDto;
 #[derive(Clone, Copy, Debug, Display, Deserialize, Eq, EnumIter, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Division {
-    #[strum(to_string = "Any")]
-    #[serde(rename(deserialize = "Any"))]
-    Any,
-
     #[strum(to_string = "Open")]
     #[serde(rename(deserialize = "Open"))]
     Open,
@@ -66,7 +62,6 @@ pub enum Division {
 impl From<Division> for DivisionDto {
     fn from(value: Division) -> Self {
         match value {
-            Division::Any => Self::Any,
             Division::Open => Self::Open,
             Division::G => Self::G,
             Division::Cadet => Self::Cadet,

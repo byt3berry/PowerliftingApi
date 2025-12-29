@@ -1,28 +1,14 @@
-use types::prelude::*;
+use sea_orm::prelude::{DeriveActiveEnum, EnumIter};
+use types::prelude::CountryDto;
 
-use crate::models::SeaCountry;
-
+#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]
+#[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "country")]
 pub enum Country {
+    #[sea_orm(string_value = "france")]
     France,
+
+    #[sea_orm(string_value = "other")]
     Other,
-}
-
-impl From<SeaCountry> for Country {
-    fn from(value: SeaCountry) -> Self {
-        match value {
-            SeaCountry::France => Self::France,
-            SeaCountry::Other => Self::Other,
-        }
-    }
-}
-
-impl From<Country> for SeaCountry {
-    fn from(value: Country) -> Self {
-        match value {
-            Country::France => Self::France,
-            Country::Other => Self::Other,
-        }
-    }
 }
 
 impl From<CountryDto> for Country {

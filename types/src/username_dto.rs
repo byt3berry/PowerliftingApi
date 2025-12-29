@@ -20,3 +20,21 @@ impl UsernameDto {
         }
     }
 }
+
+impl From<String> for UsernameDto {
+    fn from(value: String) -> Self {
+        let parts: Vec<String> = value
+            .split_whitespace()
+            .filter(|w| !w.is_empty())
+            .map(str::to_lowercase)
+            .collect();
+
+        Self::new(&value, parts)
+    }
+}
+
+impl From<UsernameDto> for String {
+    fn from(value: UsernameDto) -> Self {
+        value.name
+    }
+}
