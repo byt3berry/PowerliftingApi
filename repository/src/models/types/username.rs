@@ -3,7 +3,7 @@ use types::prelude::UsernameDto;
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Username {
     pub name: String,
-    parts: Vec<String>,
+    pub parts: Vec<String>,
 }
 
 impl Username {

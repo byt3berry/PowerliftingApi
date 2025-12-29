@@ -1,11 +1,13 @@
 use anyhow::{bail, Context, Result};
-use migrations::{Asterisk, Expr, Query, SelectStatement};
+use migrations::extension::postgres::PgExpr;
+use migrations::{Asterisk, Expr, Func, Query, SelectStatement};
 use sea_orm::{ColumnTrait, Condition, ConnectOptions, ConnectionTrait, Database, DatabaseConnection, EntityTrait, JoinType, Order, Statement};
 use tracing::debug;
 use types::filters::{DivisionFilterDto, FederationFilterDto, QueryDto, SexFilterDto};
-use types::prelude::EntryDto;
+use types::prelude::{EntryDto, UsernameDto};
 
 use crate::models::read::{meet, ranked_entry};
+use crate::models::types::Username;
 use crate::traits::{IntoQualifiedColumn, QualifiedColumn};
 
 pub struct ReadOnlyRepository {
@@ -98,7 +100,8 @@ impl ReadOnlyRepository {
             let mut part_condition = Condition::all();
 
             for part in line.split_whitespace() {
-                part_condition = part_condition.add(ranked_entry::Column::Name.contains(part));
+                let format: String = format!("%{part}%");
+                part_condition = part_condition.add(Expr::column(("ranks", ranked_entry::Column::Name)).ilike(format));
             }
 
             condition = condition.add(part_condition);
@@ -151,7 +154,32 @@ impl ReadOnlyRepository {
             .into_iter()
             .map(ranked_entry::Model::into)
             .collect();
+        let mut output: Vec<EntryDto> = Vec::new();
 
-        Ok(sea_entries)
+        for powerlifter in query.powerlifters.lines() {
+            let username: Username = Username::from(powerlifter.to_string());
+            let entry: Option<EntryDto> = sea_entries
+                .iter()
+                .find(|x| {
+                    if x.name.parts.len() < username.parts.len() {
+                        return false;
+                    }
+
+                    for part in &username.parts {
+                        if !x.name.parts.contains(part) {
+                            return false;
+                        }
+                    }
+
+                    true
+                })
+            .cloned();
+
+            if let Some(entry) = entry {
+                output.push(entry);
+            }
+        }
+
+        Ok(output)
     }
 }
