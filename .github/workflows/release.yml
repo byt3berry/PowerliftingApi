@@ -25,8 +25,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: powerlifting_api
-          path: ${{ github.workspace }}/target/release/powerlifting_api
+          name: powerlifting_api_artifact
+          path: ${{ github.workspace }}/target/release/backend
 
   release:
     name: Create release
@@ -38,7 +38,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: powerlifting_api
+          name: powerlifting_api_artifact
 
       - name: Get version from Cargo.toml
         id: version
@@ -62,7 +62,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          overwrite: true
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: powerlifting_api
+          asset_path: powerlifting_api_artifact
           asset_name: powerlifting-api-linux-x86_64
           asset_content_type: application/octet-stream
