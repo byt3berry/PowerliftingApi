@@ -9,12 +9,7 @@ const SCALE: u32 = 4;
 pub struct WeightDto(pub Decimal);
 
 impl WeightDto {
-    #[must_use]
-    pub fn is_zero(self) -> bool {
-        self == Self::from(0.)
-    }
-
-    pub fn zero() -> Self {
+    fn zero() -> Self {
         Self::from(Decimal::zero())
     }
 }

@@ -1,13 +1,14 @@
 use anyhow::{bail, Context, Result};
 use migrations::extension::postgres::PgExpr;
-use migrations::{Asterisk, Expr, Func, Query, SelectStatement};
+use migrations::{Asterisk, Expr, Query, SelectStatement};
 use sea_orm::{ColumnTrait, Condition, ConnectOptions, ConnectionTrait, Database, DatabaseConnection, EntityTrait, JoinType, Order, Statement};
 use tracing::debug;
+
 use types::filters::{DivisionFilterDto, FederationFilterDto, QueryDto, SexFilterDto};
-use types::prelude::{EntryDto, UsernameDto};
+use types::prelude::EntryDto;
 
 use crate::models::read::{meet, ranked_entry};
-use crate::models::types::Username;
+use crate::models::types::{RankedEntry, Username};
 use crate::traits::{IntoQualifiedColumn, QualifiedColumn};
 
 pub struct ReadOnlyRepository {
@@ -148,17 +149,16 @@ impl ReadOnlyRepository {
         let statement: Statement = connection.get_database_backend().build(&result);
         debug!("sql query:\n{:?}", statement.to_string());
         let result = ranked_entry::Entity::find().from_raw_sql(statement);
-        let sea_entries: Vec<EntryDto> = result
+        let sea_entries: Vec<RankedEntry> = result
+            .into_model::<RankedEntry>()
             .all(connection)
-            .await?
-            .into_iter()
-            .map(ranked_entry::Model::into)
-            .collect();
+            .await?;
+
         let mut output: Vec<EntryDto> = Vec::new();
 
         for powerlifter in query.powerlifters.lines() {
             let username: Username = Username::from(powerlifter.to_string());
-            let entry: Option<EntryDto> = sea_entries
+            let entry: Option<RankedEntry> = sea_entries
                 .iter()
                 .find(|x| {
                     if x.name.parts.len() < username.parts.len() {
@@ -173,10 +173,10 @@ impl ReadOnlyRepository {
 
                     true
                 })
-            .cloned();
+                .cloned();
 
             if let Some(entry) = entry {
-                output.push(entry);
+                output.push(entry.into());
             }
         }
 

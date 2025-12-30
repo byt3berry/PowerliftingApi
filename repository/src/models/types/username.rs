@@ -1,9 +1,17 @@
+use sea_orm::TryGetable;
 use types::prelude::UsernameDto;
 
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Username {
     pub name: String,
     pub parts: Vec<String>,
+}
+
+impl TryGetable for Username {
+    fn try_get_by<I: sea_orm::ColIdx>(res: &sea_orm::QueryResult, index: I) -> Result<Self, sea_orm::TryGetError> {
+        let output = String::try_get_by(res, index)?;
+        Ok(output.into())
+    }
 }
 
 impl Username {
@@ -44,11 +52,5 @@ impl From<String> for Username {
             .collect();
 
         Self::new(&value, parts)
-    }
-}
-
-impl From<Username> for String {
-    fn from(value: Username) -> Self {
-        value.name
     }
 }

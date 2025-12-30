@@ -19,17 +19,6 @@ impl Display for WeightClassDto {
     }
 }
 
-impl From<Decimal> for WeightClassDto {
-    fn from(mut value: Decimal) -> Self {
-        if value.is_sign_positive() {
-            Self::Over(value.into())
-        } else {
-            value.set_sign_negative(true);
-            Self::UnderOrEqual(value.into())
-        }
-    }
-}
-
 impl From<WeightClassDto> for Decimal {
     fn from(value: WeightClassDto) -> Self {
         match value {
