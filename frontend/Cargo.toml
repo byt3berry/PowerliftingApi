@@ -1,10 +1,10 @@
 [package]
 name = "frontend"
-version = "0.1.0"
 edition = "2024"
+version.workspace = true
 
 [dependencies]
 anyhow = "1.0.98"
 maud = { version = "*", features = ["actix-web"] }
 strum = "0.27.2"
-types = { version = "0.1.0", path = "../types" }
+types = { version = "0.8.0", path = "../types" }

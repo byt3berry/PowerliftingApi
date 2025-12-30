@@ -1,8 +1,8 @@
 [package]
 name = "migrations"
-version = "0.1.0"
 edition = "2021"
 publish = false
+version.workspace = true
 
 [dependencies]
 async-std = { version = "1", features = ["attributes", "tokio1"] }

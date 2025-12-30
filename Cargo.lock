@@ -534,7 +534,7 @@ checksum = "c08606f8c3cbf4ce6ec8e28fb0014a2c086708fe954eaa885384a6165172e7e8"
 
 [[package]]
 name = "backend"
-version = "0.7.0"
+version = "0.8.0"
 dependencies = [
  "actix-files",
  "actix-htmx",
@@ -967,7 +967,7 @@ dependencies = [
 
 [[package]]
 name = "data_parsing"
-version = "0.1.0"
+version = "0.8.0"
 dependencies = [
  "anyhow",
  "csv",
@@ -1228,7 +1228,7 @@ dependencies = [
 
 [[package]]
 name = "frontend"
-version = "0.1.0"
+version = "0.8.0"
 dependencies = [
  "anyhow",
  "maud",
@@ -1946,7 +1946,7 @@ checksum = "32a282da65faaf38286cf3be983213fcf1d2e2a58700e808f83f4ea9a4804bc0"
 
 [[package]]
 name = "migrations"
-version = "0.1.0"
+version = "0.8.0"
 dependencies = [
  "async-std",
  "sea-orm",
@@ -2547,7 +2547,7 @@ dependencies = [
 
 [[package]]
 name = "repository"
-version = "0.1.0"
+version = "0.8.0"
 dependencies = [
  "anyhow",
  "dotenvy",
@@ -2891,7 +2891,7 @@ checksum = "1c107b6f4780854c8b126e228ea8869f4d7b71260f962fefb57b996b8959ba6b"
 
 [[package]]
 name = "search"
-version = "0.1.0"
+version = "0.8.0"
 dependencies = [
  "anyhow",
  "repository",
@@ -3652,7 +3652,7 @@ checksum = "1dccffe3ce07af9386bfd29e80c0ab1a8205a2fc34e4bcd40364df902cfa8f3f"
 
 [[package]]
 name = "types"
-version = "0.1.0"
+version = "0.8.0"
 dependencies = [
  "anyhow",
  "pretty_assertions",
