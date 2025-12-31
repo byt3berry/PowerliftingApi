@@ -10,11 +10,11 @@ actix-htmx = "0.3.0"
 actix-web = "4.11.0"
 anyhow = "1.0.98"
 clap = { version = "4.5.41", features = ["derive"] }
-data_parsing = { version = "0.8.0", path="../data_parsing/" }
+data_parsing = { path="../data_parsing/" }
 dotenvy = "0.15.7"
 env_logger = "0.11.8"
-frontend = { version = "0.8.0", path = "../frontend" }
+frontend = { path = "../frontend" }
 log = "0.4.27"
-repository = { version = "0.8.0", path = "../repository" }
-search = { version = "0.8.0", path="../search/" }
-types = { version = "0.8.0", path="../types/" }
+repository = { path = "../repository" }
+search = { path="../search/" }
+types = { path="../types/" }

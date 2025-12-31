@@ -10,8 +10,8 @@ rstest = "0.25.0"
 [dependencies]
 anyhow = "1.0.100"
 dotenvy = "0.15.7"
-migrations = { version = "0.8.0", path="../migrations/" }
+migrations = { path="../migrations/" }
 rust_decimal = "1.39.0"
 sea-orm = { version = "1.1.19", features = ["runtime-tokio-native-tls", "sqlx-postgres"] }
 tracing = "0.1.41"
-types = { version = "0.8.0", path="../types/" }
+types = { path="../types/" }

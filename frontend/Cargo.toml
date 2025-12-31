@@ -7,4 +7,4 @@ version.workspace = true
 anyhow = "1.0.98"
 maud = { version = "*", features = ["actix-web"] }
 strum = "0.27.2"
-types = { version = "0.8.0", path = "../types" }
+types = { path = "../types" }
