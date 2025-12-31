@@ -7,24 +7,22 @@ use tracing::info;
 
 use crate::{ReadOnlyRepository, WriteOnlyRepository};
 
-const DEFAULT_SCHEMA: &str = "public";
-const DEFAULT_TABLE: &str = "powerlifting_api_data";
-
 pub struct Repository;
 
 impl Repository {
     fn build_connection_string() -> Result<String> {
         let host: String = env::var("DATABASE_HOST").context("DATABASE_HOST must be set")?;
+        let database: String = env::var("DATABASE_NAME").context("DATABASE_NAME must be set")?;
         let username: String = env::var("DATABASE_USERNAME").context("DATABASE_USERNAME must be set")?;
         let password: String = env::var("DATABASE_PASSWORD").context("DATABASE_PASSWORD must be set")?;
 
-        Ok(format!("postgres://{username}:{password}@{host}/{DEFAULT_TABLE}"))
+        Ok(format!("postgres://{username}:{password}@{host}/{database}"))
     }
 
     fn build_connection_options() -> Result<ConnectOptions> {
         dotenv()?;
         let connection_string = Self::build_connection_string()?;
-        let database_schema = env::var("DATABASE_SCHEMA").unwrap_or_else(|_| DEFAULT_SCHEMA.to_string());
+        let database_schema = env::var("DATABASE_SCHEMA").context("DATABASE_PASSWORD must be set")?;
 
         info!("Repository setting up for {}", connection_string);
         let mut connection: ConnectOptions = ConnectOptions::new(connection_string);
