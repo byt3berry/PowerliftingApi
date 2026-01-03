@@ -1,7 +1,7 @@
-use sea_orm::prelude::{DeriveActiveEnum, EnumIter};
+use sea_orm::prelude::{DeriveActiveEnum, DeriveDisplay, EnumIter};
 use types::prelude::FederationDto;
 
-#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]
+#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveDisplay, DeriveActiveEnum)]
 #[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "federation")]
 pub enum Federation {
     #[sea_orm(string_value = "ffforce")]

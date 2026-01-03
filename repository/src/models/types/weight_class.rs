@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use rust_decimal::Decimal;
 use sea_orm::TryGetable;
 use types::prelude::*;
@@ -14,6 +16,21 @@ impl TryGetable for WeightClass {
     fn try_get_by<I: sea_orm::ColIdx>(res: &sea_orm::QueryResult, index: I) -> Result<Self, sea_orm::TryGetError> {
         let output = Decimal::try_get_by(res, index)?;
         Ok(output.into())
+    }
+}
+
+impl Display for WeightClass {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            WeightClass::UnderOrEqual(weight) => {
+                f.write_str("-")?;
+                weight.fmt(f)
+            },
+            WeightClass::Over(weight) => {
+                f.write_str("+")?;
+                weight.fmt(f)
+            }
+        }
     }
 }
 

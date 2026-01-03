@@ -1,18 +1,18 @@
-use rust_decimal::Decimal;
 use sea_orm::FromQueryResult;
 
-use types::prelude::EntryDto;
+use types::prelude::{EntryDto, ExportRow};
 
-use crate::models::types::{Division, Equipment, Sex, Username, Weight, WeightClass};
+use crate::models::types::{Division, Equipment, Federation, Sex, Username, Weight, WeightClass};
 
 #[derive(Clone, Debug, Eq, PartialEq, FromQueryResult)]
-pub struct RankedEntry {
+pub struct SearchResult {
     pub rank: i64,
     pub name: Username,
+    pub federation: Federation,
     pub division: Division,
     pub equipment: Equipment,
     pub sex: Sex,
-    pub bodyweight: Decimal,
+    pub bodyweight: Weight,
     pub weight_class: Option<WeightClass>,
     pub squat1: Option<Weight>,
     pub squat2: Option<Weight>,
@@ -32,8 +32,8 @@ pub struct RankedEntry {
     pub total: Option<Weight>,
 }
 
-impl From<RankedEntry> for EntryDto {
-    fn from(value: RankedEntry) -> Self {
+impl From<SearchResult> for EntryDto {
+    fn from(value: SearchResult) -> Self {
         Self {
             rank: value.rank.into(),
             name: value.name.into(),
@@ -58,6 +58,26 @@ impl From<RankedEntry> for EntryDto {
             best_bench: value.best_bench.map(Weight::into),
             best_deadlift: value.best_deadlift.map(Weight::into),
             total: value.total.map(Weight::into),
+        }
+    }
+}
+
+impl From<SearchResult> for ExportRow {
+    fn from(value: SearchResult) -> Self {
+        Self {
+            rank: value.rank.to_string(),
+            federation: value.federation.to_string(),
+            name: value.name.name.clone(),
+            equipment: value.equipment.to_string(),
+            sex: value.sex.to_string(),
+            division: value.division.to_string(),
+            bodyweight: value.bodyweight.0.to_string(),
+            weight_class: value.weight_class.map_or_else(|| Self::DEFAULT_OUTPUT.to_string(), |v| v.to_string()),
+            best_squat: value.best_squat.map_or_else(|| Self::DEFAULT_OUTPUT.to_string(), |v| v.to_string()),
+            best_bench: value.best_bench.map_or_else(|| Self::DEFAULT_OUTPUT.to_string(), |v| v.to_string()),
+            best_deadlift: value.best_deadlift.map_or_else(|| Self::DEFAULT_OUTPUT.to_string(), |v| v.to_string()),
+            total: value.total.map_or_else(|| Self::DEFAULT_OUTPUT.to_string(), |v| v.to_string()),
+            ..Default::default()
         }
     }
 }

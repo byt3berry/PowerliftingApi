@@ -122,7 +122,7 @@ impl Database {
 
                 Result::Ok(Meet::new(data, entries))
             })
-        .filter_map(Result::ok)
+            .filter_map(Result::ok)
             .collect();
 
         Ok(Self(meets))

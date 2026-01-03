@@ -30,7 +30,7 @@ pub fn build_table(data: Vec<ExportRow>) -> Markup {
                 tr {
                     td { (row.rank) }
                     td { (row.name) }
-                    td { "FFForce" }
+                    td { (row.federation) }
                     td { (row.division) }
                     td { (row.sex) }
                     td { (row.equipment) }

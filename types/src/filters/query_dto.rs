@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 use crate::filters::{DivisionFilterDto, EquipmentFilterDto, FederationFilterDto, SexFilterDto};
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct QueryDto {
     pub federation_choice: FederationFilterDto,
     pub equipment_choice: EquipmentFilterDto,

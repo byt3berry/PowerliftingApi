@@ -1,7 +1,8 @@
+use sea_orm::DeriveDisplay;
 use sea_orm::prelude::{DeriveActiveEnum, EnumIter};
 use types::prelude::SexDto;
 
-#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]
+#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveDisplay, DeriveActiveEnum)]
 #[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "sex")]
 pub enum Sex {
     #[sea_orm(string_value = "m")]

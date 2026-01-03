@@ -4,12 +4,10 @@ use migrations::{Asterisk, Expr, Query, SelectStatement};
 use sea_orm::{ColumnTrait, Condition, ConnectOptions, ConnectionTrait, Database, DatabaseConnection, EntityTrait, JoinType, Order, Statement};
 use tracing::debug;
 
-use types::filters::{DivisionFilterDto, FederationFilterDto, QueryDto, SexFilterDto};
-use types::prelude::EntryDto;
-
+use crate::filters::{QueryFilter};
 use crate::models::read::{meet, ranked_entry};
-use crate::models::types::{RankedEntry, Username};
-use crate::traits::{IntoQualifiedColumn, QualifiedColumn};
+use crate::models::types::SearchResult;
+use crate::traits::{MatchFilter, IntoQualifiedColumn, QualifiedColumn};
 
 pub struct ReadOnlyRepository {
     options: ConnectOptions,
@@ -42,7 +40,7 @@ impl ReadOnlyRepository {
         Ok(())
     }
 
-    pub async fn search(&self, query: &QueryDto) -> Result<Vec<EntryDto>> {
+    pub async fn search(&self, query: &QueryFilter) -> Result<Vec<SearchResult>> {
         let Some(ref connection) = self.connection else {
             bail!("Can't insert meet without connecting to the database")
         };
@@ -50,19 +48,11 @@ impl ReadOnlyRepository {
         let mut ranks_condition: Condition = Condition::all()
             .add(ranked_entry::Column::Total.is_not_null());
 
-        if query.federation_choice != FederationFilterDto::Any {
-            ranks_condition = ranks_condition.add(meet::Column::Federation.eq(query.federation_choice.to_string().to_lowercase()));
-        }
-
-        if query.sex_choice != SexFilterDto::Any {
-            ranks_condition = ranks_condition.add(ranked_entry::Column::Sex.eq(query.sex_choice.to_string().to_lowercase()));
-        }
-
-        if query.division_choice != DivisionFilterDto::Any {
-            ranks_condition = ranks_condition.add(ranked_entry::Column::Division.eq(query.division_choice.to_string().to_lowercase()));
-        }
-
-        ranks_condition = ranks_condition.add(ranked_entry::Column::Equipment.eq(query.equipment_choice.to_string().to_lowercase()));
+        ranks_condition = ranks_condition
+            .add_option(query.federation_choice.eq(meet::Column::Federation))
+            .add_option(query.sex_choice.eq(ranked_entry::Column::Sex))
+            .add_option(query.division_choice.eq(ranked_entry::Column::Division))
+            .add_option(query.equipment_choice.eq(ranked_entry::Column::Equipment));
 
         let ranks: SelectStatement = Query::select()
             .from(ranked_entry::Entity)
@@ -70,6 +60,7 @@ impl ReadOnlyRepository {
             .qualified_column(ranked_entry::Column::Id)
             .qualified_column(ranked_entry::Column::Name)
             .qualified_column(ranked_entry::Column::Total)
+            .qualified_column_casted(meet::Column::Federation, "text")
             .join(
                 JoinType::LeftJoin, 
                 meet::Entity,
@@ -83,7 +74,7 @@ impl ReadOnlyRepository {
             ])
             .to_owned();
 
-        let ranks: SelectStatement =Query::select()
+        let ranks: SelectStatement = Query::select()
             .from_subquery(ranks, "ranks")
             .column(Asterisk)
             .expr_as(
@@ -97,10 +88,10 @@ impl ReadOnlyRepository {
 
         let mut condition: Condition = Condition::any();
 
-        for line in query.powerlifters.lines() {
+        for powerlifter in query.powerlifters.iter() {
             let mut part_condition = Condition::all();
 
-            for part in line.split_whitespace() {
+            for part in &powerlifter.parts {
                 let format: String = format!("%{part}%");
                 part_condition = part_condition.add(Expr::column(("ranks", ranked_entry::Column::Name)).ilike(format));
             }
@@ -111,6 +102,7 @@ impl ReadOnlyRepository {
         let result: SelectStatement = Query::select()
             .from(ranked_entry::Entity)
             .column(ranked_entry::Column::Rank)
+            .column(("ranks", meet::Column::Federation))
             .qualified_column(ranked_entry::Column::Id)
             .qualified_column(ranked_entry::Column::MeetId)
             .qualified_column(ranked_entry::Column::Name)
@@ -149,23 +141,22 @@ impl ReadOnlyRepository {
         let statement: Statement = connection.get_database_backend().build(&result);
         debug!("sql query:\n{:?}", statement.to_string());
         let result = ranked_entry::Entity::find().from_raw_sql(statement);
-        let sea_entries: Vec<RankedEntry> = result
-            .into_model::<RankedEntry>()
+        let sea_entries: Vec<SearchResult> = result
+            .into_model::<SearchResult>()
             .all(connection)
             .await?;
 
-        let mut output: Vec<EntryDto> = Vec::new();
+        let mut output: Vec<SearchResult> = Vec::new();
 
-        for powerlifter in query.powerlifters.lines() {
-            let username: Username = Username::from(powerlifter.to_string());
-            let entry: Option<RankedEntry> = sea_entries
+        for powerlifter in query.powerlifters.iter() {
+            let entry: Option<SearchResult> = sea_entries
                 .iter()
                 .find(|x| {
-                    if x.name.parts.len() < username.parts.len() {
+                    if x.name.parts.len() < powerlifter.parts.len() {
                         return false;
                     }
 
-                    for part in &username.parts {
+                    for part in &powerlifter.parts {
                         if !x.name.parts.contains(part) {
                             return false;
                         }
@@ -176,7 +167,7 @@ impl ReadOnlyRepository {
                 .cloned();
 
             if let Some(entry) = entry {
-                output.push(entry.into());
+                output.push(entry);
             }
         }
 

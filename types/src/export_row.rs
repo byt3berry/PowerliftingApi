@@ -1,5 +1,8 @@
+pub const DEFAULT_OUTPUT: &str = "?";
+
 pub struct ExportRow {
     pub rank: String,
+    pub federation: String,
     pub name: String,
     pub equipment: String,
     pub sex: String,
@@ -12,20 +15,25 @@ pub struct ExportRow {
     pub total: String,
 }
 
+impl ExportRow {
+    pub const DEFAULT_OUTPUT: &str = "?";
+}
+
 impl Default for ExportRow {
     fn default() -> Self {
         Self {
-            rank: String::from("?"),
-            name: String::from("?"),
-            equipment: String::from("?"),
-            sex: String::from("?"),
-            division: String::from("?"),
-            bodyweight: String::from("?"),
-            weight_class: String::from("?"),
-            best_squat: String::from("?"),
-            best_bench: String::from("?"),
-            best_deadlift: String::from("?"),
-            total: String::from("?"),
+            rank: String::from(DEFAULT_OUTPUT),
+            federation: String::from(DEFAULT_OUTPUT),
+            name: String::from(DEFAULT_OUTPUT),
+            equipment: String::from(DEFAULT_OUTPUT),
+            sex: String::from(DEFAULT_OUTPUT),
+            division: String::from(DEFAULT_OUTPUT),
+            bodyweight: String::from(DEFAULT_OUTPUT),
+            weight_class: String::from(DEFAULT_OUTPUT),
+            best_squat: String::from(DEFAULT_OUTPUT),
+            best_bench: String::from(DEFAULT_OUTPUT),
+            best_deadlift: String::from(DEFAULT_OUTPUT),
+            total: String::from(DEFAULT_OUTPUT),
         }
     }
 }
