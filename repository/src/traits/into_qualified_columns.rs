@@ -1,4 +1,4 @@
-use migrations::ColumnRef;
+use sea_orm_migration::prelude::ColumnRef;
 
 use crate::traits::IntoQualifiedColumn;
 

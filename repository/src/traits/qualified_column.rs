@@ -1,4 +1,4 @@
-use migrations::{ExprTrait, IntoIden, SelectStatement};
+use sea_orm_migration::prelude::{ExprTrait, IntoIden, SelectStatement};
 
 use crate::traits::IntoQualifiedColumn;
 

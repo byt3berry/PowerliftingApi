@@ -1,10 +1,9 @@
-use std::fmt::Display;
-
 use rust_decimal::Decimal;
 use rust_decimal::prelude::Zero;
-
 use sea_orm::TryGetable;
-use types::prelude::*;
+use std::fmt::Display;
+
+use types::prelude::WeightDto;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Weight(pub Decimal);

@@ -1,5 +1,5 @@
-use migrations::{ColumnRef, ExprTrait, IntoIden, SimpleExpr};
-use sea_orm::{ColumnTrait};
+use sea_orm_migration::prelude::{ColumnRef, ExprTrait, IntoIden, SimpleExpr};
+use sea_orm::prelude::{ColumnTrait};
 
 pub trait IntoQualifiedColumn: ColumnTrait {
     fn into_qualified(self) -> ColumnRef;

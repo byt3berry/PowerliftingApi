@@ -1,5 +1,6 @@
 use serde::Deserialize;
-use types::prelude::*;
+
+use types::prelude::MeetDataDto;
 
 use crate::types::{Country, Federation};
 

@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::prelude::{CountryDto, FederationDto};
 
 pub struct MeetDataDto {
     pub name: String,

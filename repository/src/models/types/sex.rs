@@ -1,4 +1,4 @@
-use sea_orm::DeriveDisplay;
+use sea_orm::prelude::DeriveDisplay;
 use sea_orm::prelude::{DeriveActiveEnum, EnumIter};
 use types::prelude::SexDto;
 

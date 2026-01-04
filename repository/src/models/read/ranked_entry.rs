@@ -1,6 +1,6 @@
 use rust_decimal::Decimal;
 use sea_orm::entity::prelude::*;
-use sea_orm::{ActiveModelBehavior, DeriveEntityModel};
+use sea_orm::prelude::{ActiveModelBehavior, DeriveEntityModel};
 
 use crate::models::types::{Division, Equipment, Sex};
 use crate::models::read::meet;

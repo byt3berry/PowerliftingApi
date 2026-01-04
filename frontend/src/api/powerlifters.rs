@@ -1,5 +1,5 @@
 use maud::{html, Markup};
-use types::prelude::*;
+use types::prelude::ExportRow;
 
 pub const POWERLIFTER_TABLE_HEADERS: [&str; 12] = [
     "Rank", 

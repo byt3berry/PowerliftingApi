@@ -1,7 +1,8 @@
 use anyhow::{bail, Context, Result};
-use migrations::extension::postgres::PgExpr;
-use migrations::{Asterisk, Expr, Query, SelectStatement};
-use sea_orm::{ColumnTrait, Condition, ConnectOptions, ConnectionTrait, Database, DatabaseConnection, EntityTrait, JoinType, Order, Statement};
+use sea_orm::prelude::{ColumnTrait, ConnectionTrait, DatabaseConnection, EntityTrait};
+use sea_orm::{Condition, ConnectOptions, Database, JoinType, Order, Statement};
+use sea_orm_migration::prelude::extension::postgres::PgExpr;
+use sea_orm_migration::prelude::{Asterisk, Expr, Query, SelectStatement};
 use tracing::debug;
 
 use crate::filters::{QueryFilter};

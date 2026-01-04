@@ -1,6 +1,7 @@
-use sea_orm::ActiveValue::Set;
+use sea_orm::entity::ActiveValue;
 use sea_orm::entity::prelude::*;
-use sea_orm::{ActiveModelBehavior, DeriveEntityModel};
+use sea_orm::prelude::{ActiveModelBehavior, DeriveEntityModel};
+
 use types::prelude::MeetDataDto;
 
 use crate::models::types::{Country, Federation};
@@ -35,11 +36,11 @@ impl ActiveModelBehavior for ActiveModel {}
 impl From<MeetDataDto> for ActiveModel {
     fn from(value: MeetDataDto) -> Self {
         Self {
-            name: Set(value.name),
-            federation: Set(value.federation.into()),
-            country: Set(value.country.into()),
-            state: Set(value.state),
-            town: Set(value.town),
+            name: ActiveValue::Set(value.name),
+            federation: ActiveValue::Set(value.federation.into()),
+            country: ActiveValue::Set(value.country.into()),
+            state: ActiveValue::Set(value.state),
+            town: ActiveValue::Set(value.town),
             ..Default::default()
         }
     }

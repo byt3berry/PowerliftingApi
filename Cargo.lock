@@ -2556,6 +2556,7 @@ dependencies = [
  "rstest",
  "rust_decimal",
  "sea-orm",
+ "sea-orm-migration",
  "tracing",
  "types",
 ]

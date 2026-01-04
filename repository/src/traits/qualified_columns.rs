@@ -1,4 +1,4 @@
-use migrations::SelectStatement;
+use sea_orm_migration::prelude::SelectStatement;
 
 use crate::traits::IntoQualifiedColumn;
 use crate::traits::IntoQualifiedColumns;

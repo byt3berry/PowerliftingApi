@@ -1,5 +1,5 @@
-use migrations::SimpleExpr;
-use sea_orm::{ColumnTrait, DeriveDisplay, EnumIter};
+use sea_orm::prelude::{ColumnTrait, DeriveDisplay, EnumIter};
+use sea_orm_migration::prelude::SimpleExpr;
 
 use types::filters::FederationFilterDto;
 

@@ -13,5 +13,6 @@ dotenvy = "0.15.7"
 migrations = { path="../migrations/" }
 rust_decimal = "1.39.0"
 sea-orm = { version = "1.1.19", features = ["runtime-tokio-native-tls", "sqlx-postgres"] }
+sea-orm-migration = { version = "1.1.0", features = ["runtime-tokio-native-tls", "sqlx-postgres"] }
 tracing = "0.1.41"
 types = { path="../types/" }

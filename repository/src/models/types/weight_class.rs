@@ -1,8 +1,8 @@
-use std::fmt::Display;
-
 use rust_decimal::Decimal;
 use sea_orm::TryGetable;
-use types::prelude::*;
+use std::fmt::Display;
+
+use types::prelude::WeightClassDto;
 
 use crate::models::types::Weight;
 

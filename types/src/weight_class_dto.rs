@@ -1,8 +1,7 @@
 use std::fmt::Display;
-
 use rust_decimal::Decimal;
 
-use crate::prelude::*;
+use crate::prelude::WeightDto;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum WeightClassDto {
