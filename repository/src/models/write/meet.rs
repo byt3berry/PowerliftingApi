@@ -1,3 +1,4 @@
+use chrono::NaiveDate;
 use sea_orm::entity::ActiveValue;
 use sea_orm::entity::prelude::*;
 use sea_orm::prelude::{ActiveModelBehavior, DeriveEntityModel};
@@ -13,6 +14,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub name: String,
+    pub date: NaiveDate,
     pub federation: Federation,
     pub country: Country,
     pub state: String,
@@ -37,6 +39,7 @@ impl From<MeetDataDto> for ActiveModel {
     fn from(value: MeetDataDto) -> Self {
         Self {
             name: ActiveValue::Set(value.name),
+            date: ActiveValue::Set(value.date.into()),
             federation: ActiveValue::Set(value.federation.into()),
             country: ActiveValue::Set(value.country.into()),
             state: ActiveValue::Set(value.state),

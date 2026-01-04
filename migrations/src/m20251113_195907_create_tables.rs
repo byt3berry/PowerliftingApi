@@ -240,7 +240,6 @@ enum Country  {
 enum Division {
     Division,
 
-    Any,
     Open,
     G,
     Cadet,
