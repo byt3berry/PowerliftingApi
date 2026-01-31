@@ -1,7 +1,6 @@
 use rust_decimal::Decimal;
 use rust_decimal::prelude::Zero;
-use sea_orm::TryGetable;
-use std::fmt::Display;
+use sea_orm::{ColIdx, QueryResult, TryGetError, TryGetable};
 
 use types::prelude::WeightDto;
 
@@ -9,15 +8,9 @@ use types::prelude::WeightDto;
 pub struct Weight(pub Decimal);
 
 impl TryGetable for Weight {
-    fn try_get_by<I: sea_orm::ColIdx>(res: &sea_orm::QueryResult, index: I) -> Result<Self, sea_orm::TryGetError> {
+    fn try_get_by<I: ColIdx>(res: &QueryResult, index: I) -> Result<Self, TryGetError> {
         let output = Decimal::try_get_by(res, index)?;
         Ok(output.into())
-    }
-}
-
-impl Display for Weight {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        self.0.normalize().fmt(f)
     }
 }
 

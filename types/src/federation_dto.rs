@@ -1,4 +1,6 @@
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+use strum_macros::Display;
+
+#[derive(Clone, Copy, Debug, Display, Eq, PartialEq)]
 pub enum FederationDto {
     FFForce,
     EPF,

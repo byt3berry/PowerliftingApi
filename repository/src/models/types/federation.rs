@@ -31,3 +31,15 @@ impl From<FederationDto> for Federation {
         }
     }
 }
+
+impl From<Federation> for FederationDto {
+    fn from(value: Federation) -> Self {
+        match value {
+            Federation::Ffforce => Self::FFForce,
+            Federation::Epf => Self::EPF,
+            Federation::Ipf => Self::IPF,
+            Federation::Ffhmfac => Self::FFHMFAC,
+            Federation::Other => Self::OTHER,
+        }
+    }
+}

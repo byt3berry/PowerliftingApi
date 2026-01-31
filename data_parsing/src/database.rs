@@ -155,6 +155,7 @@ impl Deref for Database {
 #[cfg(test)]
 mod tests {
     use anyhow::Result;
+    use chrono::NaiveDate;
     use pretty_assertions::assert_eq;
     use rstest::rstest;
     use std::path::{Path, PathBuf};
@@ -167,8 +168,9 @@ mod tests {
 
     use super::Database;
 
-    const TEST_PATH: &str = "test_data/entries/meet_database";
+    const TEST_PATH: &str = "test_data/database";
 
+    #[test_log::test]
     #[rstest]
     #[case("test1/entries.csv")]
     #[case("test2/entries.csv")]
@@ -182,6 +184,7 @@ mod tests {
         assert!(result.is_ok(), "{}", result.unwrap_err());
     }
 
+    #[test_log::test]
     #[rstest]
     #[case("unknownDirectory/entries.csv")]
     #[case("test1/")]
@@ -197,7 +200,7 @@ mod tests {
         assert!(result.is_err());
     }
 
-    #[test]
+    #[test_log::test]
     fn test_from_entries_1() {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test1/entries.csv");
         let expected: Vec<Entry> = vec![
@@ -230,7 +233,7 @@ mod tests {
         assert_eq!(expected, result.unwrap());
     }
 
-    #[test]
+    #[test_log::test]
     fn test_from_entries_2() {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test2/entries.csv");
         let expected: Vec<Entry> = vec![
@@ -284,6 +287,7 @@ mod tests {
         assert_eq!(expected, result.unwrap());
     }
 
+    #[test_log::test]
     #[rstest]
     #[case("test1/meet.csv")]
     #[case("test2/meet.csv")]
@@ -295,6 +299,7 @@ mod tests {
         assert!(result.is_ok());
     }
 
+    #[test_log::test]
     #[rstest]
     #[case("unknownDirectory/meet.csv")]
     #[case("test1")]
@@ -311,11 +316,12 @@ mod tests {
         assert!(result.is_err());
     }
 
-    #[test]
+    #[test_log::test]
     fn test_from_data_1() {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test1/meet.csv");
         let expected: MeetData = MeetData {
             federation: Federation::FFForce,
+            date: NaiveDate::from_ymd_opt(2000, 1, 1).unwrap(),
             country: Country::FRANCE,
             state: "Ile de France".to_string(),
             town: "Paris".to_string(),
@@ -328,11 +334,12 @@ mod tests {
         assert_eq!(expected, result.unwrap());
     }
 
-    #[test]
+    #[test_log::test]
     fn test_from_data_2() {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test2/meet.csv");
         let expected: MeetData = MeetData {
             federation: Federation::IPF,
+            date: NaiveDate::from_ymd_opt(2001, 2, 2).unwrap(),
             country: Country::OTHER,
             state: String::new(),
             town: String::new(),
@@ -345,6 +352,7 @@ mod tests {
         assert_eq!(expected, result.unwrap());
     }
 
+    #[test_log::test]
     #[rstest]
     #[case("unknownDirectory/")]
     #[case("invalid/meet.csv")]
@@ -356,6 +364,7 @@ mod tests {
         assert!(result.is_err());
     }
 
+    #[test_log::test]
     #[rstest]
     #[case("invalid/meet1/")]
     #[case("invalid/meet2/")]
@@ -371,13 +380,14 @@ mod tests {
         assert_eq!(expected, result.unwrap());
     }
 
-    #[test]
+    #[test_log::test]
     fn test_from_directory_1() {
         let test_directory: PathBuf = Path::new(TEST_PATH).join("test1/");
         let expected: Database = Database(vec![
             Meet {
                 data: MeetData {
                     federation: Federation::FFForce,
+                    date: NaiveDate::from_ymd_opt(2000, 1, 1).unwrap(),
                     country: Country::FRANCE,
                     state: "Ile de France".to_string(),
                     town: "Paris".to_string(),
@@ -415,13 +425,14 @@ mod tests {
         assert_eq!(expected, result.unwrap());
     }
 
-    #[test]
+    #[test_log::test]
     fn test_from_directory_2() {
         let test_directory: PathBuf = Path::new(TEST_PATH).join("test2/");
         let expected: Database = Database(vec![
             Meet {
                 data: MeetData {
                     federation: Federation::IPF,
+                    date: NaiveDate::from_ymd_opt(2001, 2, 2).unwrap(),
                     country: Country::OTHER,
                     state: String::new(),
                     town: String::new(),
@@ -481,13 +492,14 @@ mod tests {
 
     }
 
-    #[test]
+    #[test_log::test]
     fn test_from_directory_3() {
         let test_file: PathBuf = Path::new(TEST_PATH).join("test3/");
         let expected: Database = Database(vec![
             Meet {
                 data: MeetData {
                     federation: Federation::FFForce,
+                    date: NaiveDate::from_ymd_opt(2002, 3, 3).unwrap(),
                     country: Country::FRANCE,
                     state: "Ile de France".to_string(),
                     town: "Paris".to_string(),
@@ -520,6 +532,7 @@ mod tests {
             Meet {
                 data: MeetData {
                     federation: Federation::IPF,
+                    date: NaiveDate::from_ymd_opt(2003, 4, 4).unwrap(),
                     country: Country::OTHER,
                     state: String::new(),
                     town: String::new(),

@@ -6,6 +6,7 @@ use sea_orm_migration::prelude::{Asterisk, Expr, Query, SelectStatement};
 use tracing::debug;
 
 use crate::filters::{QueryFilter};
+use crate::models::read::powerlifter_entry::PowerlifterEntry;
 use crate::models::read::{meet, ranked_entry};
 use crate::models::types::SearchResult;
 use crate::traits::{MatchFilter, IntoQualifiedColumn, QualifiedColumn};
@@ -41,15 +42,13 @@ impl ReadOnlyRepository {
         Ok(())
     }
 
-    pub async fn search(&self, query: &QueryFilter) -> Result<Vec<SearchResult>> {
+    pub async fn search(&self, query: &QueryFilter) -> Result<Vec<PowerlifterEntry>> {
         let Some(ref connection) = self.connection else {
             bail!("Can't insert meet without connecting to the database")
         };
 
-        let mut ranks_condition: Condition = Condition::all()
-            .add(ranked_entry::Column::Total.is_not_null());
-
-        ranks_condition = ranks_condition
+        let ranks_condition: Condition = Condition::all()
+            .add(ranked_entry::Column::Total.is_not_null())
             .add_option(query.federation_choice.eq(meet::Column::Federation))
             .add_option(query.sex_choice.eq(ranked_entry::Column::Sex))
             .add_option(query.division_choice.eq(ranked_entry::Column::Division))
@@ -142,15 +141,15 @@ impl ReadOnlyRepository {
         let statement: Statement = connection.get_database_backend().build(&result);
         debug!("sql query:\n{:?}", statement.to_string());
         let result = ranked_entry::Entity::find().from_raw_sql(statement);
-        let sea_entries: Vec<SearchResult> = result
-            .into_model::<SearchResult>()
+        let sea_entries: Vec<PowerlifterEntry> = result
+            .into_model::<PowerlifterEntry>()
             .all(connection)
             .await?;
 
-        let mut output: Vec<SearchResult> = Vec::new();
+        let mut output: Vec<PowerlifterEntry> = Vec::new();
 
         for powerlifter in query.powerlifters.iter() {
-            let entry: Option<SearchResult> = sea_entries
+            let entry: Option<PowerlifterEntry> = sea_entries
                 .iter()
                 .find(|x| {
                     if x.name.parts.len() < powerlifter.parts.len() {
