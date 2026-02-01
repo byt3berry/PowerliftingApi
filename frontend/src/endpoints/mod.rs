@@ -115,7 +115,7 @@ fn body() -> Markup {
 fn input_div() -> Markup {
     html! {
         div {
-            form hx-post="/powerlifters" hx-target="#result" {
+            form {
                 div {
                     select id="federation_choice" name="federation_choice" {
                         @for value in FederationFilterDto::iter() {
@@ -140,6 +140,33 @@ fn input_div() -> Markup {
                             option value=(value) { (value) }
                         }
                     }
+
+                    button
+                        type="submit" 
+                        hx-post="/top_powerlifters" 
+                        hx-target="#result" 
+                        name="limit" 
+                        value="5" {
+                            "Top 5"
+                        }
+
+                    button
+                        type="submit" 
+                        hx-post="/top_powerlifters" 
+                        hx-target="#result" 
+                        name="limit" 
+                        value="15" {
+                            "Top 15"
+                        }
+
+                    button
+                        type="submit" 
+                        hx-post="/top_powerlifters" 
+                        hx-target="#result" 
+                        name="limit" 
+                        value="25" {
+                            "Top 25"
+                        }
                 }
 
                 label for="powerlifters" { "Powerlifters:" }
@@ -148,7 +175,12 @@ fn input_div() -> Markup {
                 textarea name="powerlifters" id="powerlifters" rows="5" cols="40" { }
                 br;
 
-                button type="submit" { "Send" }
+                button 
+                    type="submit" 
+                    hx-post="/powerlifters" 
+                    hx-target="#result" {
+                        "Send"
+                    }
             }
         }
     }
@@ -163,7 +195,7 @@ fn result_div() -> Markup {
 pub fn root_page() -> Markup {
     html! {
         (DOCTYPE)
-        (head())
-        (body())
+            (head())
+            (body())
     }
 }

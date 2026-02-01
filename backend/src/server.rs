@@ -8,8 +8,7 @@ use std::net::IpAddr;
 
 use search::SearchEngine;
 
-use crate::endpoints::powerlifters::powerlifters;
-use crate::endpoints::root::root;
+use crate::endpoints::{powerlifters, root, top_powerlifters};
 
 #[derive(Clone, Debug)]
 pub struct ServerData {
@@ -29,6 +28,7 @@ pub fn start_server(ip: IpAddr, port: u16, data: ServerData) -> Result<Server>{
                 .app_data(web::Data::new(data.clone()))
                 .service(root)
                 .service(powerlifters)
+                .service(top_powerlifters)
                 .default_service(
                     web::route().to(HttpResponse::ImATeapot),
                 )

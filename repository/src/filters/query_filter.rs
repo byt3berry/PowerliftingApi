@@ -9,6 +9,7 @@ pub struct QueryFilter {
     pub sex_choice: SexFilter,
     pub division_choice: DivisionFilter,
     pub powerlifters: PowerlifterFilter,
+    pub limit: u8,
 }
 
 impl From<QueryDto> for QueryFilter {
@@ -19,6 +20,7 @@ impl From<QueryDto> for QueryFilter {
             sex_choice: value.sex_choice.into(),
             division_choice: value.division_choice.into(),
             powerlifters: value.powerlifters.into(),
+            limit: value.limit,
         }
     }
 }

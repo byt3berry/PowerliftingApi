@@ -9,4 +9,5 @@ pub struct QueryDto {
     pub sex_choice: SexFilterDto,
     pub division_choice: DivisionFilterDto,
     pub powerlifters: String,
+    pub limit: u8,
 }

@@ -1,5 +1,5 @@
 use actix_web::dev::Server;
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 use clap::Parser;
 use dotenvy::dotenv;
 use log::info;
@@ -8,7 +8,7 @@ use cli::Args;
 use data_parsing::Database;
 use search::SearchEngine;
 
-use crate::server::{start_server, ServerData};
+use crate::server::{ServerData, start_server};
 
 mod cli;
 mod endpoints;
@@ -32,7 +32,9 @@ async fn main() -> Result<()> {
     args.validate()?;
 
     if args.migrate.is_some_and(|migrate| migrate) {
-        Database::from_directory(args.path.as_ref().unwrap())?.save().await?;
+        Database::from_directory(args.path.as_ref().unwrap())?
+            .save()
+            .await?;
     }
 
     if args.start_server.is_some_and(|start_server| start_server) {

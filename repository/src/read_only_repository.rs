@@ -1,4 +1,5 @@
 use anyhow::{bail, Context, Result};
+use rust_decimal::prelude::Zero;
 use sea_orm::prelude::{ColumnTrait, ConnectionTrait, DatabaseConnection, EntityTrait};
 use sea_orm::{Condition, ConnectOptions, Database, JoinType, Order, Statement};
 use sea_orm_migration::prelude::extension::postgres::PgExpr;
@@ -87,18 +88,20 @@ impl ReadOnlyRepository {
 
         let mut condition: Condition = Condition::any();
 
-        for powerlifter in query.powerlifters.iter() {
-            let mut part_condition = Condition::all();
+        if !query.limit.is_zero() {
+            for powerlifter in query.powerlifters.iter() {
+                let mut part_condition = Condition::all();
 
-            for part in &powerlifter.parts {
-                let format: String = format!("%{part}%");
-                part_condition = part_condition.add(Expr::column(("ranks", ranked_entry::Column::Name)).ilike(format));
+                for part in &powerlifter.parts {
+                    let format: String = format!("%{part}%");
+                    part_condition = part_condition.add(Expr::column(("ranks", ranked_entry::Column::Name)).ilike(format));
+                }
+
+                condition = condition.add(part_condition);
             }
-
-            condition = condition.add(part_condition);
         }
 
-        let result: SelectStatement = Query::select()
+        let mut result: SelectStatement = Query::select()
             .from(ranked_entry::Entity)
             .column(ranked_entry::Column::Rank)
             .column(("ranks", meet::Column::Federation))
@@ -134,8 +137,15 @@ impl ReadOnlyRepository {
                 .equals(ranked_entry::Column::Id.into_qualified())
             )
             .order_by(ranked_entry::Column::Rank, sea_orm::Order::Asc)
-            .cond_where(condition)
             .to_owned();
+
+        if !condition.is_empty() {
+            result = result.cond_where(condition).to_owned();
+        }
+
+        if !query.limit.is_zero() {
+            result = result.limit(query.limit as u64).to_owned();
+        }
 
         let statement: Statement = connection.get_database_backend().build(&result);
         debug!("sql query:\n{:?}", statement.to_string());
@@ -144,6 +154,10 @@ impl ReadOnlyRepository {
             .into_model::<PowerlifterEntry>()
             .all(connection)
             .await?;
+
+        if !query.limit.is_zero() {
+            return Ok(sea_entries);
+        }
 
         let mut output: Vec<PowerlifterEntry> = Vec::new();
 
@@ -163,7 +177,7 @@ impl ReadOnlyRepository {
 
                     true
                 })
-                .cloned();
+            .cloned();
 
             if let Some(entry) = entry {
                 output.push(entry);
