@@ -8,7 +8,6 @@ use tracing::debug;
 use crate::filters::{QueryFilter};
 use crate::models::read::powerlifter_entry::PowerlifterEntry;
 use crate::models::read::{meet, ranked_entry};
-use crate::models::types::SearchResult;
 use crate::traits::{MatchFilter, IntoQualifiedColumn, QualifiedColumn};
 
 pub struct ReadOnlyRepository {
@@ -17,7 +16,7 @@ pub struct ReadOnlyRepository {
 }
 
 impl ReadOnlyRepository {
-    pub(crate) const fn new(options: ConnectOptions) -> Self {
+    pub const fn new(options: ConnectOptions) -> Self {
         Self {
             options,
             connection: None,

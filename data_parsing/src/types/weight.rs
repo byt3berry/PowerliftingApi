@@ -4,8 +4,9 @@ use rust_decimal::prelude::{FromPrimitive, Zero};
 use serde::de::{self, Visitor};
 use serde::{Deserialize, Deserializer};
 use std::cmp::Ordering;
-use std::fmt::{self, Display};
+use std::fmt;
 use std::str::FromStr;
+
 use types::prelude::WeightDto;
 
 const SCALE: u32 = 4;
@@ -119,12 +120,6 @@ impl Ord for Weight {
 impl PartialOrd for Weight {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
-    }
-}
-
-impl Display for Weight {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
     }
 }
 

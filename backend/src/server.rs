@@ -4,11 +4,12 @@ use actix_web::middleware::{Logger, NormalizePath, TrailingSlash};
 use actix_web::{web, App, HttpResponse, HttpServer};
 use anyhow::Result;
 use log::info;
-use search::search_engine::SearchEngine;
 use std::net::IpAddr;
 
-use crate::api::powerlifters::powerlifters;
-use crate::api::root::root;
+use search::SearchEngine;
+
+use crate::endpoints::powerlifters::powerlifters;
+use crate::endpoints::root::root;
 
 #[derive(Clone, Debug)]
 pub struct ServerData {

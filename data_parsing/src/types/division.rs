@@ -1,5 +1,6 @@
 use serde::Deserialize;
 use strum_macros::{Display, EnumIter};
+
 use types::prelude::DivisionDto;
 
 #[derive(Clone, Copy, Debug, Display, Deserialize, Eq, EnumIter, PartialEq)]

@@ -1,8 +1,8 @@
-use std::str::FromStr;
-
 use anyhow::{Error, Result};
 use sea_orm::TryGetable;
 use sea_orm::prelude::{DbErr, TryGetError};
+use std::str::FromStr;
+
 use types::prelude::UsernameDto;
 
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]

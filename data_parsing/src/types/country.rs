@@ -1,5 +1,6 @@
 use serde::Deserialize;
 use strum_macros::EnumIter;
+
 use types::prelude::CountryDto;
 
 #[derive(Copy, Clone, Debug, Default, Deserialize, EnumIter, Eq, PartialEq)]

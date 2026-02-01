@@ -3,7 +3,7 @@ use sea_orm_migration::prelude::SimpleExpr;
 
 use types::filters::FederationFilterDto;
 
-use crate::{traits::match_filter::MatchFilter};
+use crate::traits::MatchFilter;
 
 #[derive(Clone, Copy, Debug, DeriveDisplay, EnumIter, Eq, PartialEq)]
 pub enum FederationFilter {

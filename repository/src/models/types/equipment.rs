@@ -1,4 +1,5 @@
 use sea_orm::prelude::{DeriveActiveEnum, DeriveDisplay, EnumIter};
+
 use types::prelude::EquipmentDto;
 
 #[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveDisplay, DeriveActiveEnum)]

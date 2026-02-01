@@ -2,13 +2,11 @@ mod country;
 mod division;
 mod equipment;
 mod federation;
-mod search_result;
 mod sex;
 mod username;
 mod weight;
 mod weight_class;
 
-pub use search_result::SearchResult;
 pub(crate) use country::Country;
 pub(crate) use division::Division;
 pub(crate) use equipment::Equipment;

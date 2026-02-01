@@ -1,9 +1,10 @@
 use anyhow::{Error, Result};
 use serde::de::{self, Visitor};
 use serde::{Deserialize, Deserializer};
-use types::prelude::UsernameDto;
-use std::fmt::{self, Display};
+use std::fmt;
 use std::str::FromStr;
+
+use types::prelude::UsernameDto;
 
 #[derive(Clone, Debug, Ord, PartialOrd)]
 pub struct Username {
@@ -55,12 +56,6 @@ impl PartialEq for Username {
     /// `other` is the powerlifter name requested
     fn eq(&self, other: &Self) -> bool {
         self.parts.eq(&other.parts)
-    }
-}
-
-impl Display for Username {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{}", self.name)
     }
 }
 

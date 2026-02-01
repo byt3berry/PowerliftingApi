@@ -1,5 +1,6 @@
 use serde::Deserialize;
 use strum_macros::{Display, EnumIter};
+
 use types::prelude::EquipmentDto;
 
 #[derive(Clone, Copy, Debug, Deserialize, Display, EnumIter, Eq, PartialEq)]

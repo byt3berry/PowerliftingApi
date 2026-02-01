@@ -1,16 +1,17 @@
 use actix_web::dev::Server;
 use anyhow::{bail, Result};
 use clap::Parser;
-use cli::Args;
-use data_parsing::Database;
 use dotenvy::dotenv;
 use log::info;
-use search::search_engine::SearchEngine;
+
+use cli::Args;
+use data_parsing::Database;
+use search::SearchEngine;
 
 use crate::server::{start_server, ServerData};
 
-mod api;
 mod cli;
+mod endpoints;
 mod server;
 
 #[actix_web::main]

@@ -1,3 +1,3 @@
-pub mod read;
-pub mod types;
-pub mod write;
+pub(crate) mod read;
+pub(crate) mod types;
+pub(crate) mod write;

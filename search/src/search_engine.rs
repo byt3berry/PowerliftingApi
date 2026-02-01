@@ -1,7 +1,8 @@
-use repository::models::read::powerlifter_entry::PowerlifterEntry;
-use repository::models::types::SearchResult;
+use repository::PowerlifterEntry;
 use repository::{ReadOnlyRepository, Repository};
 use types::filters::QueryDto;
+
+use crate::search_result::SearchResult;
 
 #[derive(Debug, Clone)]
 pub struct SearchEngine;
