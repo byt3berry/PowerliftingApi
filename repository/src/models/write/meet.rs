@@ -1,6 +1,8 @@
-use sea_orm::ActiveValue::Set;
+use chrono::NaiveDate;
+use sea_orm::entity::ActiveValue;
 use sea_orm::entity::prelude::*;
-use sea_orm::{ActiveModelBehavior, DeriveEntityModel};
+use sea_orm::prelude::{ActiveModelBehavior, DeriveEntityModel};
+
 use types::prelude::MeetDataDto;
 
 use crate::models::types::{Country, Federation};
@@ -12,6 +14,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub name: String,
+    pub date: NaiveDate,
     pub federation: Federation,
     pub country: Country,
     pub state: String,
@@ -35,11 +38,12 @@ impl ActiveModelBehavior for ActiveModel {}
 impl From<MeetDataDto> for ActiveModel {
     fn from(value: MeetDataDto) -> Self {
         Self {
-            name: Set(value.name),
-            federation: Set(value.federation.into()),
-            country: Set(value.country.into()),
-            state: Set(value.state),
-            town: Set(value.town),
+            name: ActiveValue::Set(value.name),
+            date: ActiveValue::Set(value.date.into()),
+            federation: ActiveValue::Set(value.federation.into()),
+            country: ActiveValue::Set(value.country.into()),
+            state: ActiveValue::Set(value.state),
+            town: ActiveValue::Set(value.town),
             ..Default::default()
         }
     }

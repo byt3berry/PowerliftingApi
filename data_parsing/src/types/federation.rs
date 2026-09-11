@@ -1,5 +1,6 @@
 use serde::Deserialize;
 use strum_macros::{Display, EnumIter};
+
 use types::prelude::FederationDto;
 
 #[derive(Copy, Clone, Debug, Deserialize, Default, Display, Eq, PartialEq, EnumIter)]

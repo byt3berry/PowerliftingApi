@@ -1,8 +1,7 @@
 use std::fmt::Display;
-
 use rust_decimal::Decimal;
 
-use crate::prelude::*;
+use crate::prelude::WeightDto;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum WeightClassDto {
@@ -13,8 +12,14 @@ pub enum WeightClassDto {
 impl Display for WeightClassDto {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::UnderOrEqual(weight)
-                | Self::Over(weight) => f.write_str(&weight.to_string()),
+            Self::UnderOrEqual(weight) => {
+                f.write_str("-")?;
+                weight.fmt(f)
+            },
+            Self::Over(weight) => {
+                f.write_str("+")?;
+                weight.fmt(f)
+            }
         }
     }
 }

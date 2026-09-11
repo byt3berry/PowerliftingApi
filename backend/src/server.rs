@@ -4,11 +4,11 @@ use actix_web::middleware::{Logger, NormalizePath, TrailingSlash};
 use actix_web::{web, App, HttpResponse, HttpServer};
 use anyhow::Result;
 use log::info;
-use search::search_engine::SearchEngine;
 use std::net::IpAddr;
 
-use crate::api::powerlifters::powerlifters;
-use crate::api::root::root;
+use search::SearchEngine;
+
+use crate::endpoints::{powerlifters, root, top_powerlifters};
 
 #[derive(Clone, Debug)]
 pub struct ServerData {
@@ -28,6 +28,7 @@ pub fn start_server(ip: IpAddr, port: u16, data: ServerData) -> Result<Server>{
                 .app_data(web::Data::new(data.clone()))
                 .service(root)
                 .service(powerlifters)
+                .service(top_powerlifters)
                 .default_service(
                     web::route().to(HttpResponse::ImATeapot),
                 )

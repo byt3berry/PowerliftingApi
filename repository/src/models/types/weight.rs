@@ -1,14 +1,14 @@
 use rust_decimal::Decimal;
 use rust_decimal::prelude::Zero;
+use sea_orm::{ColIdx, QueryResult, TryGetError, TryGetable};
 
-use sea_orm::TryGetable;
-use types::prelude::*;
+use types::prelude::WeightDto;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Weight(pub Decimal);
 
 impl TryGetable for Weight {
-    fn try_get_by<I: sea_orm::ColIdx>(res: &sea_orm::QueryResult, index: I) -> Result<Self, sea_orm::TryGetError> {
+    fn try_get_by<I: ColIdx>(res: &QueryResult, index: I) -> Result<Self, TryGetError> {
         let output = Decimal::try_get_by(res, index)?;
         Ok(output.into())
     }

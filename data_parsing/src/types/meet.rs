@@ -1,4 +1,4 @@
-use types::prelude::*;
+use types::prelude::{EntryDto, MeetDto};
 
 use crate::types::MeetData;
 use crate::types::Entry;

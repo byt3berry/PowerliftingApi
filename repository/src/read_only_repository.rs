@@ -1,15 +1,15 @@
 use anyhow::{bail, Context, Result};
-use migrations::extension::postgres::PgExpr;
-use migrations::{Asterisk, Expr, Query, SelectStatement};
-use sea_orm::{ColumnTrait, Condition, ConnectOptions, ConnectionTrait, Database, DatabaseConnection, EntityTrait, JoinType, Order, Statement};
+use rust_decimal::prelude::Zero;
+use sea_orm::prelude::{ColumnTrait, ConnectionTrait, DatabaseConnection, EntityTrait};
+use sea_orm::{Condition, ConnectOptions, Database, JoinType, Order, Statement};
+use sea_orm_migration::prelude::extension::postgres::PgExpr;
+use sea_orm_migration::prelude::{Asterisk, Expr, Query, SelectStatement};
 use tracing::debug;
 
-use types::filters::{DivisionFilterDto, FederationFilterDto, QueryDto, SexFilterDto};
-use types::prelude::EntryDto;
-
+use crate::filters::{QueryFilter};
+use crate::models::read::powerlifter_entry::PowerlifterEntry;
 use crate::models::read::{meet, ranked_entry};
-use crate::models::types::{RankedEntry, Username};
-use crate::traits::{IntoQualifiedColumn, QualifiedColumn};
+use crate::traits::{MatchFilter, IntoQualifiedColumn, QualifiedColumn};
 
 pub struct ReadOnlyRepository {
     options: ConnectOptions,
@@ -17,7 +17,7 @@ pub struct ReadOnlyRepository {
 }
 
 impl ReadOnlyRepository {
-    pub(crate) const fn new(options: ConnectOptions) -> Self {
+    pub const fn new(options: ConnectOptions) -> Self {
         Self {
             options,
             connection: None,
@@ -42,27 +42,17 @@ impl ReadOnlyRepository {
         Ok(())
     }
 
-    pub async fn search(&self, query: &QueryDto) -> Result<Vec<EntryDto>> {
+    pub async fn search(&self, query: &QueryFilter) -> Result<Vec<PowerlifterEntry>> {
         let Some(ref connection) = self.connection else {
             bail!("Can't insert meet without connecting to the database")
         };
 
-        let mut ranks_condition: Condition = Condition::all()
-            .add(ranked_entry::Column::Total.is_not_null());
-
-        if query.federation_choice != FederationFilterDto::Any {
-            ranks_condition = ranks_condition.add(meet::Column::Federation.eq(query.federation_choice.to_string().to_lowercase()));
-        }
-
-        if query.sex_choice != SexFilterDto::Any {
-            ranks_condition = ranks_condition.add(ranked_entry::Column::Sex.eq(query.sex_choice.to_string().to_lowercase()));
-        }
-
-        if query.division_choice != DivisionFilterDto::Any {
-            ranks_condition = ranks_condition.add(ranked_entry::Column::Division.eq(query.division_choice.to_string().to_lowercase()));
-        }
-
-        ranks_condition = ranks_condition.add(ranked_entry::Column::Equipment.eq(query.equipment_choice.to_string().to_lowercase()));
+        let ranks_condition: Condition = Condition::all()
+            .add(ranked_entry::Column::Total.is_not_null())
+            .add_option(query.federation_choice.eq(meet::Column::Federation))
+            .add_option(query.sex_choice.eq(ranked_entry::Column::Sex))
+            .add_option(query.division_choice.eq(ranked_entry::Column::Division))
+            .add_option(query.equipment_choice.eq(ranked_entry::Column::Equipment));
 
         let ranks: SelectStatement = Query::select()
             .from(ranked_entry::Entity)
@@ -70,6 +60,7 @@ impl ReadOnlyRepository {
             .qualified_column(ranked_entry::Column::Id)
             .qualified_column(ranked_entry::Column::Name)
             .qualified_column(ranked_entry::Column::Total)
+            .qualified_column_casted(meet::Column::Federation, "text")
             .join(
                 JoinType::LeftJoin, 
                 meet::Entity,
@@ -83,7 +74,7 @@ impl ReadOnlyRepository {
             ])
             .to_owned();
 
-        let ranks: SelectStatement =Query::select()
+        let ranks: SelectStatement = Query::select()
             .from_subquery(ranks, "ranks")
             .column(Asterisk)
             .expr_as(
@@ -97,20 +88,23 @@ impl ReadOnlyRepository {
 
         let mut condition: Condition = Condition::any();
 
-        for line in query.powerlifters.lines() {
-            let mut part_condition = Condition::all();
+        if !query.limit.is_zero() {
+            for powerlifter in query.powerlifters.iter() {
+                let mut part_condition = Condition::all();
 
-            for part in line.split_whitespace() {
-                let format: String = format!("%{part}%");
-                part_condition = part_condition.add(Expr::column(("ranks", ranked_entry::Column::Name)).ilike(format));
+                for part in &powerlifter.parts {
+                    let format: String = format!("%{part}%");
+                    part_condition = part_condition.add(Expr::column(("ranks", ranked_entry::Column::Name)).ilike(format));
+                }
+
+                condition = condition.add(part_condition);
             }
-
-            condition = condition.add(part_condition);
         }
 
-        let result: SelectStatement = Query::select()
+        let mut result: SelectStatement = Query::select()
             .from(ranked_entry::Entity)
             .column(ranked_entry::Column::Rank)
+            .column(("ranks", meet::Column::Federation))
             .qualified_column(ranked_entry::Column::Id)
             .qualified_column(ranked_entry::Column::MeetId)
             .qualified_column(ranked_entry::Column::Name)
@@ -143,29 +137,39 @@ impl ReadOnlyRepository {
                 .equals(ranked_entry::Column::Id.into_qualified())
             )
             .order_by(ranked_entry::Column::Rank, sea_orm::Order::Asc)
-            .cond_where(condition)
             .to_owned();
+
+        if !condition.is_empty() {
+            result = result.cond_where(condition).to_owned();
+        }
+
+        if !query.limit.is_zero() {
+            result = result.limit(query.limit as u64).to_owned();
+        }
 
         let statement: Statement = connection.get_database_backend().build(&result);
         debug!("sql query:\n{:?}", statement.to_string());
         let result = ranked_entry::Entity::find().from_raw_sql(statement);
-        let sea_entries: Vec<RankedEntry> = result
-            .into_model::<RankedEntry>()
+        let sea_entries: Vec<PowerlifterEntry> = result
+            .into_model::<PowerlifterEntry>()
             .all(connection)
             .await?;
 
-        let mut output: Vec<EntryDto> = Vec::new();
+        if !query.limit.is_zero() {
+            return Ok(sea_entries);
+        }
 
-        for powerlifter in query.powerlifters.lines() {
-            let username: Username = Username::from(powerlifter.to_string());
-            let entry: Option<RankedEntry> = sea_entries
+        let mut output: Vec<PowerlifterEntry> = Vec::new();
+
+        for powerlifter in query.powerlifters.iter() {
+            let entry: Option<PowerlifterEntry> = sea_entries
                 .iter()
                 .find(|x| {
-                    if x.name.parts.len() < username.parts.len() {
+                    if x.name.parts.len() < powerlifter.parts.len() {
                         return false;
                     }
 
-                    for part in &username.parts {
+                    for part in &powerlifter.parts {
                         if !x.name.parts.contains(part) {
                             return false;
                         }
@@ -173,10 +177,10 @@ impl ReadOnlyRepository {
 
                     true
                 })
-                .cloned();
+            .cloned();
 
             if let Some(entry) = entry {
-                output.push(entry.into());
+                output.push(entry);
             }
         }
 

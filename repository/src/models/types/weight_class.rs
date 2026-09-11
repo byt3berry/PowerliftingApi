@@ -1,6 +1,7 @@
 use rust_decimal::Decimal;
-use sea_orm::TryGetable;
-use types::prelude::*;
+use sea_orm::{ColIdx, QueryResult, TryGetError, TryGetable};
+
+use types::prelude::WeightClassDto;
 
 use crate::models::types::Weight;
 
@@ -11,7 +12,7 @@ pub enum WeightClass {
 }
 
 impl TryGetable for WeightClass {
-    fn try_get_by<I: sea_orm::ColIdx>(res: &sea_orm::QueryResult, index: I) -> Result<Self, sea_orm::TryGetError> {
+    fn try_get_by<I: ColIdx>(res: &QueryResult, index: I) -> Result<Self, TryGetError> {
         let output = Decimal::try_get_by(res, index)?;
         Ok(output.into())
     }

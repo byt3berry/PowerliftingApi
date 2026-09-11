@@ -1,4 +1,5 @@
 use sea_orm::prelude::{DeriveActiveEnum, EnumIter};
+
 use types::prelude::CountryDto;
 
 #[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]

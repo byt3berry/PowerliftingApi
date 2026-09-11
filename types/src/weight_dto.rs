@@ -37,6 +37,6 @@ impl From<WeightDto> for Decimal {
 
 impl Display for WeightDto {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(&self.0.to_string())
+        self.0.normalize().fmt(f)
     }
 }

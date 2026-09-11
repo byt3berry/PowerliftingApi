@@ -6,7 +6,12 @@ use strum_macros::{Display, EnumIter};
 pub enum FederationFilterDto {
     #[strum(to_string = "Any")]
     #[serde(rename(deserialize = "Any"))]
+    #[default]
     Any,
+
+    #[strum(to_string = "AllFrench")]
+    #[serde(rename(deserialize = "AllFrench"))]
+    AllFrench,
 
     #[strum(to_string = "FFForce")]
     #[serde(rename(deserialize = "FFForce"))]
@@ -23,9 +28,4 @@ pub enum FederationFilterDto {
     #[strum(to_string = "FFHMFAC")]
     #[serde(rename(deserialize = "FFHMFAC"))]
     FFHMFAC,
-
-    #[strum(to_string = "Other")]
-    #[serde(other)]
-    #[default]
-    OTHER,
 }

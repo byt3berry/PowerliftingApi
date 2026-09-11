@@ -1,4 +1,5 @@
 use serde::Deserialize;
+
 use types::prelude::EntryDto;
 
 use crate::types::{Division, Equipment, Sex, Username, Weight, WeightClass};

@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::prelude::{EntryDto, MeetDataDto};
 
 pub struct MeetDto {
     pub data: MeetDataDto,

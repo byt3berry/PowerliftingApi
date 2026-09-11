@@ -1,7 +1,7 @@
-use sea_orm::prelude::{DeriveActiveEnum, EnumIter};
+use sea_orm::prelude::{DeriveActiveEnum, DeriveDisplay, EnumIter};
 use types::prelude::FederationDto;
 
-#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]
+#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveDisplay, DeriveActiveEnum)]
 #[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "federation")]
 pub enum Federation {
     #[sea_orm(string_value = "ffforce")]
@@ -28,6 +28,18 @@ impl From<FederationDto> for Federation {
             FederationDto::IPF => Self::Ipf,
             FederationDto::FFHMFAC => Self::Ffhmfac,
             FederationDto::OTHER => Self::Other,
+        }
+    }
+}
+
+impl From<Federation> for FederationDto {
+    fn from(value: Federation) -> Self {
+        match value {
+            Federation::Ffforce => Self::FFForce,
+            Federation::Epf => Self::EPF,
+            Federation::Ipf => Self::IPF,
+            Federation::Ffhmfac => Self::FFHMFAC,
+            Federation::Other => Self::OTHER,
         }
     }
 }

@@ -1,6 +1,7 @@
+use sea_orm_migration::prelude::async_trait::async_trait;
 use sea_orm_migration::prelude::extension::postgres::Type;
 use sea_orm_migration::prelude::sea_orm::{DeriveIden, DeriveMigrationName};
-use sea_orm_migration::prelude::{async_trait, ColumnDef, DbErr, ForeignKey, ForeignKeyAction, MigrationTrait, SchemaManager, Table};
+use sea_orm_migration::prelude::{ColumnDef, DbErr, ForeignKey, ForeignKeyAction, MigrationTrait, SchemaManager, Table};
 
 const PRECISION: u32 = 8;
 const SCALE: u32 = 4;
@@ -8,7 +9,7 @@ const SCALE: u32 = 4;
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
-#[async_trait::async_trait]
+#[async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager

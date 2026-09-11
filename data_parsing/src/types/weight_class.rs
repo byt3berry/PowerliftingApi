@@ -1,9 +1,10 @@
 use anyhow::Result;
 use serde::de::{self, Visitor};
 use serde::{Deserialize, Deserializer};
-use types::prelude::WeightClassDto;
-use std::fmt::{self, Display};
+use std::fmt;
 use std::str::FromStr;
+
+use types::prelude::WeightClassDto;
 
 use crate::types::weight::Weight;
 
@@ -30,15 +31,6 @@ impl FromStr for WeightClass {
             v.parse::<Weight>().map(Self::Over)
         } else {
             s.parse::<Weight>().map(Self::UnderOrEqual)
-        }
-    }
-}
-
-impl Display for WeightClass {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::UnderOrEqual(weight) => write!(f, "{weight}"),
-            Self::Over(weight) => write!(f, "+{weight}"),
         }
     }
 }
@@ -106,17 +98,5 @@ mod tests {
 
         assert!(result.is_ok());
         assert_eq!(expected, result.unwrap());
-    }
-
-    #[rstest]
-    #[case(WeightClass::UnderOrEqual(83.into()), "83".to_string())]
-    #[case(WeightClass::Over(120.into()), "+120".to_string())]
-    fn test_display(
-        #[case] input: WeightClass,
-        #[case] expected: String
-    ) {
-        let result: String = format!("{}", input);
-
-        assert_eq!(expected, result);
     }
 }

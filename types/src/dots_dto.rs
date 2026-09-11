@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{prelude::WeightDto, sex_dto::SexDto};
 
 #[derive(Debug, Default, Eq, PartialEq)]
 pub struct DotsDto(i32);

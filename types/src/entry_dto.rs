@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::prelude::{DivisionDto, EquipmentDto, UsernameDto, SexDto, WeightClassDto, WeightDto};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct EntryDto {
@@ -25,22 +25,4 @@ pub struct EntryDto {
     pub best_bench: Option<WeightDto>,
     pub best_deadlift: Option<WeightDto>,
     pub total: Option<WeightDto>,
-}
-
-impl From<EntryDto> for ExportRow {
-    fn from(value: EntryDto) -> Self {
-        Self {
-            rank: value.rank.map_or_else(|| "None".to_string(), |v| v.to_string()),
-            name: value.name.name.clone(),
-            equipment: value.equipment.to_string(),
-            sex: value.sex.to_string(),
-            division: value.division.to_string(),
-            bodyweight: value.bodyweight.0.to_string(),
-            weight_class: value.weight_class.map_or_else(|| "None".to_string(), |v| v.to_string()),
-            best_squat: value.best_squat.map_or_else(|| "None".to_string(), |v| v.to_string()),
-            best_bench: value.best_bench.map_or_else(|| "None".to_string(), |v| v.to_string()),
-            best_deadlift: value.best_deadlift.map_or_else(|| "None".to_string(), |v| v.to_string()),
-            total: value.total.map_or_else(|| "None".to_string(), |v| v.to_string()),
-        }
-    }
 }

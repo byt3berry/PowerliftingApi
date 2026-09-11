@@ -1,8 +1,11 @@
 use anyhow::{bail, Context, Error, Result};
-use migrations::{Migrator, MigratorTrait};
-use sea_orm::{ActiveModelTrait, ConnectOptions, Database, DatabaseConnection, EntityTrait, TransactionTrait};
+use migrations::Migrator;
+use sea_orm::prelude::{ActiveModelTrait, DatabaseConnection, EntityTrait};
+use sea_orm::{ConnectOptions, Database, TransactionTrait};
+use sea_orm_migration::MigratorTrait;
 use tracing::info;
-use types::prelude::*;
+
+use types::prelude::MeetDto;
 
 use crate::models::write::{entry, meet};
 
