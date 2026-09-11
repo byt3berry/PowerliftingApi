@@ -1,4 +1,4 @@
-use maud::{html, Markup, DOCTYPE};
+use maud::{DOCTYPE, Markup, html};
 use strum::IntoEnumIterator;
 
 use types::filters::{DivisionFilterDto, EquipmentFilterDto, FederationFilterDto, SexFilterDto};
@@ -142,28 +142,28 @@ fn input_div() -> Markup {
                     }
 
                     button
-                        type="submit" 
-                        hx-post="/top_powerlifters" 
-                        hx-target="#result" 
-                        name="limit" 
+                        type="submit"
+                        hx-post="/v1/top_powerlifters"
+                        hx-target="#result"
+                        name="limit"
                         value="5" {
                             "Top 5"
                         }
 
                     button
-                        type="submit" 
-                        hx-post="/top_powerlifters" 
-                        hx-target="#result" 
-                        name="limit" 
+                        type="submit"
+                        hx-post="/v1/top_powerlifters"
+                        hx-target="#result"
+                        name="limit"
                         value="15" {
                             "Top 15"
                         }
 
                     button
-                        type="submit" 
-                        hx-post="/top_powerlifters" 
-                        hx-target="#result" 
-                        name="limit" 
+                        type="submit"
+                        hx-post="/v1/top_powerlifters"
+                        hx-target="#result"
+                        name="limit"
                         value="25" {
                             "Top 25"
                         }
@@ -175,9 +175,9 @@ fn input_div() -> Markup {
                 textarea name="powerlifters" id="powerlifters" rows="5" cols="40" { }
                 br;
 
-                button 
-                    type="submit" 
-                    hx-post="/powerlifters" 
+                button
+                    type="submit"
+                    hx-post="/v1/powerlifters"
                     hx-target="#result" {
                         "Send"
                     }
