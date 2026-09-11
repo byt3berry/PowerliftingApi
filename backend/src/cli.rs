@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 use std::net::IpAddr;
 use std::path::PathBuf;
 
@@ -25,7 +25,7 @@ pub struct Args {
     pub start_server: Option<bool>,
 
     /// Apply migrations
-    #[arg(short, long, default_value = "true")]
+    #[arg(short, long, default_value = "false")]
     pub migrate: Option<bool>,
 }
 

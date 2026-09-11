@@ -3,9 +3,9 @@ resolver = "3"
 members = [
     "backend",
     "data_parsing",
-    "frontend",
     "migrations",
-    "repository", "search",
+    "repository",
+    "search",
     "types",
 ]
 

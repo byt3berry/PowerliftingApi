@@ -10,6 +10,7 @@ use search::SearchEngine;
 
 use crate::server::{ServerData, start_server};
 
+mod api_doc;
 mod cli;
 mod endpoints;
 mod server;
