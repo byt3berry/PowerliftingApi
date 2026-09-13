@@ -23,7 +23,7 @@ pub fn config(cfg: &mut ServiceConfig) {
 
 #[utoipa::path(
     post,
-    path = "/powerlifters",
+    path = "/api/powerlifters",
     request_body(
         content = PowerliftersQuery,
         content_type = "application/json"

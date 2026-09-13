@@ -33,16 +33,19 @@ async fn main() -> Result<()> {
     args.validate()?;
 
     if args.migrate.is_some_and(|migrate| migrate) {
-        Database::from_directory(args.path.as_ref().unwrap())?
+        Database::from_directory(args.data_path.as_ref().unwrap())?
             .save()
             .await?;
     }
 
     if args.start_server.is_some_and(|start_server| start_server) {
         let data: ServerData = ServerData {
+            ip: args.ip.unwrap(),
+            port: args.port.unwrap(),
             search_engine: SearchEngine,
+            static_data: args.static_path,
         };
-        let server: Server = start_server(args.ip.unwrap(), args.port.unwrap(), data)?;
+        let server: Server = start_server(data)?;
 
         server.await?;
 

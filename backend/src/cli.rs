@@ -10,7 +10,11 @@ use clap::Parser;
 pub struct Args {
     /// Path to data
     #[arg(long, env = "DATA")]
-    pub path: Option<PathBuf>,
+    pub data_path: Option<PathBuf>,
+
+    /// Path to static files
+    #[arg(long, env = "STATIC_DATA")]
+    pub static_path: PathBuf,
 
     /// IP
     #[arg(long, env = "IP", requires = "port")]
@@ -31,8 +35,12 @@ pub struct Args {
 
 impl Args {
     pub fn validate(&self) -> Result<()> {
-        if self.path.as_ref().is_none_or(|path| !path.exists()) {
-            bail!("path \"{:?}\" must exist", self.path);
+        if self.data_path.as_ref().is_none_or(|path| !path.exists()) {
+            bail!("data path \"{:?}\" must exist", self.data_path);
+        }
+
+        if !self.static_path.exists() {
+            bail!("static path \"{:?}\" must exist", self.static_path);
         }
 
         if self.start_server.is_some_and(|start_server| start_server) {

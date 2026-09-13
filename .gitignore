@@ -28,3 +28,9 @@ profiling/
 # Added by cargo
 
 /target
+
+.vs/
+bin/
+obj/
+*.pubxml
+*.user
