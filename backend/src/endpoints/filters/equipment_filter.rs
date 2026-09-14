@@ -5,13 +5,28 @@ use utoipa::ToSchema;
 
 #[derive(Clone, Copy, Debug, Deserialize, Display, Eq, PartialEq, ToSchema)]
 pub enum EquipmentFilter {
+    #[serde(alias = "raw")]
     Raw,
+
+    #[serde(alias = "wraps")]
     Wraps,
+
+    #[serde(alias = "single")]
     Single,
+
+    #[serde(alias = "multi")]
     Multi,
+
+    #[serde(alias = "straps")]
     Straps,
+
+    #[serde(alias = "sleeves")]
     Sleeves,
+
+    #[serde(alias = "bare")]
     Bare,
+
+    #[serde(alias = "unlimited")]
     Unlimited,
 }
 

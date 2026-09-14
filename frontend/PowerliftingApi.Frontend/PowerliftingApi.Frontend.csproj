@@ -13,4 +13,8 @@
     <PackageReference Include="MudBlazor" Version="9.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PowerliftingApi.Frontend.Infrastructure\PowerliftingApi.Frontend.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

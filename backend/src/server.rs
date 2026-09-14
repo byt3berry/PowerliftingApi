@@ -1,3 +1,4 @@
+use actix_cors::Cors;
 use actix_files::Files;
 use actix_htmx::HtmxMiddleware;
 use actix_web::dev::Server;
@@ -30,6 +31,12 @@ pub fn start_server(data: ServerData) -> Result<Server> {
 
     Ok(HttpServer::new(move || {
         App::new()
+            .wrap(
+                Cors::default()
+                    .allow_any_origin()
+                    .allow_any_method()
+                    .allow_any_header(),
+            )
             .wrap(NormalizePath::new(TrailingSlash::Trim))
             .wrap(HtmxMiddleware)
             .wrap(Logger::new("[%s] %U"))

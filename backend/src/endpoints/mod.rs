@@ -1,5 +1,5 @@
 use actix_web::web::{Data, Json, ServiceConfig};
-use actix_web::{HttpResponse, Responder, post};
+use actix_web::{HttpResponse, post};
 use log::{debug, info};
 
 use search::SearchResult;
@@ -43,7 +43,7 @@ pub fn config(cfg: &mut ServiceConfig) {
     tag = "Powerlifters"
 )]
 #[post("/powerlifters")]
-async fn powerlifters(form: Json<PowerliftersQuery>, data: Data<ServerData>) -> impl Responder {
+async fn powerlifters(form: Json<PowerliftersQuery>, data: Data<ServerData>) -> HttpResponse {
     debug!("form: {form:?}");
     let powerlifter_data: Vec<Powerlifter> = search(form.0.into(), data)
         .await
