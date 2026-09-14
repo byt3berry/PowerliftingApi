@@ -6,18 +6,19 @@
 using Refit;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
-using PowerliftingApi.Frontend.Infrastructure.Models;
 
 #nullable enable annotations
 
-namespace PowerliftingApi.Frontend.Infrastructure.Interfaces
+namespace PowerliftingApi.Frontend.Infrastructure.ApiContracts
 {
     /// <summary>backend</summary>
     [System.CodeDom.Compiler.GeneratedCode("Refitter", "2.2.0.0")]
-    public partial interface IBackend : IDisposable
+    internal partial interface IBackend : IDisposable
     {
         /// <param name="body">body parameter</param>
+        /// <param name="cancellationToken">The cancellation token to cancel the request.</param>
         /// <returns>Powerlifters matching the supplied filters</returns>
         /// <exception cref="ApiException">
         /// Thrown when the request returns a non-success status code:
@@ -34,7 +35,7 @@ namespace PowerliftingApi.Frontend.Infrastructure.Interfaces
         /// </exception>
         [Headers("Accept: application/json", "Content-Type: application/json")]
         [Post("/api/powerlifters")]
-        Task<ICollection<Powerlifter>> Powerlifters([Body] PowerliftersQuery body);
+        Task<ICollection<Powerlifter>> Powerlifters([Body] PowerliftersQuery body, CancellationToken cancellationToken = default);
 
     }
 
