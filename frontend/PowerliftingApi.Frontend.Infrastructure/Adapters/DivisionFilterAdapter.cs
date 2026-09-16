@@ -21,7 +21,7 @@ internal class DivisionFilterAdapter : IAdapter<DivisionFilterUI, DivisionFilter
         DivisionFilterUI.Masters1 => DivisionFilter.Masters1,
         DivisionFilterUI.Masters2 => DivisionFilter.Masters2,
         DivisionFilterUI.Masters3 => DivisionFilter.Masters3,
-        DivisionFilterUI.Masters4 => DivisionFilter.Masters3,
+        DivisionFilterUI.Masters4 => DivisionFilter.Masters4,
         _ => throw new InvalidEnumArgumentException(nameof(input), (int)input, typeof(DivisionFilterUI))
     };
 }

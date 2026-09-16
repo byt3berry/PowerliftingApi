@@ -11,7 +11,7 @@ internal class PowerlifterAdapter(DivisionAdapter divisionAdapter,
 {
     public PowerlifterUI Adapt(Powerlifter input) => new()
     {
-        Name = input.Name,
+        Name = input.Name ?? String.Empty,
         Rank = input.Rank,
         Division = divisionAdapter.Adapt(input.Division),
         Equipment = equipmentAdapter.Adapt(input.Equipment),

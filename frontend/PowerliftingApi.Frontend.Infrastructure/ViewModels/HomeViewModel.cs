@@ -19,12 +19,6 @@ public partial class HomeViewModel(IBackendService backendService) : ObservableO
     [RelayCommand]
     private async Task Search(CancellationToken token)
     {
-        try
-        {
-            Powerlifters = [.. await _backendService.GetPowerlifters(Query, token)];
-        }
-        catch (Exception e)
-        {
-        }
+        Powerlifters = [.. await _backendService.GetPowerlifters(Query, token)];
     }
 }

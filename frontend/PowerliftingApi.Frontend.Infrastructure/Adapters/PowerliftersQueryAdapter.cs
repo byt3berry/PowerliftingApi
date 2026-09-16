@@ -16,6 +16,6 @@ internal class PowerliftersQueryAdapter(DivisionFilterAdapter divisionFilterAdap
         EquipmentChoice = equipmentFilterAdapter.Adapt(input.Equipment),
         FederationChoice = federationFilterAdapter.Adapt(input.Federation),
         SexChoice = sexFilterAdapter.Adapt(input.Sex),
-        Powerlifters = input.Powerlifters,
+        Powerlifters = input.Powerlifters ?? String.Empty,
     };
 }

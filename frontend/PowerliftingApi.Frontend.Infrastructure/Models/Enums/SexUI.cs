@@ -7,7 +7,7 @@ public enum SexUI
     [Description("???")]
     Unknown,
 
-    [Description("H")]
+    [Description("M")]
     M,
 
     [Description("F")]

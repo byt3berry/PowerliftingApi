@@ -29,7 +29,7 @@ pub struct Args {
     pub start_server: Option<bool>,
 
     /// Apply migrations
-    #[arg(short, long, default_value = "false")]
+    #[arg(short, long, default_value = "true")]
     pub migrate: Option<bool>,
 }
 

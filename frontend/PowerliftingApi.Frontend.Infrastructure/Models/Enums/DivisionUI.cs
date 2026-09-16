@@ -42,5 +42,4 @@ public enum DivisionUI
 
     [Description("Masters4")]
     Masters4,
-
 }
