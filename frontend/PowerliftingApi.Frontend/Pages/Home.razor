@@ -1,5 +1,6 @@
 @page "/"
 
+@using PowerliftingApi.Frontend.Infrastructure.Extensions
 @using PowerliftingApi.Frontend.Infrastructure.Models.Enums.Filters
 
 <PageTitle>Home</PageTitle>
@@ -22,7 +23,7 @@
                                         CheckMark>
                                 @foreach (DivisionFilterUI division in Enum.GetValues<DivisionFilterUI>())
                                 {
-                                    <MudChip Value="@division" />
+                                    <MudChip Value="@division" Text="@division.ToDescription()" />
                                 }
                             </MudChipSet>
                         </td>
@@ -30,7 +31,7 @@
 
                     <tr>
                         <td>
-                            <MudText>Equipment</MudText>
+                            <MudText>Équipement</MudText>
                         </td>
                         <td>
                             <MudChipSet T="@EquipmentFilterUI"
@@ -41,7 +42,7 @@
                                         CheckMark>
                                 @foreach (EquipmentFilterUI equipment in Enum.GetValues<EquipmentFilterUI>())
                                 {
-                                    <MudChip Value="@equipment" />
+                                    <MudChip Value="@equipment" Text="@equipment.ToDescription()" />
                                 }
                             </MudChipSet>
 
@@ -50,7 +51,7 @@
 
                     <tr>
                         <td>
-                            <MudText>Sex</MudText>
+                            <MudText>Sexe</MudText>
                         </td>
                         <td>
                             <MudChipSet T="@SexFilterUI"
@@ -61,7 +62,7 @@
                                         CheckMark>
                                 @foreach (SexFilterUI sex in Enum.GetValues<SexFilterUI>())
                                 {
-                                    <MudChip Value="@sex" />
+                                    <MudChip Value="@sex" Text="@sex.ToDescription()" />
                                 }
                             </MudChipSet>
                         </td>
@@ -76,6 +77,7 @@
                                           Margin="@Margin.Dense"
                                           Sizing="InputSizing.Auto"
                                           Lines="6"
+                                          MaxLines="6"
                                           FullWidth />
                         </td>
                     </tr>
@@ -93,24 +95,26 @@
     <MudDataGrid Items="@_viewModel.Powerlifters"
                  ColumnResizeMode="@ResizeMode.Column"
                  SortMode="@SortMode.None"
+                 Height="400px"
+                 Virtualize
                  FixedHeader
                  Dense>
         <NoRecordsContent>
             Ajustez les filtres
         </NoRecordsContent>
         <Columns>
-            <PropertyColumn Property="@(x => x.Rank)" />
-            <PropertyColumn Property="@(x => x.Name)" />
-            <PropertyColumn Property="@(x => x.Federation)" />
-            <PropertyColumn Property="@(x => x.Division)" />
-            <PropertyColumn Property="@(x => x.Sex)" />
-            <PropertyColumn Property="@(x => x.Equipment)" />
-            <PropertyColumn Property="@(x => x.WeightClass)" />
-            <PropertyColumn Property="@(x => x.Bodyweight)" />
-            <PropertyColumn Property="@(x => x.BestSquat)" />
-            <PropertyColumn Property="@(x => x.BestBench)" />
-            <PropertyColumn Property="@(x => x.BestDeadlift)" />
-            <PropertyColumn Property="@(x => x.Total)" />
+            <PropertyColumn Property="@(x => x.Rank)" Title="Rang" />
+            <PropertyColumn Property="@(x => x.Name)" Title="Nom" />
+            <PropertyColumn Property="@(x => x.Federation)" Title="Fédération" />
+            <PropertyColumn Property="@(x => x.Division)" Title="Division" />
+            <PropertyColumn Property="@(x => x.Sex)" Title="Sexe" />
+            <PropertyColumn Property="@(x => x.Equipment)" Title="Équipement" />
+            <PropertyColumn Property="@(x => x.WeightClass)" Title="Catégorie" />
+            <PropertyColumn Property="@(x => x.Bodyweight)" Title="Poids" />
+            <PropertyColumn Property="@(x => x.BestSquat)" Title="Squat" />
+            <PropertyColumn Property="@(x => x.BestBench)" Title="Bench" />
+            <PropertyColumn Property="@(x => x.BestDeadlift)" Title="Deadlift" />
+            <PropertyColumn Property="@(x => x.Total)" Title="Total" />
         </Columns>
     </MudDataGrid>
 </MudStack>

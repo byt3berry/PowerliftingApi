@@ -25,21 +25,21 @@ public enum DivisionFilterUI
     [Description("Juniors")]
     Juniors,
 
-    [Description("Masters")]
-    Masters,
-
     [Description("Seniors")]
     Seniors,
 
-    [Description("Masters1")]
+    [Description("Masters")]
+    Masters,
+
+    [Description("Masters 1")]
     Masters1,
 
-    [Description("Masters2")]
+    [Description("Masters 2")]
     Masters2,
 
-    [Description("Masters3")]
+    [Description("Masters 3")]
     Masters3,
 
-    [Description("Masters4")]
+    [Description("Masters 4")]
     Masters4,
 }
