@@ -15,6 +15,35 @@
     <MudMainContent Class="pt-16 pa-4">
         @Body
     </MudMainContent>
+
+    <MudAppBar Class="pb-1" Elevation="1" Bottom>
+        <MudSpacer />
+
+        <MudStack Spacing="0" AlignItems="@AlignItems.Center" Justify="@Justify.Center">
+            <MudStack Row AlignItems="@AlignItems.Center" Justify="@Justify.Center">
+                <MudButton StartIcon="@Icons.Custom.Brands.GitHub"
+                           Variant="@Variant.Text"
+                           Href="https://github.com/byt3berry/PowerliftingApi"
+                           Target="_blank"
+                           Rel="noopener">
+                    Projet GitHub
+                </MudButton>
+
+                <MudLink Href="https://github.com/byt3berry/PowerliftingApi/releases" Target="_blank">
+                    <MudImage Src="https://img.shields.io/github/v/release/byt3berry/PowerliftingApi" Alt="Latest release" />
+                </MudLink>
+            </MudStack>
+
+            <MudButton Variant="@Variant.Text"
+                       Href="https://github.com/byt3berry/PowerliftingApi"
+                       Target="_blank"
+                       Rel="noopener">
+                Cette page utilise les data du projet OpenPowerlifting
+            </MudButton>
+        </MudStack>
+
+        <MudSpacer />
+    </MudAppBar>
 </MudLayout>
 
 @code {
