@@ -8,9 +8,32 @@ on:
 permissions:
   contents: write
 
+env:
+  DOTNET_VERSION: "10.0.401"
+  DOTNET_FRAMEWORK: "net10.0"
+
 jobs:
-  build:
-    name: Build binary
+  version:
+    name: Get version from Cargo.toml
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.metadata }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - id: version
+        uses: nicolaiunrein/cargo-get@master
+        with:
+          subcommand: workspace.package.version
+
+      - run: echo "Version ${{ steps.version.outputs.metadata }}"
+
+  publish-backend:
+    name: Publish the backend binary artifact
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,31 +48,64 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: powerlifting_api_artifact
+          name: backend_artifact
           path: ${{ github.workspace }}/target/release/backend
+          if-no-files-found: error
 
-  release:
-    name: Create release
-    needs: build
+  publish-frontend:
+    name: Publish the frontend binary artifact
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/setup-dotnet@v6
         with:
-          toolchain: stable
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Get version from Cargo.toml
-        id: version
-        uses: nicolaiunrein/cargo-get@master
+      - name: Install dependencies
+        working-directory: ${{ github.workspace }}/frontend
+        run: |
+          dotnet workload restore
+          dotnet workload install wasm-tools
+          dotnet restore
+
+      - name: Build
+        run: >
+          dotnet publish
+          ${{ github.workspace }}/frontend/PowerliftingApi.Frontend
+          --self-contained
+          -o ${{ github.workspace }}/frontend/PowerliftingApi.Frontend/bin/Publish
+          -c Release
+          -r "browser-wasm"
+          -f "net10.0"
+
+      - name: Zip
+        working-directory: ${{ github.workspace }}/frontend/PowerliftingApi.Frontend/bin/Publish
+        run: >
+          zip
+          -T -r
+          wwwroot.zip
+          wwwroot
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          subcommand: workspace.package.version
+          name: frontend_artifact
+          path: ${{ github.workspace }}/frontend/PowerliftingApi.Frontend/bin/Publish/wwwroot.zip
+          if-no-files-found: error
 
-      - name: Download artifact
+  release:
+    name: Upload release
+    needs: [version, publish-backend, publish-frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-          name: powerlifting_api_artifact
+          merge-multiple: true
 
       - name: Create release
         id: create_release
@@ -57,18 +113,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.version.outputs.metadata }}
-          release_name: Release v${{ steps.version.outputs.metadata }}
+          tag_name: ${{ needs.version.outputs.metadata }}
+          release_name: Release v${{ needs.version.outputs.metadata }}
           draft: false
           prerelease: false
 
-      - name: Upload binary
+      - name: Upload backend binary
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          overwrite: true
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: artifacts/backend
           asset_name: powerlifting-api-linux-x86_64
           asset_content_type: application/octet-stream
+
+      - name: Upload frontend files
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: artifacts/wwwroot.zip
+          asset_name: wwwroot.zip
+          asset_content_type: application/zip
