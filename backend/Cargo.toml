@@ -5,6 +5,7 @@ default-run = "backend"
 version.workspace = true
 
 [dependencies]
+actix-cors = "0.7"
 actix-files = "0.6.6"
 actix-htmx = "0.3.0"
 actix-web = "4.11.0"
@@ -13,8 +14,13 @@ clap = { version = "4.5.41", features = ["derive"] }
 data_parsing = { path="../data_parsing/" }
 dotenvy = "0.15.7"
 env_logger = "0.11.8"
-frontend = { path = "../frontend" }
 log = "0.4.27"
 repository = { path = "../repository" }
+rust_decimal = { version="1.39.0", features = ["serde-float"] }
 search = { path="../search/" }
+serde = { version = "1.0.219", features = ["derive"] }
+strum = "0.27.2"
+strum_macros = "0.27.2"
 types = { path="../types/" }
+utoipa = { version = "5", features = ["actix_extras", "decimal_float"] }
+utoipa-swagger-ui = { version = "9", features = ["actix-web"] }

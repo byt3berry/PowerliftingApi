@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="PowerliftingApi.Frontend.Infrastructure.UnitTests/PowerliftingApi.Frontend.Infrastructure.UnitTests.csproj" Id="984b6daf-cb1c-4868-9308-940634c4c130" />
+  <Project Path="PowerliftingApi.Frontend.Infrastructure/PowerliftingApi.Frontend.Infrastructure.csproj" Id="14a7cad2-d156-487a-828d-c48a88107bbf" />
+  <Project Path="PowerliftingApi.Frontend/PowerliftingApi.Frontend.csproj" />
+</Solution>

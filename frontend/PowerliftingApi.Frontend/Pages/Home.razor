@@ -1,0 +1,120 @@
+@page "/"
+
+@using PowerliftingApi.Frontend.Infrastructure.Extensions
+@using PowerliftingApi.Frontend.Infrastructure.Models.Enums.Filters
+
+<PageTitle>Home</PageTitle>
+
+<MudStack>
+    <MudForm Spacing="1" Model="@_viewModel.Query">
+        <MudStack>
+            <MudSimpleTable Dense Elevation="1">
+                <tbody>
+                    <tr>
+                        <td>
+                            <MudText>Division</MudText>
+                        </td>
+                        <td>
+                            <MudChipSet T="@DivisionFilterUI"
+                                        @bind-SelectedValue="@_viewModel.Query.Division"
+                                        SelectionMode="@SelectionMode.ToggleSelection"
+                                        SelectedColor="@Color.Secondary"
+                                        Variant="@Variant.Outlined"
+                                        CheckMark>
+                                @foreach (DivisionFilterUI division in Enum.GetValues<DivisionFilterUI>())
+                                {
+                                    <MudChip Value="@division" Text="@division.ToDescription()" />
+                                }
+                            </MudChipSet>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <MudText>Équipement</MudText>
+                        </td>
+                        <td>
+                            <MudChipSet T="@EquipmentFilterUI"
+                                        @bind-SelectedValue="@_viewModel.Query.Equipment"
+                                        SelectionMode="@SelectionMode.ToggleSelection"
+                                        SelectedColor="@Color.Secondary"
+                                        Variant="@Variant.Outlined"
+                                        CheckMark>
+                                @foreach (EquipmentFilterUI equipment in Enum.GetValues<EquipmentFilterUI>())
+                                {
+                                    <MudChip Value="@equipment" Text="@equipment.ToDescription()" />
+                                }
+                            </MudChipSet>
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <MudText>Sexe</MudText>
+                        </td>
+                        <td>
+                            <MudChipSet T="@SexFilterUI"
+                                        @bind-SelectedValue="@_viewModel.Query.Sex"
+                                        SelectionMode="@SelectionMode.ToggleSelection"
+                                        SelectedColor="@Color.Secondary"
+                                        Variant="@Variant.Outlined"
+                                        CheckMark>
+                                @foreach (SexFilterUI sex in Enum.GetValues<SexFilterUI>())
+                                {
+                                    <MudChip Value="@sex" Text="@sex.ToDescription()" />
+                                }
+                            </MudChipSet>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2">
+                            <MudTextField @bind-Value="@_viewModel.Query.Powerlifters"
+                                          T="string"
+                                          Label="Powerlifters"
+                                          Variant="Variant.Outlined"
+                                          Margin="@Margin.Dense"
+                                          Sizing="InputSizing.Auto"
+                                          Lines="6"
+                                          MaxLines="6"
+                                          FullWidth />
+                        </td>
+                    </tr>
+                </tbody>
+            </MudSimpleTable>
+
+        </MudStack>
+
+        <MudButton OnClick="@_viewModel.SearchCommand.ExecuteAsync"
+                   Variant="@Variant.Outlined">
+            Chercher
+        </MudButton>
+    </MudForm>
+
+    <MudDataGrid Items="@_viewModel.Powerlifters"
+                 ColumnResizeMode="@ResizeMode.Column"
+                 SortMode="@SortMode.None"
+                 Height="400px"
+                 Virtualize
+                 FixedHeader
+                 Dense>
+        <NoRecordsContent>
+            Ajustez les filtres
+        </NoRecordsContent>
+        <Columns>
+            <PropertyColumn Property="@(x => x.Rank)" Title="Rang" />
+            <PropertyColumn Property="@(x => x.Name)" Title="Nom" />
+            <PropertyColumn Property="@(x => x.Federation)" Title="Fédération" />
+            <PropertyColumn Property="@(x => x.Division)" Title="Division" />
+            <PropertyColumn Property="@(x => x.Sex)" Title="Sexe" />
+            <PropertyColumn Property="@(x => x.Equipment)" Title="Équipement" />
+            <PropertyColumn Property="@(x => x.WeightClass)" Title="Catégorie" />
+            <PropertyColumn Property="@(x => x.Bodyweight)" Title="Poids" />
+            <PropertyColumn Property="@(x => x.BestSquat)" Title="Squat" />
+            <PropertyColumn Property="@(x => x.BestBench)" Title="Bench" />
+            <PropertyColumn Property="@(x => x.BestDeadlift)" Title="Deadlift" />
+            <PropertyColumn Property="@(x => x.Total)" Title="Total" />
+        </Columns>
+    </MudDataGrid>
+</MudStack>

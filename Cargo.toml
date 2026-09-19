@@ -3,14 +3,14 @@ resolver = "3"
 members = [
     "backend",
     "data_parsing",
-    "frontend",
     "migrations",
-    "repository", "search",
+    "repository",
+    "search",
     "types",
 ]
 
 [workspace.package]
-version = "0.9.0"
+version = "0.9.1"
 edition = "2024"
 
 [profile.profiling]
